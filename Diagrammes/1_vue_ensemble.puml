@@ -1,0 +1,54 @@
+@startuml 1_vue_ensemble
+title 1 - Vue d'ensemble des entités
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty members
+
+interface Updatable {
+  + update(dt : double) : void
+}
+
+interface Renderable {
+  + render(gc : GraphicsContext) : void
+}
+
+interface Damageable {
+  + takeDamage(amount : int) : void
+  + isAlive() : boolean
+}
+
+abstract class Entity {
+  # x : double
+  # y : double
+  + collidesWith(other : Entity) : boolean
+}
+
+abstract class Character {
+  # hp : int
+  # maxHp : int
+}
+
+class Projectile
+class Player
+abstract class Enemy
+
+Updatable <|.. Entity
+Renderable <|.. Entity
+Entity <|-- Character
+Entity <|-- Projectile
+Damageable <|.. Character
+Character <|-- Player
+Character <|-- Enemy
+
+note right of Entity
+  Tout ce qui existe
+  à l'écran
+end note
+
+note right of Character
+  Tout ce qui a
+  des points de vie
+end note
+
+@enduml

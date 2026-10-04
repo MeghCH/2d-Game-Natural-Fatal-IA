@@ -1,0 +1,148 @@
+@startuml uml_entites
+title Shoot'em up - Diagramme de classes : entités
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+hide empty members
+
+interface Updatable {
+  + update(dt : double) : void
+}
+
+interface Renderable {
+  + render(gc : GraphicsContext) : void
+}
+
+interface Damageable {
+  + takeDamage(amount : int) : void
+  + isAlive() : boolean
+}
+
+interface HealthObserver <<Observer>> {
+  + onHealthChanged(c : Character) : void
+}
+
+interface MovementStrategy <<Strategy>> {
+  + move(e : Entity, dt : double) : void
+}
+
+abstract class Entity {
+  # x : double
+  # y : double
+  # width : double
+  # height : double
+  # velocity : Vector2D
+  + getHitbox() : Rectangle
+  + collidesWith(other : Entity) : boolean
+}
+
+abstract class Character {
+  # hp : int
+  # maxHp : int
+  - observers : List<HealthObserver>
+  + takeDamage(amount : int) : void
+  + isAlive() : boolean
+  + addObserver(o : HealthObserver) : void
+  # notifyObservers() : void
+}
+
+class Player {
+  - playerId : int
+  - score : int
+  - lives : int
+  - weapon : Weapon
+  - controls : InputController
+  + shoot() : Projectile
+  + addScore(points : int) : void
+}
+
+class InputController {
+  - upKey : KeyCode
+  - downKey : KeyCode
+  - leftKey : KeyCode
+  - rightKey : KeyCode
+  - shootKey : KeyCode
+  + isPressed(action : Action) : boolean
+}
+
+abstract class Enemy {
+  # contactDamage : int
+  # scoreValue : int
+  # movement : MovementStrategy
+  + getContactDamage() : int
+  + setMovement(m : MovementStrategy) : void
+  + {abstract} attack(target : Player) : void
+}
+
+class Mosquito {
+  contactDamage = 2
+}
+
+class Wasp {
+  contactDamage = 6
+}
+
+class Crow {
+  contactDamage = 10
+}
+
+class EvilAI {
+  - phase : BossPhase
+  + changePhase() : void
+}
+
+interface BossPhase <<State>> {
+  + execute(boss : EvilAI, dt : double) : void
+  + next() : BossPhase
+}
+
+class Projectile {
+  - damage : int
+  - owner : Character
+}
+
+class Weapon {
+  - fireRate : int
+  - cooldown : double
+  + fire(x : double, y : double) : Projectile
+}
+
+class StraightMovement
+class ZigzagMovement
+class DiveMovement
+
+Updatable <|.. Entity
+Renderable <|.. Entity
+Damageable <|.. Character
+
+Entity <|-- Character
+Entity <|-- Projectile
+Character <|-- Player
+Character <|-- Enemy
+
+Enemy <|-- Mosquito
+Enemy <|-- Wasp
+Enemy <|-- Crow
+Enemy <|-- EvilAI
+
+Player *-- "1" Weapon
+Player *-- "1" InputController
+Weapon ..> Projectile : <<create>>
+
+Enemy o-- "1" MovementStrategy
+MovementStrategy <|.. StraightMovement
+MovementStrategy <|.. ZigzagMovement
+MovementStrategy <|.. DiveMovement
+
+EvilAI o-- "1" BossPhase
+Character o-- "*" HealthObserver
+
+note right of Enemy
+  Dégâts au contact :
+  moustique = 2
+  guêpe = 6
+  corbeau = 10
+end note
+
+@enduml

@@ -1,0 +1,65 @@
+@startuml 2_joueur
+title 2 - Le joueur
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty members
+
+abstract class Character {
+  # hp : int
+  - observers : List<HealthObserver>
+  + takeDamage(amount : int) : void
+  # notifyObservers() : void
+}
+
+class Player {
+  - playerId : int
+  - score : int
+  - lives : int
+  + shoot() : Projectile
+}
+
+class InputController {
+  - upKey : KeyCode
+  - downKey : KeyCode
+  - leftKey : KeyCode
+  - rightKey : KeyCode
+  - shootKey : KeyCode
+}
+
+class Weapon {
+  - fireRate : int
+  - cooldown : double
+  + fire(x : double, y : double) : Projectile
+}
+
+class Projectile {
+  - damage : int
+}
+
+interface HealthObserver <<Observer>> {
+  + onHealthChanged(c : Character) : void
+}
+
+class Hud {
+  + onHealthChanged(c : Character) : void
+}
+
+Character <|-- Player
+Player *-- "1" InputController
+Player *-- "1" Weapon
+Weapon ..> Projectile : crée
+Character o-- "*" HealthObserver
+HealthObserver <|.. Hud
+
+note bottom of InputController
+  Joueur 1 : ZQSD + espace
+  Joueur 2 : flèches + entrée
+end note
+
+note bottom of Hud
+  Prévenu à chaque
+  perte de PV
+end note
+
+@enduml

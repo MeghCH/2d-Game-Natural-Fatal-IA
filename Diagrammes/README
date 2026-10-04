@@ -1,0 +1,156 @@
+# Diagrammes UML - Shoot'em up
+
+Ce dossier contient les diagrammes de classes du jeu, écrits en PlantUML. Ils décrivent l'architecture orientée objet du projet et mettent en évidence les design patterns utilisés.
+
+## Le jeu en bref
+
+Un ou deux joueurs se défendent en tirant sur des vagues d'ennemis, répartis sur quatre niveaux :
+
+| Niveau            | Ennemi       | Dégâts au contact       |
+| ----------------- | ------------ | ----------------------- |
+| 1 - Apprentissage | Moustique    | 2                       |
+| 2                 | Guêpe        | 6                       |
+| 3                 | Corbeau      | 10                      |
+| 4 - Boss final    | IA maléfique | variable selon sa phase |
+
+## Ouvrir les diagrammes
+
+Dans VS Code, installer l'extension **PlantUML** (jebbs), ouvrir un fichier `.puml` et appuyer sur **Alt+D** pour afficher l'aperçu.
+
+L'extension a besoin de Graphviz :
+
+```bash
+sudo dnf install graphviz      # Fedora
+sudo apt install graphviz      # Ubuntu / Debian
+```
+
+Puis dans `settings.json` de VS Code :
+
+```json
+"plantuml.commandArgs": ["-DGRAPHVIZ_DOT=/usr/bin/dot"]
+```
+
+Sans installation, il est aussi possible de coller le contenu d'un fichier sur [plantuml.com](https://www.plantuml.com/plantuml/uml/).
+
+## Comment lire un diagramme de classes
+
+### Le sens de lecture
+
+On lit **de haut en bas** : les classes les plus générales sont en haut, les plus précises en bas. Les flèches d'héritage pointent vers le parent, c'est pour ça qu'elles « remontent ».
+
+### Les pastilles devant les noms
+
+| Pastille           | Signification                            | Équivalent Java         | Exemple                         |
+| ------------------ | ---------------------------------------- | ----------------------- | ------------------------------- |
+| **C** (vert)       | Classe concrète, instanciable avec `new` | `public class`          | `Player`, `Mosquito`            |
+| **A** (bleu clair) | Classe abstraite, sert de modèle         | `public abstract class` | `Entity`, `Enemy`               |
+| **I** (violet)     | Interface, contrat de méthodes           | `public interface`      | `Updatable`, `MovementStrategy` |
+| **E** (orange)     | Énumération, liste fixe de valeurs       | `public enum`           | `EnemyType`                     |
+
+Les noms en _italique_ désignent les classes et méthodes abstraites.
+
+### Les symboles de visibilité
+
+| Symbole | Visibilité  | Accessible depuis        |
+| ------- | ----------- | ------------------------ |
+| `+`     | `public`    | partout                  |
+| `-`     | `private`   | la classe uniquement     |
+| `#`     | `protected` | la classe et ses enfants |
+
+Exemple : `hp` est `#` dans `Character` car `Player` et `Enemy` en héritent, alors que `score` est `-` dans `Player` car aucune autre classe ne doit le modifier directement.
+
+### Les cinq types de liens
+
+| Lien           | Dessin                              | Se lit                                    | Exemple                          |
+| -------------- | ----------------------------------- | ----------------------------------------- | -------------------------------- |
+| Héritage       | trait plein + triangle vide         | « est un »                                | `Mosquito` est un `Enemy`        |
+| Implémentation | pointillés + triangle vide          | « respecte le contrat »                   | `Entity` implémente `Updatable`  |
+| Composition    | losange **plein** côté propriétaire | « possède, et disparaît avec »            | `Player` possède sa `Weapon`     |
+| Agrégation     | losange **vide** côté propriétaire  | « a, mais peut être partagé ou remplacé » | `Enemy` a une `MovementStrategy` |
+| Dépendance     | pointillés + flèche ouverte         | « utilise / crée »                        | `Weapon` crée des `Projectile`   |
+
+#### Les liens dessinés
+
+```text
+Héritage         Mosquito ─────────────▷  Enemy
+                 (trait plein, triangle vide vers le parent)
+
+Implémentation   Entity   ─ ─ ─ ─ ─ ─ ─▷  Updatable
+                 (pointillés, triangle vide vers l'interface)
+
+Composition      Player   ◆─────────────  Weapon
+                 (losange plein côté propriétaire)
+
+Agrégation       Enemy    ◇─────────────  MovementStrategy
+                 (losange vide côté propriétaire)
+
+Dépendance       Weapon   ─ ─ ─ ─ ─ ─ ─>  Projectile
+                 (pointillés, flèche ouverte)
+```
+
+Le même schéma en vrai UML (affiché automatiquement sur GitHub) :
+
+```mermaid
+classDiagram
+  direction LR
+  class Updatable {
+    <<interface>>
+  }
+  class MovementStrategy {
+    <<interface>>
+  }
+  class Enemy {
+    <<abstract>>
+  }
+  class Entity {
+    <<abstract>>
+  }
+  Enemy <|-- Mosquito : héritage
+  Updatable <|.. Entity : implémentation
+  Player *-- Weapon : composition
+  Enemy o-- MovementStrategy : agrégation
+  Weapon ..> Projectile : dépendance
+```
+
+Les chiffres près des liens sont les cardinalités : `1` = exactement un, `*` = plusieurs.
+
+## Les cinq diagrammes
+
+### 1. `1_vue_ensemble.puml` - Vue d'ensemble
+
+La hiérarchie des entités, sans les détails. Tout objet visible à l'écran est une `Entity` ; tout ce qui a des points de vie est un `Character`. On y voit les trois branches principales : `Player`, `Enemy` et `Projectile`, ainsi que les interfaces `Updatable`, `Renderable` et `Damageable`.
+
+### 2. `2_joueur.puml` - Le joueur
+
+Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `Hud` est prévenu à chaque perte de points de vie grâce au pattern **Observer**.
+
+### 3. `3_ennemis.puml` - Les ennemis
+
+Les quatre ennemis héritent de `Enemy` et ne diffèrent que par leurs dégâts et leur comportement. Le déplacement est délégué à une `MovementStrategy` (pattern **Strategy**), et l'IA maléfique change de comportement selon sa `BossPhase` (pattern **State**).
+
+### 4. `Uml_entites.puml` - Entités complètes
+
+La réunion des diagrammes 1, 2 et 3 en un seul schéma, avec tous les attributs et méthodes. Il sert de référence pour coder, plus que pour présenter.
+
+### 5. `Uml_structure_jeu.puml` - Structure du jeu
+
+Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'écran via `GameState` (pattern **State** : menu, partie, pause, game over). Pendant une partie, le `LevelManager` enchaîne les quatre `Level`, chacun découpé en `Wave` d'ennemis fabriqués par l'`EnemyFactory` (pattern **Factory**). Chaque niveau ne redéfinit que la construction de ses vagues (pattern **Template Method**).
+
+## Récapitulatif des design patterns
+
+| Pattern         | Où                       | Pourquoi                                                       |
+| --------------- | ------------------------ | -------------------------------------------------------------- |
+| Strategy        | `MovementStrategy`       | changer le déplacement d'un ennemi sans créer de sous-classe   |
+| State           | `GameState`, `BossPhase` | gérer les écrans du jeu et les phases du boss                  |
+| Factory         | `EnemyFactory`           | centraliser la création des ennemis                            |
+| Template Method | `Level.buildWaves()`     | partager la logique commune des niveaux                        |
+| Observer        | `HealthObserver` / `Hud` | mettre à jour l'affichage sans coupler le joueur à l'interface |
+
+## Ordre de présentation conseillé
+
+1. Vue d'ensemble - « voici les familles d'objets »
+2. Le joueur
+3. Les ennemis
+4. Structure du jeu - « voici comment tout s'orchestre »
+
+Le diagramme complet des entités reste disponible pour répondre aux questions détaillées.
