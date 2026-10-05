@@ -1,0 +1,37 @@
+B-OOP-301-STG-3-1-2dgame-5/
+├── pom.xml
+├── .gitignore
+├── docs/
+│   ├── STACK.md
+│   ├── DESIGN_PATTERNS.md
+│   └── Diagrammes/
+│       ├── README.md
+│       ├── 1_vue_ensemble.puml
+│       ├── 2_joueur.puml
+│       ├── 3_ennemis.puml
+│       ├── Uml_entites.puml
+│       └── Uml_structure_jeu.puml
+└── src/
+    ├── main/
+    │   ├── java/com/shootemup/
+    │   │   └── Main.java
+    │   └── resources/sprites/
+    └── test/java/com/shootemup/B-OOP-301-STG-3-1-2dgame-5/
+├── pom.xml
+├── .gitignore
+├── docs/
+│   ├── STACK.md
+│   ├── DESIGN_PATTERNS.md
+│   └── Diagrammes/
+│       ├── README.md
+│       ├── 1_vue_ensemble.puml
+│       ├── 2_joueur.puml
+│       ├── 3_ennemis.puml
+│       ├── Uml_entites.puml
+│       └── Uml_structure_jeu.puml
+└── src/
+    ├── main/
+    │   ├── java/com/shootemup/
+    │   │   └── Main.java
+    │   └── resources/sprites/
+    └── test/java/com/shootemup/
