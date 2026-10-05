@@ -5,35 +5,35 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
-import java.util.HashSet;
-import java.util.Set;
+import com.shootemup.core.Game;
+import com.shootemup.state.PlayingState;
 
 /**
- * Point d'entrée du jeu. Version de test : un carré déplacé avec les flèches.
+ * Point d'entrée du jeu.
+ * <p>
+ * Crée la fenêtre JavaFX et relie ses événements (temps qui passe, touches)
+ * au {@link Game}, qui se charge de tout le reste.
  */
 public class Main extends Application {
 
-    private static final int WIDTH = 960;
-    private static final int HEIGHT = 540;
-    private static final double SPEED = 300;
-
-    private final Set<KeyCode> pressed = new HashSet<>();
-    private double x = 100;
-    private double y = HEIGHT / 2.0;
-
+    /**
+     * Crée la fenêtre, démarre le jeu sur l'écran de partie et lance la boucle de jeu.
+     *
+     * @param stage la fenêtre principale fournie par JavaFX
+     */
     @Override
     public void start(Stage stage) {
-        Canvas canvas = new Canvas(WIDTH, HEIGHT);
+        Canvas canvas = new Canvas(Game.WIDTH, Game.HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Scene scene = new Scene(new StackPane(canvas));
 
-        scene.setOnKeyPressed(e -> pressed.add(e.getCode()));
-        scene.setOnKeyReleased(e -> pressed.remove(e.getCode()));
+        Game game = new Game();
+        game.setState(new PlayingState(game));
+
+        scene.setOnKeyPressed(e -> game.keyPressed(e.getCode()));
+        scene.setOnKeyReleased(e -> game.keyReleased(e.getCode()));
 
         new AnimationTimer() {
             private long last = 0;
@@ -46,8 +46,8 @@ public class Main extends Application {
                 }
                 double dt = (now - last) / 1e9;
                 last = now;
-                update(dt);
-                render(gc);
+                game.update(dt);
+                game.render(gc);
             }
         }.start();
 
@@ -57,20 +57,11 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void update(double dt) {
-        if (pressed.contains(KeyCode.UP))    y -= SPEED * dt;
-        if (pressed.contains(KeyCode.DOWN))  y += SPEED * dt;
-        if (pressed.contains(KeyCode.LEFT))  x -= SPEED * dt;
-        if (pressed.contains(KeyCode.RIGHT)) x += SPEED * dt;
-    }
-
-    private void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#101820"));
-        gc.fillRect(0, 0, WIDTH, HEIGHT);
-        gc.setFill(Color.web("#5DCAA5"));
-        gc.fillRect(x, y, 40, 40);
-    }
-
+    /**
+     * Lance l'application JavaFX.
+     *
+     * @param args arguments de la ligne de commande, non utilisés
+     */
     public static void main(String[] args) {
         launch(args);
     }

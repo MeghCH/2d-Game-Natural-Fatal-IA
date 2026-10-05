@@ -52,7 +52,7 @@ public interface GameState {
      * Réagit à une touche pressée.
      * @param e l'événement clavier
      */
-    void handleInput(KeyEvent e);
+    void handleInput(KeyCode e);
 }
 ```
 
@@ -92,7 +92,7 @@ public class PauseState implements GameState {
     }
 
     @Override
-    public void handleInput(KeyEvent e) {
+    public void handleInput(KeyCode e) {
         if (e.getCode() == KeyCode.ESCAPE) {
             game.setState(previous);   // retour à la partie
         }

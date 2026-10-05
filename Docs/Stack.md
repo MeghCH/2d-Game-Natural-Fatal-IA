@@ -33,7 +33,7 @@ Le sujet propose trois options : JavaFX, AWT/Swing ou une solution frontend Java
 
 **Adapté à un jeu d'action.** Le `Canvas` et son `GraphicsContext` permettent de dessiner sprites, projectiles et effets à chaque image, avec une accélération matérielle. L'`AnimationTimer` appelle la boucle de jeu environ 60 fois par seconde, ce qui correspond directement à notre classe `GameLoop`.
 
-**Cohérent avec la conception.** Nos diagrammes et nos design patterns s'appuient déjà sur les classes JavaFX (`GraphicsContext` dans `Renderable`, `KeyEvent` dans `GameState`, `Image` dans `AssetManager`).
+**Cohérent avec la conception.** Nos diagrammes et nos design patterns s'appuient déjà sur les classes JavaFX (`GraphicsContext` dans `Renderable`, `KeyCode` dans `GameState`, `Image` dans `AssetManager`).
 
 **Centré sur l'objectif du projet.** Le sujet évalue la maîtrise de la POO en Java. Avec JavaFX, toute la logique reste en Java. Une solution JavaScript aurait ajouté une couche de communication entre deux langages sans apport pédagogique.
 
