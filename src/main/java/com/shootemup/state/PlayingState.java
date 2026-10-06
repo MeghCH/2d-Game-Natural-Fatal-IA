@@ -90,12 +90,16 @@ public class PlayingState implements GameState {
     }
 
     /**
-     * Mémorise la touche enfoncée.
+     * Passe en pause sur Échap, sinon mémorise la touche enfoncée.
      *
      * @param code la touche enfoncée
      */
     @Override
     public void keyPressed(KeyCode code) {
+        if (code == KeyCode.ESCAPE) {
+            game.setState(new PauseState(game, this));
+            return;
+        }
         pressed.add(code);
     }
 
