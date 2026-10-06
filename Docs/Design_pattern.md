@@ -6,14 +6,14 @@ Les classes citées correspondent aux diagrammes du dossier `Diagrammes/`.
 
 ## Récapitulatif
 
-| Pattern         | Famille      | Classes                     | Problème résolu                                          |
-| --------------- | ------------ | --------------------------- | -------------------------------------------------------- |
-| State           | Comportement | `GameState`, `BossPhase`    | changer d'écran et de phase de boss sans `if` géants     |
-| Factory         | Création     | `EnemyFactory`, `EnemyType` | créer les ennemis à un seul endroit                      |
-| Strategy        | Comportement | `MovementStrategy`          | varier les déplacements sans multiplier les sous-classes |
-| Observer        | Comportement | `HealthObserver`, `Hud`     | mettre à jour l'affichage quand les PV changent          |
-| Template Method | Comportement | `Level`                     | partager la logique commune des niveaux                  |
-| Singleton       | Création     | `AssetManager`              | charger les images et sons une seule fois                |
+| Pattern         | Famille      | Classes                               | Problème résolu                                          |
+| --------------- | ------------ | ------------------------------------- | -------------------------------------------------------- |
+| State           | Comportement | `GameState`, `BossPhase`              | changer d'écran et de phase de boss sans `if` géants     |
+| Factory         | Création     | `EnemyFactory`, `EnemyType`           | créer les ennemis à un seul endroit                      |
+| Strategy        | Comportement | `MovementStrategy`                    | varier les déplacements sans multiplier les sous-classes |
+| Observer        | Comportement | `HealthObserver`, `PlayerStatusPanel` | mettre à jour l'affichage quand les PV changent          |
+| Template Method | Comportement | `Level`                               | partager la logique commune des niveaux                  |
+| Singleton       | Création     | `AssetManager`                        | charger les images et sons une seule fois                |
 
 ---
 
@@ -49,10 +49,16 @@ public interface GameState {
     void render(GraphicsContext gc);
 
     /**
-     * Réagit à une touche pressée.
-     * @param e l'événement clavier
+     * Réagit à l'appui sur une touche.
+     * @param code la touche enfoncée
      */
-    void handleInput(KeyCode e);
+    void keyPressed(KeyCode code);
+
+    /**
+     * Réagit au relâchement d'une touche.
+     * @param code la touche relâchée
+     */
+    void keyReleased(KeyCode code);
 }
 ```
 
@@ -61,6 +67,9 @@ public class Game {
 
     private GameState currentState;
 
+    public static final int WIDTH = 960;
+    public static final int HEIGHT = 540;
+
     /**
      * Remplace l'écran courant.
      * @param newState le nouvel écran à afficher
@@ -68,6 +77,10 @@ public class Game {
     public void setState(GameState newState) {
         this.currentState = newState;
         newState.enter();
+    }
+
+    public GameState getCurrentState() {
+        return this.currentState;
     }
 
     public void update(double dt) {
@@ -92,13 +105,13 @@ public class PauseState implements GameState {
     }
 
     @Override
-    public void handleInput(KeyCode e) {
-        if (e.getCode() == KeyCode.ESCAPE) {
+    public void keyPressed(KeyCode code) {
+        if (code == KeyCode.ESCAPE) {
             game.setState(previous);   // retour à la partie
         }
     }
 
-    // enter(), update() et render() : affichage du menu pause
+    // enter(), update(), render() et keyReleased() : affichage du menu pause
 }
 ```
 
@@ -261,7 +274,7 @@ Les déplacements se combinent librement avec les ennemis et peuvent changer pen
 
 ### Problème
 
-Quand un joueur perd des PV, plusieurs éléments doivent réagir : la barre de vie du HUD, un son, peut-être un clignotement. Si `Player` appelait directement `hud.updateBar()`, la logique du jeu dépendrait de l'interface graphique.
+Quand un joueur perd des PV, plusieurs éléments doivent réagir : la barre de vie du PlayerStatusPanel, un son, peut-être un clignotement. Si `Player` appelait directement `PlayerStatusPanel.updateBar()`, la logique du jeu dépendrait de l'interface graphique.
 
 ### Solution
 
@@ -306,12 +319,23 @@ public abstract class Character extends Entity implements Damageable {
 ```
 
 ```java
-public class Hud implements HealthObserver {
+public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable {
+
+    public void track(Player player) {
+        players.add(player);
+        player.addObserver(this);
+    }
 
     @Override
     public void onHealthChanged(Character c) {
-        // met à jour la barre de vie du joueur concerné
+        flashTimers.put(c, FLASH_DURATION); // déclenche le clignotement
     }
+
+    public boolean isFlashing(Character c) {
+        return flashTimers.containsKey(c);
+    }
+
+    // update() fait avancer les clignotements, render() dessine les barres
 }
 ```
 

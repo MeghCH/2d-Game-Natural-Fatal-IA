@@ -32,8 +32,12 @@ abstract class Entity {
   # y : double
   # width : double
   # height : double
-  # velocity : Vector2D
-  + getHitbox() : Rectangle
+  + getX() : double
+  + getY() : double
+  + getWidth() : double
+  + getHeight() : double
+  + setX(x : double) : void
+  + setY(y : double) : void
   + collidesWith(other : Entity) : boolean
 }
 
@@ -54,16 +58,28 @@ class Player {
   - weapon : Weapon
   - controls : InputController
   + shoot() : Projectile
+  + getControls() : InputController
+  + getScore() : int
   + addScore(points : int) : void
 }
 
 class InputController {
-  - upKey : KeyCode
-  - downKey : KeyCode
-  - leftKey : KeyCode
-  - rightKey : KeyCode
-  - shootKey : KeyCode
-  + isPressed(action : Action) : boolean
+  - up : Set<KeyCode>
+  - down : Set<KeyCode>
+  - left : Set<KeyCode>
+  - right : Set<KeyCode>
+  - shoot : Set<KeyCode>
+  - pressed : Set<KeyCode>
+  + {static} player1() : InputController
+  + {static} player2() : InputController
+  + keyPressed(code : KeyCode) : void
+  + keyReleased(code : KeyCode) : void
+  + isUp() : boolean
+  + isDown() : boolean
+  + isLeft() : boolean
+  + isRight() : boolean
+  + isShooting() : boolean
+  + clear() : void
 }
 
 abstract class Enemy {
