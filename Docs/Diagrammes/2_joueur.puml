@@ -17,14 +17,20 @@ class Player {
   - score : int
   - lives : int
   + shoot() : Projectile
+  + getControls() : InputController
+  + getScore() : int
+  + addScore(points : int) : void
 }
 
 class InputController {
-  - upKey : KeyCode
-  - downKey : KeyCode
-  - leftKey : KeyCode
-  - rightKey : KeyCode
-  - shootKey : KeyCode
+  - up : Set<KeyCode>
+  - down : Set<KeyCode>
+  - left : Set<KeyCode>
+  - right : Set<KeyCode>
+  - shoot : Set<KeyCode>
+  + {static} player1() : InputController
+  + {static} player2() : InputController
+  + clear() : void
 }
 
 class Weapon {

@@ -9,7 +9,10 @@ hide empty members
 class Game {
   - currentState : GameState
   - loop : GameLoop
+  + {static} WIDTH : int
+  + {static} HEIGHT : int
   + setState(s : GameState) : void
+  + getCurrentState() : GameState
   + start() : void
 }
 
@@ -22,7 +25,8 @@ interface GameState <<State>> {
   + enter() : void
   + update(dt : double) : void
   + render(gc : GraphicsContext) : void
-  + handleInput(e : InputEvent) : void
+  + keyPressed(code : KeyCode) : void
+  + keyReleased(code : KeyCode) : void
 }
 
 class MenuState
@@ -31,9 +35,7 @@ class GameOverState
 
 class PlayingState {
   - players : List<Player>
-  - levelManager : LevelManager
-  - collisions : CollisionManager
-  - PlayerStatusPanel : PlayerStatusPanel
+  - statusPanel : PlayerStatusPanel
 }
 
 class LevelManager {
@@ -97,8 +99,19 @@ interface HealthObserver <<Observer>> {
   + onHealthChanged(c : Character) : void
 }
 
+interface Updatable {
+  + update(dt : double) : void
+}
+
+interface Renderable {
+  + render(gc : GraphicsContext) : void
+}
+
 class PlayerStatusPanel {
+  + track(player : Player) : void
   + onHealthChanged(c : Character) : void
+  + update(dt : double) : void
+  + isFlashing(c : Character) : boolean
   + render(gc : GraphicsContext) : void
 }
 
@@ -110,8 +123,7 @@ GameState <|.. PlayingState
 GameState <|.. PauseState
 GameState <|.. GameOverState
 
-PlayingState *-- "1" LevelManager
-PlayingState *-- "1" CollisionManager
+PlayingState *-- "*" Player
 PlayingState *-- "1" PlayerStatusPanel
 
 LevelManager *-- "4" Level
@@ -125,133 +137,13 @@ Wave ..> EnemyFactory : <<use>>
 EnemyFactory ..> EnemyType
 
 HealthObserver <|.. PlayerStatusPanel
+Updatable <|.. PlayerStatusPanel
+Renderable <|.. PlayerStatusPanel
 
-@enduml@startuml uml_structure_jeu
-title Shoot'em up - Diagramme de classes : structure du jeu
-
-skinparam classAttributeIconSize 0
-skinparam shadowing false
-skinparam linetype ortho
-hide empty members
-
-class Game {
-  - currentState : GameState
-  - loop : GameLoop
-  + setState(s : GameState) : void
-  + start() : void
-}
-
-class GameLoop {
-  - running : boolean
-  + handle(now : long) : void
-}
-
-interface GameState <<State>> {
-  + enter() : void
-  + update(dt : double) : void
-  + render(gc : GraphicsContext) : void
-  + handleInput(e : InputEvent) : void
-}
-
-class MenuState
-class PauseState
-class GameOverState
-
-class PlayingState {
-  - players : List<Player>
-  - levelManager : LevelManager
-  - collisions : CollisionManager
-  - PlayerStatusPanel : PlayerStatusPanel
-}
-
-class LevelManager {
-  - levels : List<Level>
-  - currentIndex : int
-  + getCurrentLevel() : Level
-  + nextLevel() : boolean
-}
-
-abstract class Level <<Template Method>> {
-  # waves : Queue<Wave>
-  # activeEnemies : List<Enemy>
-  + update(dt : double) : void
-  # {abstract} buildWaves() : void
-  + isCompleted() : boolean
-}
-
-class TutorialLevel {
-  # buildWaves() : void
-}
-note bottom of TutorialLevel : Niveau 1 - moustiques
-
-class WaspLevel {
-  # buildWaves() : void
-}
-note bottom of WaspLevel : Niveau 2 - guêpes
-
-class CrowLevel {
-  # buildWaves() : void
-}
-note bottom of CrowLevel : Niveau 3 - corbeaux
-
-class BossLevel {
-  # buildWaves() : void
-}
-note bottom of BossLevel : Niveau 4 - IA maléfique
-
-class Wave {
-  - type : EnemyType
-  - count : int
-  - spawnDelay : double
-  + spawn(f : EnemyFactory) : List<Enemy>
-}
-
-class EnemyFactory <<Factory>> {
-  + create(t : EnemyType, x : double, y : double) : Enemy
-}
-
-enum EnemyType {
-  MOSQUITO
-  WASP
-  CROW
-  EVIL_AI
-}
-
-class CollisionManager {
-  + check(a : List<Entity>, b : List<Entity>) : void
-}
-
-interface HealthObserver <<Observer>> {
-  + onHealthChanged(c : Character) : void
-}
-
-class PlayerStatusPanel {
-  + onHealthChanged(c : Character) : void
-  + render(gc : GraphicsContext) : void
-}
-
-Game *-- "1" GameLoop
-Game o-- "1" GameState
-
-GameState <|.. MenuState
-GameState <|.. PlayingState
-GameState <|.. PauseState
-GameState <|.. GameOverState
-
-PlayingState *-- "1" LevelManager
-PlayingState *-- "1" CollisionManager
-PlayingState *-- "1" PlayerStatusPanel
-
-LevelManager *-- "4" Level
-Level <|-- TutorialLevel
-Level <|-- WaspLevel
-Level <|-- CrowLevel
-Level <|-- BossLevel
-
-Level *-- "*" Wave
-Wave ..> EnemyFactory : <<use>>
-EnemyFactory ..> EnemyType
-
-HealthObserver <|.. PlayerStatusPanel
+note bottom of PlayingState
+  LevelManager et CollisionManager
+  pas encore branchés ici
+  (prévus pour une prochaine itération)
+end note
 
 @enduml
