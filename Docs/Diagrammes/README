@@ -122,7 +122,7 @@ La hiérarchie des entités, sans les détails. Tout objet visible à l'écran e
 
 ### 2. `2_joueur.puml` - Le joueur
 
-Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `Hud` est prévenu à chaque perte de points de vie grâce au pattern **Observer**.
+Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `PlayerStatusPanel` est prévenu à chaque perte de points de vie grâce au pattern **Observer**.
 
 ### 3. `3_ennemis.puml` - Les ennemis
 
@@ -144,7 +144,7 @@ Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'é
 | State           | `GameState`, `BossPhase` | gérer les écrans du jeu et les phases du boss                  |
 | Factory         | `EnemyFactory`           | centraliser la création des ennemis                            |
 | Template Method | `Level.buildWaves()`     | partager la logique commune des niveaux                        |
-| Observer        | `HealthObserver` / `Hud` | mettre à jour l'affichage sans coupler le joueur à l'interface |
+| Observer        | `HealthObserver` / `PlayerStatusPanel` | mettre à jour l'affichage sans coupler le joueur à l'interface |
 
 ## Ordre de présentation conseillé
 

@@ -5,7 +5,7 @@ package com.shootemup.entity;
  * <p>
  * Implémente le pattern <b>Observer</b> : un {@link Character} garde une liste
  * d'observateurs et les prévient à chaque perte de points de vie, sans savoir
- * qui ils sont. Le HUD, par exemple, l'implémente pour mettre à jour la barre
+ * qui ils sont. Le PlayerStatusPanel, par exemple, l'implémente pour mettre à jour la barre
  * de vie sans que la logique du jeu dépende de l'affichage.
  */
 public interface HealthObserver {

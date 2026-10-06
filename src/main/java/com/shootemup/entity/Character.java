@@ -8,7 +8,7 @@ import java.util.List;
  * <p>
  * Implémente le pattern <b>Observer</b> : un personnage garde une liste de
  * {@link HealthObserver} et les prévient chaque fois que ses points de vie
- * changent, sans savoir qui ils sont (HUD, sons, effets visuels...).
+ * changent, sans savoir qui ils sont (PlayerStatusPanel, sons, effets visuels...).
  */
 public abstract class Character extends Entity implements Damageable {
 

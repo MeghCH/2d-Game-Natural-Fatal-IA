@@ -41,7 +41,7 @@ interface HealthObserver <<Observer>> {
   + onHealthChanged(c : Character) : void
 }
 
-class Hud {
+class PlayerStatusPanel {
   + onHealthChanged(c : Character) : void
 }
 
@@ -50,14 +50,14 @@ Player *-- "1" InputController
 Player *-- "1" Weapon
 Weapon ..> Projectile : crée
 Character o-- "*" HealthObserver
-HealthObserver <|.. Hud
+HealthObserver <|.. PlayerStatusPanel
 
 note bottom of InputController
   Joueur 1 : ZQSD + espace
   Joueur 2 : flèches + entrée
 end note
 
-note bottom of Hud
+note bottom of PlayerStatusPanel
   Prévenu à chaque
   perte de PV
 end note

@@ -6,14 +6,14 @@ Les classes citées correspondent aux diagrammes du dossier `Diagrammes/`.
 
 ## Récapitulatif
 
-| Pattern         | Famille      | Classes                     | Problème résolu                                          |
-| --------------- | ------------ | --------------------------- | -------------------------------------------------------- |
-| State           | Comportement | `GameState`, `BossPhase`    | changer d'écran et de phase de boss sans `if` géants     |
-| Factory         | Création     | `EnemyFactory`, `EnemyType` | créer les ennemis à un seul endroit                      |
-| Strategy        | Comportement | `MovementStrategy`          | varier les déplacements sans multiplier les sous-classes |
-| Observer        | Comportement | `HealthObserver`, `Hud`     | mettre à jour l'affichage quand les PV changent          |
-| Template Method | Comportement | `Level`                     | partager la logique commune des niveaux                  |
-| Singleton       | Création     | `AssetManager`              | charger les images et sons une seule fois                |
+| Pattern         | Famille      | Classes                               | Problème résolu                                          |
+| --------------- | ------------ | ------------------------------------- | -------------------------------------------------------- |
+| State           | Comportement | `GameState`, `BossPhase`              | changer d'écran et de phase de boss sans `if` géants     |
+| Factory         | Création     | `EnemyFactory`, `EnemyType`           | créer les ennemis à un seul endroit                      |
+| Strategy        | Comportement | `MovementStrategy`                    | varier les déplacements sans multiplier les sous-classes |
+| Observer        | Comportement | `HealthObserver`, `PlayerStatusPanel` | mettre à jour l'affichage quand les PV changent          |
+| Template Method | Comportement | `Level`                               | partager la logique commune des niveaux                  |
+| Singleton       | Création     | `AssetManager`                        | charger les images et sons une seule fois                |
 
 ---
 
@@ -261,7 +261,7 @@ Les déplacements se combinent librement avec les ennemis et peuvent changer pen
 
 ### Problème
 
-Quand un joueur perd des PV, plusieurs éléments doivent réagir : la barre de vie du HUD, un son, peut-être un clignotement. Si `Player` appelait directement `hud.updateBar()`, la logique du jeu dépendrait de l'interface graphique.
+Quand un joueur perd des PV, plusieurs éléments doivent réagir : la barre de vie du PlayerStatusPanel, un son, peut-être un clignotement. Si `Player` appelait directement `PlayerStatusPanel.updateBar()`, la logique du jeu dépendrait de l'interface graphique.
 
 ### Solution
 
@@ -306,7 +306,7 @@ public abstract class Character extends Entity implements Damageable {
 ```
 
 ```java
-public class Hud implements HealthObserver {
+public class PlayerStatusPanel implements HealthObserver {
 
     @Override
     public void onHealthChanged(Character c) {

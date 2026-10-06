@@ -1,83 +1,89 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
+import com.shootemup.entity.Player;
+import com.shootemup.input.InputController;
+import com.shootemup.ui.PlayerStatusPanel;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Écran de la partie en cours.
  * <p>
- * Version provisoire : un carré déplacé avec les flèches, qui sera remplacé
- * par le joueur, les ennemis et les niveaux.
+ * Gère les joueurs et le panneau d'état, transmet les touches aux contrôleurs
+ * des joueurs, et passe en pause quand on appuie sur Échap.
  */
 public class PlayingState implements GameState {
-
-    /** Vitesse de déplacement du carré, en pixels par seconde. */
-    private static final double SPEED = 300;
-
-    /** Taille du carré, en pixels. */
-    private static final double SIZE = 40;
 
     /** Le jeu, utilisé pour changer d'écran (pause, game over). */
     private final Game game;
 
-    /** Touches actuellement enfoncées. */
-    private final Set<KeyCode> pressed = new HashSet<>();
+    /** Les joueurs de la partie. */
+    private final List<Player> players = new ArrayList<>();
 
-    /** Position horizontale du carré. */
-    private double x = 100;
-
-    /** Position verticale du carré. */
-    private double y = Game.HEIGHT / 2.0;
+    /** Le panneau qui affiche la vie et le score des joueurs. */
+    private final PlayerStatusPanel statusPanel = new PlayerStatusPanel();
 
     /**
-     * Crée l'écran de partie.
+     * Crée une partie à deux joueurs, placés à gauche de l'écran.
      *
      * @param game le jeu auquel appartient cet écran
      */
     public PlayingState(Game game) {
         this.game = game;
+        addPlayer(new Player(1, 100, Game.HEIGHT / 3.0, InputController.player1()));
+        addPlayer(new Player(2, 100, 2 * Game.HEIGHT / 3.0, InputController.player2()));
     }
 
     /**
-     * Oublie les touches enfoncées, pour éviter qu'une touche relâchée
-     * pendant la pause reste considérée comme enfoncée à la reprise.
+     * Ajoute un joueur à la partie et l'affiche dans le panneau d'état.
+     *
+     * @param player le joueur à ajouter
+     */
+    private void addPlayer(Player player) {
+        players.add(player);
+        statusPanel.track(player);
+    }
+
+    /**
+     * @return les joueurs de la partie, en lecture seule
+     */
+    public List<Player> getPlayers() {
+        return Collections.unmodifiableList(players);
+    }
+
+    /**
+     * Oublie les touches enfoncées de tous les joueurs, pour éviter qu'une touche
+     * relâchée pendant la pause reste considérée comme enfoncée à la reprise.
      */
     @Override
     public void enter() {
-        pressed.clear();
+        for (Player player : players) {
+            player.getControls().clear();
+        }
     }
 
     /**
-     * Déplace le carré selon les flèches enfoncées, sans le laisser sortir de l'écran.
+     * Met à jour les joueurs puis le panneau d'état.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
     @Override
     public void update(double dt) {
-        if (pressed.contains(KeyCode.UP)) {
-            y -= SPEED * dt;
+        for (Player player : players) {
+            player.update(dt);
         }
-        if (pressed.contains(KeyCode.DOWN)) {
-            y += SPEED * dt;
-        }
-        if (pressed.contains(KeyCode.LEFT)) {
-            x -= SPEED * dt;
-        }
-        if (pressed.contains(KeyCode.RIGHT)) {
-            x += SPEED * dt;
-        }
-
-        x = Math.max(0, Math.min(x, Game.WIDTH - SIZE));
-        y = Math.max(0, Math.min(y, Game.HEIGHT - SIZE));
+        statusPanel.update(dt);
     }
 
     /**
-     * Dessine le fond puis le carré.
+     * Dessine le fond, les joueurs, puis le panneau d'état par-dessus.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -85,12 +91,15 @@ public class PlayingState implements GameState {
     public void render(GraphicsContext gc) {
         gc.setFill(Color.web("#101820"));
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
-        gc.setFill(Color.web("#5DCAA5"));
-        gc.fillRect(x, y, SIZE, SIZE);
+
+        for (Player player : players) {
+            player.render(gc);
+        }
+        statusPanel.render(gc);
     }
 
     /**
-     * Passe en pause sur Échap, sinon mémorise la touche enfoncée.
+     * Passe en pause sur Échap, sinon transmet la touche à tous les joueurs.
      *
      * @param code la touche enfoncée
      */
@@ -100,16 +109,26 @@ public class PlayingState implements GameState {
             game.setState(new PauseState(game, this));
             return;
         }
-        pressed.add(code);
+
+        // DEBUG : blesse le joueur 1 pour tester le panneau. À retirer quand les ennemis existeront.
+        if (code == KeyCode.H) {
+            players.get(0).takeDamage(2);
+        }
+
+        for (Player player : players) {
+            player.getControls().keyPressed(code);
+        }
     }
 
     /**
-     * Oublie la touche relâchée.
+     * Transmet la touche relâchée à tous les joueurs.
      *
      * @param code la touche relâchée
      */
     @Override
     public void keyReleased(KeyCode code) {
-        pressed.remove(code);
+        for (Player player : players) {
+            player.getControls().keyReleased(code);
+        }
     }
 }

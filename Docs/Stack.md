@@ -21,13 +21,13 @@ Le sujet propose trois options : JavaFX, AWT/Swing ou une solution frontend Java
 
 ### Comparaison
 
-| Critère        | JavaFX                                | AWT/Swing                                  | Frontend JS                              |
-| -------------- | ------------------------------------- | ------------------------------------------ | ---------------------------------------- |
-| Boucle de jeu  | `AnimationTimer` intégré              | à coder avec un `Timer` ou un thread       | `requestAnimationFrame` côté navigateur  |
-| Dessin         | `Canvas`, accélération matérielle     | `paintComponent`, double buffering à gérer | Canvas HTML                              |
-| Menus et HUD   | composants modernes, stylables en CSS | composants datés                           | très flexible                            |
-| Mise en place  | faible, bootstrap fourni              | moyenne                                    | élevée : communication Java ↔ JavaScript |
-| Logique de jeu | entièrement en Java                   | entièrement en Java                        | partagée entre deux langages             |
+| Critère                    | JavaFX                                | AWT/Swing                                  | Frontend JS                              |
+| -------------------------- | ------------------------------------- | ------------------------------------------ | ---------------------------------------- |
+| Boucle de jeu              | `AnimationTimer` intégré              | à coder avec un `Timer` ou un thread       | `requestAnimationFrame` côté navigateur  |
+| Dessin                     | `Canvas`, accélération matérielle     | `paintComponent`, double buffering à gérer | Canvas HTML                              |
+| Menus et PlayerStatusPanel | composants modernes, stylables en CSS | composants datés                           | très flexible                            |
+| Mise en place              | faible, bootstrap fourni              | moyenne                                    | élevée : communication Java ↔ JavaScript |
+| Logique de jeu             | entièrement en Java                   | entièrement en Java                        | partagée entre deux langages             |
 
 ### Justification
 
@@ -50,7 +50,7 @@ JavaFX est volontairement cantonné à la couche d'affichage et d'entrées.
 | Couche        | Contenu                                                                                                 | Dépend de JavaFX ? |
 | ------------- | ------------------------------------------------------------------------------------------------------- | ------------------ |
 | Modèle        | `Entity`, `Character`, `Enemy`, `Level`, `Wave`, `EnemyFactory`, `MovementStrategy`, `CollisionManager` | non                |
-| Affichage     | méthodes `render`, `Hud`, `AssetManager`                                                                | oui                |
+| Affichage     | méthodes `render`, `PlayerStatusPanel`, `AssetManager`                                                                | oui                |
 | Entrées       | `InputController`, `handleInput` des `GameState`                                                        | oui                |
 | Orchestration | `Game`, `GameLoop` (`AnimationTimer`)                                                                   | oui                |
 
@@ -104,7 +104,7 @@ flowchart TB
   subgraph APP["Application — Java 21"]
     direction TB
     FX["JavaFX 21<br/>Fenêtre, Canvas, AnimationTimer"]
-    VIEW["Affichage et entrées<br/>render, Hud, InputController"]
+    VIEW["Affichage et entrées<br/>render, PlayerStatusPanel, InputController"]
     ORCH["Orchestration<br/>Game, GameLoop, GameState"]
     MODEL["Modèle du jeu<br/>Entités, niveaux, factory, stratégies"]
     FX --> VIEW --> ORCH --> MODEL
