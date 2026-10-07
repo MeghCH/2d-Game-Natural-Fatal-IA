@@ -4,6 +4,7 @@ import com.shootemup.core.Game;
 import com.shootemup.input.InputController;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import java.util.List;
 
 /**
  * Personnage contrôlé par un joueur humain.
@@ -33,6 +34,9 @@ public class Player extends Character {
     /** Score du joueur, augmenté à chaque ennemi abattu. */
     private int score = 0;
 
+    /** Arme du joueur, qui gère la cadence de tir. */
+    private final Weapon weapon = new Weapon();
+
     /**
      * Crée un joueur en pleine santé.
      *
@@ -58,6 +62,8 @@ public class Player extends Character {
         if (!isAlive()) {
             return;
         }
+
+        weapon.update(dt);
 
         if (controls.isUp()) {
             this.y -= SPEED * dt;
@@ -130,5 +136,18 @@ public class Player extends Character {
      */
     public void addScore(int points) {
         score += points;
+    }
+
+    /**
+     * Tire si la touche de tir est enfoncée et que l'arme est prête.
+     * Un joueur mort ne tire pas.
+     *
+     * @return les balles tirées, ou une liste vide si le joueur ne tire pas
+     */
+    public List<Projectile> shoot() {
+        if (!isAlive() || !controls.isShooting()) {
+            return List.of();
+        }
+        return weapon.fire(this);
     }
 }
