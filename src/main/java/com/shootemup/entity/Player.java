@@ -17,7 +17,7 @@ import java.util.List;
 public class Player extends Character {
 
     /** Taille du joueur, en pixels. */
-    private static final double SIZE = 40;
+    public static final double SIZE = 40;
 
     /** Vitesse de déplacement, en pixels par seconde. */
     private static final double SPEED = 300;

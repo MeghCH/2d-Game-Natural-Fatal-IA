@@ -41,8 +41,10 @@ public class PlayingState implements GameState {
      */
     public PlayingState(Game game) {
         this.game = game;
-        addPlayer(new Player(1, 100, Game.HEIGHT / 3.0, InputController.player1()));
-        addPlayer(new Player(2, 100, 2 * Game.HEIGHT / 3.0, InputController.player2()));
+        double startY = Game.HEIGHT - 60;
+        double sideMargin = 60;
+        addPlayer(new Player(1, sideMargin, startY, InputController.player1()));
+        addPlayer(new Player(2, Game.WIDTH - sideMargin - Player.SIZE, startY, InputController.player2()));
     }
 
     /**

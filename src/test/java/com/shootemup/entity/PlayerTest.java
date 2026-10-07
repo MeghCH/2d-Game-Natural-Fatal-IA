@@ -70,4 +70,28 @@ class PlayerTest {
 
         assertEquals(75, player.getScore());
     }
+
+        @Test
+    void shootsWhenShootKeyIsPressed() {
+        Player player = new Player(1, 100, 300, InputController.player1());
+        player.getControls().keyPressed(KeyCode.SPACE);
+
+        assertEquals(1, player.shoot().size());
+    }
+
+    @Test
+    void doesNotShootWithoutShootKey() {
+        Player player = new Player(1, 100, 300, InputController.player1());
+
+        assertTrue(player.shoot().isEmpty());
+    }
+
+    @Test
+    void deadPlayerDoesNotShoot() {
+        Player player = new Player(1, 100, 300, InputController.player1());
+        player.takeDamage(30);
+        player.getControls().keyPressed(KeyCode.SPACE);
+
+        assertTrue(player.shoot().isEmpty());
+    }
 }
