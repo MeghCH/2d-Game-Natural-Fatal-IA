@@ -35,8 +35,12 @@ class GameOverState
 
 class PlayingState {
   - players : List<Player>
+  - projectiles : List<Projectile>
   - statusPanel : PlayerStatusPanel
+  + getProjectiles() : List<Projectile>
 }
+
+class Projectile
 
 class LevelManager {
   - levels : List<Level>
@@ -124,6 +128,7 @@ GameState <|.. PauseState
 GameState <|.. GameOverState
 
 PlayingState *-- "*" Player
+PlayingState *-- "*" Projectile
 PlayingState *-- "1" PlayerStatusPanel
 
 LevelManager *-- "4" Level

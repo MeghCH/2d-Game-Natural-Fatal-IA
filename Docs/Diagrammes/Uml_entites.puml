@@ -52,12 +52,13 @@ abstract class Character {
 }
 
 class Player {
+  + {static} SIZE : double
   - playerId : int
   - score : int
   - lives : int
   - weapon : Weapon
   - controls : InputController
-  + shoot() : Projectile
+  + shoot() : List<Projectile>
   + getControls() : InputController
   + getScore() : int
   + addScore(points : int) : void
@@ -114,14 +115,22 @@ interface BossPhase <<State>> {
 }
 
 class Projectile {
+  - vx : double
+  - vy : double
   - damage : int
   - owner : Character
+  - active : boolean
+  + isOutOfScreen() : boolean
+  + destroy() : void
+  + isActive() : boolean
+  + getDamage() : int
+  + getOwner() : Character
 }
 
 class Weapon {
-  - fireRate : int
   - cooldown : double
-  + fire(x : double, y : double) : Projectile
+  + canFire() : boolean
+  + fire(shooter : Character) : List<Projectile>
 }
 
 class StraightMovement
@@ -145,6 +154,8 @@ Enemy <|-- EvilAI
 Player *-- "1" Weapon
 Player *-- "1" InputController
 Weapon ..> Projectile : <<create>>
+Updatable <|.. Weapon
+Projectile --> "1" Character : owner
 
 Enemy o-- "1" MovementStrategy
 MovementStrategy <|.. StraightMovement
