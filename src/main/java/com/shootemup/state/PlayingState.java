@@ -2,6 +2,7 @@ package com.shootemup.state;
 
 import com.shootemup.core.Game;
 import com.shootemup.entity.Player;
+import com.shootemup.entity.Projectile;
 import com.shootemup.input.InputController;
 import com.shootemup.ui.PlayerStatusPanel;
 
@@ -27,6 +28,9 @@ public class PlayingState implements GameState {
     /** Les joueurs de la partie. */
     private final List<Player> players = new ArrayList<>();
 
+    /** Balles actuellement en vol. */
+    private final List<Projectile> projectiles = new ArrayList<>();
+
     /** Le panneau qui affiche la vie et le score des joueurs. */
     private final PlayerStatusPanel statusPanel = new PlayerStatusPanel();
 
@@ -37,8 +41,10 @@ public class PlayingState implements GameState {
      */
     public PlayingState(Game game) {
         this.game = game;
-        addPlayer(new Player(1, 100, Game.HEIGHT / 3.0, InputController.player1()));
-        addPlayer(new Player(2, 100, 2 * Game.HEIGHT / 3.0, InputController.player2()));
+        double startY = Game.HEIGHT - 60;
+        double sideMargin = 60;
+        addPlayer(new Player(1, sideMargin, startY, InputController.player1()));
+        addPlayer(new Player(2, Game.WIDTH - sideMargin - Player.SIZE, startY, InputController.player2()));
     }
 
     /**
@@ -59,6 +65,13 @@ public class PlayingState implements GameState {
     }
 
     /**
+     * @return les balles actuellement en vol, en lecture seule
+     */
+    public List<Projectile> getProjectiles() {
+        return Collections.unmodifiableList(projectiles);
+    }
+
+    /**
      * Oublie les touches enfoncées de tous les joueurs, pour éviter qu'une touche
      * relâchée pendant la pause reste considérée comme enfoncée à la reprise.
      */
@@ -70,7 +83,8 @@ public class PlayingState implements GameState {
     }
 
     /**
-     * Met à jour les joueurs puis le panneau d'état.
+     * Met à jour les joueurs et leurs tirs, fait avancer les balles,
+     * retire celles qui ne sont plus en jeu, puis met à jour le panneau d'état.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
@@ -78,7 +92,14 @@ public class PlayingState implements GameState {
     public void update(double dt) {
         for (Player player : players) {
             player.update(dt);
+            projectiles.addAll(player.shoot());
         }
+
+        for (Projectile projectile : projectiles) {
+            projectile.update(dt);
+        }
+        projectiles.removeIf(projectile -> projectile.isOutOfScreen() || !projectile.isActive());
+
         statusPanel.update(dt);
     }
 
@@ -94,6 +115,10 @@ public class PlayingState implements GameState {
 
         for (Player player : players) {
             player.render(gc);
+        }
+
+        for (Projectile projectile : projectiles) {
+            projectile.render(gc);
         }
         statusPanel.render(gc);
     }

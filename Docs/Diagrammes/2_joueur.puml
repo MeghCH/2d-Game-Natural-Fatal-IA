@@ -13,10 +13,11 @@ abstract class Character {
 }
 
 class Player {
+  + {static} SIZE : double
   - playerId : int
   - score : int
   - lives : int
-  + shoot() : Projectile
+  + shoot() : List<Projectile>
   + getControls() : InputController
   + getScore() : int
   + addScore(points : int) : void
@@ -33,10 +34,14 @@ class InputController {
   + clear() : void
 }
 
+interface Updatable {
+  + update(dt : double) : void
+}
+
 class Weapon {
-  - fireRate : int
   - cooldown : double
-  + fire(x : double, y : double) : Projectile
+  + canFire() : boolean
+  + fire(shooter : Character) : List<Projectile>
 }
 
 class Projectile {
@@ -55,6 +60,7 @@ Character <|-- Player
 Player *-- "1" InputController
 Player *-- "1" Weapon
 Weapon ..> Projectile : crée
+Updatable <|.. Weapon
 Character o-- "*" HealthObserver
 HealthObserver <|.. PlayerStatusPanel
 
