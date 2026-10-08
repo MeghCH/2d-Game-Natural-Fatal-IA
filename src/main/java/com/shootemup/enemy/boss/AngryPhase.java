@@ -1,6 +1,5 @@
 package com.shootemup.enemy.boss;
 
-import com.shootemup.core.Game;
 import com.shootemup.enemy.EvilAI;
 
 /**
@@ -18,19 +17,14 @@ public class AngryPhase implements BossPhase {
     }
 
     /**
-     * Fait glisser le boss vers la droite, plus vite que la phase calme,
-     * avec retour au bord gauche quand il sort de l'écran.
+     * Fait balayer le boss rapidement, en restant dans l'écran.
      *
      * @param boss le boss contrôlé
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
     @Override
     public void execute(EvilAI boss, double dt) {
-        double nextX = boss.getX() + SPEED * dt;
-        if (nextX > Game.WIDTH - boss.getWidth()) {
-            nextX = 0;
-        }
-        boss.setX(nextX);
+        sweep(boss, dt, SPEED);
     }
 
     /**

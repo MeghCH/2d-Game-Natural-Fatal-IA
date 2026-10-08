@@ -28,6 +28,9 @@ public class EvilAI extends Enemy {
     /** Phase de comportement actuelle du boss. */
     private BossPhase phase = new CalmPhase();
 
+    /** Sens du balayage horizontal : 1 vers la droite, -1 vers la gauche. */
+    private int direction = 1;
+
     /**
      * Crée le boss en pleine santé, dans sa première phase.
      *
@@ -75,6 +78,22 @@ public class EvilAI extends Enemy {
      */
     public BossPhase getPhase() {
         return phase;
+    }
+
+    /**
+     * Indique le sens du balayage horizontal.
+     *
+     * @return 1 vers la droite, -1 vers la gauche
+     */
+    public int getDirection() {
+        return direction;
+    }
+
+    /**
+     * Inverse le sens du balayage, quand le boss touche un bord de l'écran.
+     */
+    public void reverseDirection() {
+        direction = -direction;
     }
 
     /**
