@@ -1,6 +1,5 @@
 package com.shootemup;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -8,7 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import com.shootemup.core.Game;
-import com.shootemup.state.PlayingState;
+import com.shootemup.core.GameLoop;
 
 /**
  * Point d'entrée du jeu.
@@ -37,26 +36,11 @@ public class Main extends Application {
         Scene scene = new Scene(new StackPane(canvas));
 
         Game game = new Game();
-        game.setState(new PlayingState(game));
+        GameLoop loop = new GameLoop(game, gc);
+        game.start(loop);
 
         scene.setOnKeyPressed(e -> game.keyPressed(e.getCode()));
         scene.setOnKeyReleased(e -> game.keyReleased(e.getCode()));
-
-        new AnimationTimer() {
-            private long last = 0;
-
-            @Override
-            public void handle(long now) {
-                if (last == 0) {
-                    last = now;
-                    return;
-                }
-                double dt = (now - last) / 1e9;
-                last = now;
-                game.update(dt);
-                game.render(gc);
-            }
-        }.start();
 
         stage.setTitle("Shoot'em up");
         stage.setScene(scene);

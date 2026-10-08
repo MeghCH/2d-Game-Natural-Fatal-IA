@@ -1,5 +1,6 @@
 package com.shootemup.enemy;
 
+import com.shootemup.core.Game;
 import com.shootemup.enemy.boss.AngryPhase;
 import com.shootemup.enemy.boss.BersherkPhase;
 import com.shootemup.enemy.boss.CalmPhase;
@@ -48,5 +49,20 @@ class EvilAITest {
         boss.update(1);
 
         assertEquals(50, boss.getY(), DELTA);
+    }
+
+    @Test
+    void bossStaysOnScreenInEveryPhase() {
+        EvilAI boss = new EvilAI(100, 60);
+        boss.takeDamage(80);
+
+        for (int i = 0; i < 600; i++) {
+            boss.update(0.1);
+        }
+
+        assertTrue(boss.getX() >= 0);
+        assertTrue(boss.getX() + EvilAI.SIZE <= Game.WIDTH);
+        assertTrue(boss.getY() >= 0);
+        assertTrue(boss.getY() + EvilAI.SIZE <= Game.HEIGHT);
     }
 }

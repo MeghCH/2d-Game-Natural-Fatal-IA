@@ -19,14 +19,15 @@ public class BersherkPhase implements BossPhase {
     }
 
     /**
-     * Fait descendre le boss vers les joueurs.
+     * Fait descendre le boss vers les joueurs, sans dépasser la moitié de l'écran.
      *
      * @param boss le boss contrôlé
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
     @Override
     public void execute(EvilAI boss, double dt) {
-        boss.setY(boss.getY() + SPEED * dt);
+        double maxY = com.shootemup.core.Game.HEIGHT / 2.0;
+        boss.setY(Math.min(boss.getY() + SPEED * dt, maxY));
     }
 
     /**

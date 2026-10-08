@@ -24,4 +24,24 @@ public interface BossPhase {
      * @return la phase suivante, ou cette phase si c'est la dernière
      */
     BossPhase next();
+
+    /**
+     * Fait balayer le boss de gauche à droite et retour, sans sortir de l'écran.
+     *
+     * @param boss le boss contrôlé
+     * @param dt temps écoulé depuis la dernière image, en secondes
+     * @param speed vitesse de balayage, en pixels par seconde
+     */
+    default void sweep(EvilAI boss, double dt, double speed) {
+        double maxX = com.shootemup.core.Game.WIDTH - boss.getWidth();
+        double nextX = boss.getX() + speed * dt * boss.getDirection();
+        if (nextX < 0) {
+            nextX = 0;
+            boss.reverseDirection();
+        } else if (nextX > maxX) {
+            nextX = maxX;
+            boss.reverseDirection();
+        }
+        boss.setX(nextX);
+    }
 }
