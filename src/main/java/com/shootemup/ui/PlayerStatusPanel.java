@@ -46,6 +46,12 @@ public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable 
     private final Map<Character, Double> flashTimers = new HashMap<>();
 
     /**
+     * Crée un panneau vide, sans joueur suivi.
+     */
+    public PlayerStatusPanel() {
+    }
+
+    /**
      * Affiche un joueur dans le panneau et s'abonne à ses changements de points de vie.
      *
      * @param player le joueur à suivre

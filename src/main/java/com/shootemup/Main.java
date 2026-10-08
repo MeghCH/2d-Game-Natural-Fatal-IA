@@ -19,6 +19,13 @@ import com.shootemup.state.PlayingState;
 public class Main extends Application {
 
     /**
+     * Crée l'application.
+     */
+    public Main() {
+        super();
+    }
+
+    /**
      * Crée la fenêtre, démarre le jeu sur l'écran de partie et lance la boucle de jeu.
      *
      * @param stage la fenêtre principale fournie par JavaFX

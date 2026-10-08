@@ -34,6 +34,8 @@ public abstract class Entity implements Updatable, Renderable {
     }
 
     /**
+     * Indique la position horizontale du coin supérieur gauche.
+     *
      * @return la position horizontale du coin supérieur gauche
      */
     public double getX() {
@@ -41,6 +43,8 @@ public abstract class Entity implements Updatable, Renderable {
     }
 
     /**
+     * Indique la position verticale du coin supérieur gauche.
+     *
      * @return la position verticale du coin supérieur gauche
      */
     public double getY() {
@@ -48,6 +52,8 @@ public abstract class Entity implements Updatable, Renderable {
     }
 
     /**
+     * Indique la largeur de l'entité.
+     *
      * @return la largeur de l'entité
      */
     public double getWidth() {
@@ -55,6 +61,8 @@ public abstract class Entity implements Updatable, Renderable {
     }
 
     /**
+     * Indique la hauteur de l'entité.
+     *
      * @return la hauteur de l'entité
      */
     public double getHeight() {

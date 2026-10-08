@@ -109,6 +109,8 @@ public class Player extends Character {
     }
 
     /**
+     * Indique le numéro du joueur.
+     *
      * @return le numéro du joueur, 1 ou 2
      */
     public int getPlayerId() {
@@ -116,6 +118,8 @@ public class Player extends Character {
     }
 
     /**
+     * Indique les touches de contrôle du joueur.
+     *
      * @return les touches de contrôle du joueur
      */
     public InputController getControls() {
@@ -123,6 +127,8 @@ public class Player extends Character {
     }
 
     /**
+     * Indique le score actuel du joueur.
+     *
      * @return le score actuel du joueur
      */
     public int getScore() {

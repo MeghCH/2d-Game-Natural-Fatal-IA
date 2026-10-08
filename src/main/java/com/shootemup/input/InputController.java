@@ -54,6 +54,8 @@ public class InputController {
     }
 
     /**
+     * Fournit les contrôles du joueur 1.
+     *
      * @return les contrôles du joueur 1 : ZQSD ou WASD pour se déplacer, Espace pour tirer
      */
     public static InputController player1() {
@@ -66,6 +68,8 @@ public class InputController {
     }
 
     /**
+     * Fournit les contrôles du joueur 2.
+     *
      * @return les contrôles du joueur 2 : flèches pour se déplacer, Entrée pour tirer
      */
     public static InputController player2() {
@@ -96,6 +100,8 @@ public class InputController {
     }
 
     /**
+     * Indique si le joueur monte.
+     *
      * @return {@code true} si une touche pour monter est enfoncée
      */
     public boolean isUp() {
@@ -103,6 +109,8 @@ public class InputController {
     }
 
     /**
+     * Indique si le joueur descend.
+     *
      * @return {@code true} si une touche pour descendre est enfoncée
      */
     public boolean isDown() {
@@ -110,6 +118,8 @@ public class InputController {
     }
 
     /**
+     * Indique si le joueur va à gauche.
+     *
      * @return {@code true} si une touche pour aller à gauche est enfoncée
      */
     public boolean isLeft() {
@@ -117,6 +127,8 @@ public class InputController {
     }
 
     /**
+     * Indique si le joueur va à droite.
+     *
      * @return {@code true} si une touche pour aller à droite est enfoncée
      */
     public boolean isRight() {
@@ -124,6 +136,8 @@ public class InputController {
     }
 
     /**
+     * Indique si le joueur tire.
+     *
      * @return {@code true} si une touche de tir est enfoncée
      */
     public boolean isShooting() {
