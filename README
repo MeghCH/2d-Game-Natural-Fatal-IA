@@ -1,9 +1,13 @@
 B-OOP-301-STG-3-1-2dgame-5/
 ├── pom.xml
 ├── .gitignore
-├── docs/
-│   ├── STACK.md
-│   ├── DESIGN_PATTERNS.md
+├── README
+├── Docs/
+│   ├── Concept.md
+│   ├── GDD.md
+│   ├── Gameplay.md
+│   ├── Stack.md
+│   ├── Design_pattern.md
 │   └── Diagrammes/
 │       ├── README.md
 │       ├── 1_vue_ensemble.puml
@@ -11,27 +15,30 @@ B-OOP-301-STG-3-1-2dgame-5/
 │       ├── 3_ennemis.puml
 │       ├── Uml_entites.puml
 │       └── Uml_structure_jeu.puml
+├── Images/
+│   ├── level1.png
+│   ├── level2.png
+│   ├── level3.png
+│   └── level4.png
 └── src/
     ├── main/
-    │   ├── java/com/shootemup/
-    │   │   └── Main.java
-    │   └── resources/sprites/
-    └── test/java/com/shootemup/B-OOP-301-STG-3-1-2dgame-5/
-├── pom.xml
-├── .gitignore
-├── docs/
-│   ├── STACK.md
-│   ├── DESIGN_PATTERNS.md
-│   └── Diagrammes/
-│       ├── README.md
-│       ├── 1_vue_ensemble.puml
-│       ├── 2_joueur.puml
-│       ├── 3_ennemis.puml
-│       ├── Uml_entites.puml
-│       └── Uml_structure_jeu.puml
-└── src/
-    ├── main/
-    │   ├── java/com/shootemup/
-    │   │   └── Main.java
-    │   └── resources/sprites/
-    └── test/java/com/shootemup/
+    │   └── java/com/shootemup/
+    │       ├── Main.java
+    │       ├── core/Game.java
+    │       ├── entity/Character.java
+    │       ├── entity/Entity.java
+    │       ├── entity/Player.java
+    │       ├── input/InputController.java
+    │       ├── state/GameState.java
+    │       ├── state/PlayingState.java
+    │       ├── state/PauseState.java
+    │       └── ui/PlayerStatusPanel.java
+    └── test/
+        └── java/com/shootemup/
+            ├── core/GameTest.java
+            ├── entity/CharacterTest.java
+            ├── entity/EntityTest.java
+            ├── entity/PlayerTest.java
+            ├── input/InputControllerTest.java
+            ├── state/StateTransitionTest.java
+            └── ui/PlayerStatusPanelTest.java
