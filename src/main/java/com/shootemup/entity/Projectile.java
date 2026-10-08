@@ -74,6 +74,8 @@ public class Projectile extends Entity {
     }
 
     /**
+     * Indique si la balle est sortie de l'écran.
+     *
      * @return {@code true} si la balle est entièrement sortie de l'écran, par n'importe quel bord
      */
     public boolean isOutOfScreen() {
@@ -88,6 +90,8 @@ public class Projectile extends Entity {
     }
 
     /**
+     * Indique si la balle est encore en jeu.
+     *
      * @return {@code true} si la balle est encore en jeu
      */
     public boolean isActive() {
@@ -95,6 +99,8 @@ public class Projectile extends Entity {
     }
 
     /**
+     * Indique les points de dégâts infligés par la balle.
+     *
      * @return les points de dégâts infligés par la balle
      */
     public int getDamage() {
@@ -102,6 +108,8 @@ public class Projectile extends Entity {
     }
 
     /**
+     * Indique le personnage qui a tiré la balle.
+     *
      * @return le personnage qui a tiré la balle
      */
     public Character getOwner() {

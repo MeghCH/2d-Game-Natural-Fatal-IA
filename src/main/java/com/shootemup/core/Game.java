@@ -26,6 +26,12 @@ public class Game {
     public static final int HEIGHT = 540;
 
     /**
+     * Crée le cœur du jeu, sans écran actif.
+     */
+    public Game() {
+    }
+
+    /**
      * Change l'écran courant, puis prévient le nouvel écran qu'il devient actif.
      *
      * @param newState le nouvel écran, jamais {@code null}
@@ -37,6 +43,8 @@ public class Game {
     }
 
     /**
+     * Indique l'écran actuellement actif.
+     *
      * @return l'écran actuellement actif, ou {@code null} si aucun n'a été défini
      */
     public GameState getCurrentState() {

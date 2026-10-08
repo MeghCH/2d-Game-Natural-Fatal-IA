@@ -57,6 +57,8 @@ public abstract class Character extends Entity implements Damageable {
     }
 
     /**
+     * Indique les points de vie actuels.
+     *
      * @return les points de vie actuels
      */
     public int getHp() {
@@ -64,6 +66,8 @@ public abstract class Character extends Entity implements Damageable {
     }
 
     /**
+     * Indique les points de vie maximum.
+     *
      * @return les points de vie maximum
      */
     public int getMaxHp() {

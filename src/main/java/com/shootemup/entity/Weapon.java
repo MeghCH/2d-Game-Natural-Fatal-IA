@@ -25,6 +25,12 @@ public class Weapon implements Updatable {
     private double cooldown = 0;
 
     /**
+     * Crée une arme prête à tirer.
+     */
+    public Weapon() {
+    }
+
+    /**
      * Fait passer le temps de recharge.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
@@ -35,6 +41,8 @@ public class Weapon implements Updatable {
     }
 
     /**
+     * Indique si l'arme est prête à tirer.
+     *
      * @return {@code true} si l'arme est prête à tirer
      */
     public boolean canFire() {

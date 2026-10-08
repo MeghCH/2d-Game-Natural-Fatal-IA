@@ -58,6 +58,8 @@ public class PlayingState implements GameState {
     }
 
     /**
+     * Indique les joueurs de la partie.
+     *
      * @return les joueurs de la partie, en lecture seule
      */
     public List<Player> getPlayers() {
@@ -65,6 +67,8 @@ public class PlayingState implements GameState {
     }
 
     /**
+     * Indique les balles actuellement en vol.
+     *
      * @return les balles actuellement en vol, en lecture seule
      */
     public List<Projectile> getProjectiles() {
