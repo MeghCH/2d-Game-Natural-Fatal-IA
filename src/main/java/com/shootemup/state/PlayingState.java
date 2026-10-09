@@ -12,6 +12,7 @@ import com.shootemup.input.InputController;
 import com.shootemup.level.LevelManager;
 import com.shootemup.level.TutorialManager;
 import com.shootemup.ui.PlayerStatusPanel;
+import com.shootemup.ui.Starfield;
 
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
@@ -49,6 +50,9 @@ public class PlayingState implements GameState {
 
     /** Le planificateur qui fait tomber les bonus. */
     private final BonusSpawner bonusSpawner = new BonusSpawner();
+
+    /** Le ciel étoilé qui défile derrière la partie. */
+    private final Starfield background = new Starfield(Game.WIDTH, Game.HEIGHT);
 
     /** Le panneau qui affiche la vie et le score des joueurs. */
     private final PlayerStatusPanel statusPanel = new PlayerStatusPanel();
@@ -125,6 +129,7 @@ public class PlayingState implements GameState {
      */
     @Override
     public void update(double dt) {
+        background.update(dt);
         for (Player player : players) {
             player.update(dt);
             projectiles.addAll(player.shoot());
@@ -250,8 +255,9 @@ public class PlayingState implements GameState {
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#101820"));
+        gc.setFill(Color.web(levelManager.getBackgroundColor()));
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+        background.render(gc);
 
         for (Enemy enemy : levelManager.getCurrentLevel().getActiveEnemies()) {
             enemy.render(gc);

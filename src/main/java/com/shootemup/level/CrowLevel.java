@@ -26,4 +26,14 @@ public class CrowLevel extends Level {
         waves.add(new Wave(EnemyType.CROW, 5));
         waves.add(new Wave(EnemyType.CROW, 8));
     }
+
+    /**
+     * Indique la couleur de fond du niveau : bleu nuit de la traversée.
+     *
+     * @return la couleur de fond, en hexadécimal
+     */
+    @Override
+    public String getBackgroundColor() {
+        return "#16223C";
+    }
 }

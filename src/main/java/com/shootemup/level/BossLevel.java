@@ -24,4 +24,14 @@ public class BossLevel extends Level {
     protected void buildWaves() {
         waves.add(new Wave(EnemyType.EVIL_AI, 1));
     }
+
+    /**
+     * Indique la couleur de fond du niveau : violet sombre de l'IA.
+     *
+     * @return la couleur de fond, en hexadécimal
+     */
+    @Override
+    public String getBackgroundColor() {
+        return "#221638";
+    }
 }

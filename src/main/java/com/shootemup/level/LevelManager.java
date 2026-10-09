@@ -80,4 +80,13 @@ public class LevelManager {
     public int getCurrentLevelNumber() {
         return currentIndex + 1;
     }
+
+    /**
+     * Indique la couleur de fond du niveau en cours.
+     *
+     * @return la couleur de fond, en hexadécimal
+     */
+    public String getBackgroundColor() {
+        return getCurrentLevel().getBackgroundColor();
+    }
 }
