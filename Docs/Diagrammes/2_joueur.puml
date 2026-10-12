@@ -9,11 +9,14 @@ abstract class Character {
   # hp : int
   - observers : List<HealthObserver>
   + takeDamage(amount : int) : void
+  + heal(amount : int) : void
+  + addObserver(o : HealthObserver) : void
   # notifyObservers() : void
 }
 
 class Player {
-  + {static} SIZE : double
+  + {static} WIDTH : double
+  + {static} HEIGHT : double
   - playerId : int
   - score : int
   + shoot() : List<Projectile>
@@ -52,6 +55,7 @@ interface HealthObserver <<Observer>> {
 }
 
 class PlayerStatusPanel {
+  + track(player : Player) : void
   + onHealthChanged(c : Character) : void
 }
 
@@ -64,13 +68,14 @@ Character o-- "*" HealthObserver
 HealthObserver <|.. PlayerStatusPanel
 
 note bottom of InputController
-  Joueur 1 : ZQSD + espace
+  Joueur 1 : ZQSD (ou WASD) + espace
   Joueur 2 : flèches + entrée
 end note
 
 note bottom of PlayerStatusPanel
   Prévenu à chaque
-  perte de PV
+  changement de PV
+  (coup ou soin)
 end note
 
 @enduml

@@ -9,24 +9,31 @@ abstract class Enemy {
   # contactDamage : int
   # scoreValue : int
   # movement : MovementStrategy
-  + {abstract} attack(target : Player) : void
+  + attack(target : Player) : void
+  + setMovement(m : MovementStrategy) : void
 }
 
 class Mosquito {
   contactDamage = 2
+  movement = ZigzagMovement
 }
 
 class Wasp {
   contactDamage = 6
+  movement = StraightMovement
 }
 
 class Crow {
   contactDamage = 10
+  movement = DiveMovement
 }
 
 class EvilAI {
+  contactDamage = 10
   - phase : BossPhase
+  - direction : int
   + changePhase() : void
+  + reverseDirection() : void
 }
 
 interface MovementStrategy <<Strategy>> {
@@ -40,7 +47,12 @@ class DiveMovement
 interface BossPhase <<State>> {
   + execute(boss : EvilAI, dt : double) : void
   + next() : BossPhase
+  + sweep(boss : EvilAI, dt : double, speed : double) : void
 }
+
+class CalmPhase
+class AngryPhase
+class BersherkPhase
 
 Enemy <|-- Mosquito
 Enemy <|-- Wasp
@@ -53,6 +65,11 @@ MovementStrategy <|.. ZigzagMovement
 MovementStrategy <|.. DiveMovement
 
 EvilAI o-- "1" BossPhase
+BossPhase <|.. CalmPhase
+BossPhase <|.. AngryPhase
+BossPhase <|.. BersherkPhase
+CalmPhase ..> AngryPhase : next()
+AngryPhase ..> BersherkPhase : next()
 
 note right of MovementStrategy
   Chaque ennemi reçoit
@@ -60,9 +77,11 @@ note right of MovementStrategy
 end note
 
 note bottom of BossPhase
-  L'IA change de
-  comportement selon
-  ses PV restants
+  L'IA change de comportement
+  selon ses PV restants :
+  calme : balayage lent
+  < 2/3 PV : balayage rapide
+  < 1/3 PV : descend vers les joueurs
 end note
 
 @enduml

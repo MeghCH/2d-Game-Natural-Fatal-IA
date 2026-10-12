@@ -30,6 +30,28 @@ class EvilAITest {
     }
 
     @Test
+    void staysAngryWhileAboveOneThird() {
+        EvilAI boss = new EvilAI(100, 0);
+        boss.takeDamage(40);
+
+        for (int i = 0; i < 10; i++) {
+            boss.update(0.1);
+        }
+
+        assertInstanceOf(AngryPhase.class, boss.getPhase());
+    }
+
+    @Test
+    void goesStraightToBersherkWhenBothThresholdsAreCrossedAtOnce() {
+        EvilAI boss = new EvilAI(100, 0);
+        boss.takeDamage(80);
+
+        boss.update(0.1);
+
+        assertInstanceOf(BersherkPhase.class, boss.getPhase());
+    }
+
+    @Test
     void switchesToBersherkBelowOneThird() {
         EvilAI boss = new EvilAI(100, 0);
         boss.takeDamage(40);

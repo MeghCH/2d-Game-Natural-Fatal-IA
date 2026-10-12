@@ -64,7 +64,6 @@ public class PlayingState implements GameState {
         double sideMargin = 60;
         addPlayer(new Player(1, sideMargin, startY, InputController.player1()));
         addPlayer(new Player(2, Game.WIDTH - sideMargin - Player.WIDTH, startY, InputController.player2()));
-        addPlayer(new Player(2, Game.WIDTH - sideMargin - Player.SIZE, startY, InputController.player2()));
         this.levelManager = TutorialManager.createProgression(new EnemyFactory());
     }
 
