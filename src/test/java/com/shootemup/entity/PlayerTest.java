@@ -41,7 +41,7 @@ class PlayerTest {
 
     @Test
     void cannotLeaveRightEdge() {
-        double rightEdge = Game.WIDTH - 40;
+        double rightEdge = Game.WIDTH - Player.WIDTH;
         Player player = new Player(1, rightEdge, 100, InputController.player1());
         player.getControls().keyPressed(KeyCode.D);
 

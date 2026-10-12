@@ -4,6 +4,10 @@ import com.shootemup.core.Game;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import com.shootemup.asset.Animation;
+import com.shootemup.asset.AssetManager;
+import javafx.scene.image.Image;
+
 /**
  * Balle tirée par un personnage, qui avance en ligne droite dans une direction donnée.
  * <p>
@@ -15,7 +19,7 @@ import javafx.scene.paint.Color;
 public class Projectile extends Entity {
 
     /** Diamètre de la balle, en pixels. */
-    public static final double SIZE = 8;
+    public static final double SIZE = 16;
 
     /** Vitesse horizontale, en pixels par seconde : positive vers la droite. */
     private final double vx;
@@ -31,6 +35,15 @@ public class Projectile extends Entity {
 
     /** {@code true} tant que la balle est en jeu. */
     private boolean active;
+
+        /** Animation en vol des balles du joueur 1 : ligne 0 de la planche. */
+    private static final Animation P1_FLIGHT = new Animation(8, 8, 0, 2, 12);
+
+    /** Animation en vol des balles du joueur 2 : ligne 1 de la planche. */
+    private static final Animation P2_FLIGHT = new Animation(8, 8, 1, 2, 12);
+
+    /** Le chronomètre. */
+    private double animationTime = 0;
 
     /**
      * Crée une balle en jeu.
@@ -60,17 +73,28 @@ public class Projectile extends Entity {
     public void update(double dt) {
         x += vx * dt;
         y += vy * dt;
+        animationTime += dt;
     }
 
     /**
-     * Dessine la balle sous la forme d'un petit rond jaune.
+     * Dessine la balle avec son animation, selon le joueur qui l'a tirée.
+     * Si la planche est introuvable, dessine un petit rond jaune à la place.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#FAC775"));
-        gc.fillOval(x, y, width, height);
+        Image sheet = AssetManager.getInstance().getImage("/sprites/projectile.png");
+
+        if (sheet == null) {
+            gc.setFill(Color.YELLOW);
+            gc.fillOval(x, y, width, height);
+            return;
+        }
+        Animation animation = (owner instanceof Player player && player.getPlayerId() == 2)
+                ? P2_FLIGHT
+                : P1_FLIGHT;
+        animation.draw(gc, sheet, animationTime, x, y, width, height);
     }
 
     /**

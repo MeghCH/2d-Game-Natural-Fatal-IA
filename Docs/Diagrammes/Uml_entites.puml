@@ -46,6 +46,7 @@ abstract class Character {
   # maxHp : int
   - observers : List<HealthObserver>
   + takeDamage(amount : int) : void
+  + heal(amount : int) : void
   + isAlive() : boolean
   + addObserver(o : HealthObserver) : void
   # notifyObservers() : void
@@ -126,6 +127,17 @@ class Projectile {
   + getOwner() : Character
 }
 
+class Potion {
+  + {static} SIZE : double
+  - {static} FALL_SPEED : double
+  - {static} HEAL_AMOUNT : int
+  - active : boolean
+  - animationTime : double
+  + update(dt : double) : void
+  + render(gc : GraphicsContext) : void
+  + isOutOfScreen() : boolean
+  + collect(c : Character) : void
+  + isActive() : boolean
 class Bonus {
   + {static} SIZE : double
   + {static} HEAL : int
@@ -171,6 +183,15 @@ MovementStrategy <|.. DiveMovement
 
 EvilAI o-- "1" BossPhase
 Character o-- "*" HealthObserver
+
+Entity <|-- Potion
+Potion ..> Character : soigne
+
+note right of Potion
+  Tombe du haut de l'écran
+  et rend des PV au joueur
+  qui la ramasse
+end note
 
 note right of Enemy
   Dégâts au contact :

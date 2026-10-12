@@ -44,7 +44,7 @@ class WeaponTest {
 
         Projectile projectile = weapon.fire(shooter()).get(0);
 
-        assertEquals(100 + 40 / 2.0 - Projectile.SIZE / 2, projectile.getX(), DELTA);
+        assertEquals(100 + Player.WIDTH / 2 - Projectile.SIZE / 2, projectile.getX(), DELTA);
         assertEquals(300 - Projectile.SIZE, projectile.getY(), DELTA);
     }
 
