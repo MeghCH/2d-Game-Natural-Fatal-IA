@@ -47,11 +47,11 @@ La difficulté augmente à chaque niveau :
 
 ### 2.5 Bonus
 
-- Des bonus peuvent tomber du haut de l'écran, au même endroit que les ennemis.
-- Il faut les attraper sans se faire attaquer.
-- Bonus prévu : récupération de points de vie.
+- Des bonus de soin tombent lentement du haut de l'écran, à des moments aléatoires (toutes les 8 à 15 secondes).
+- Il suffit de se placer dessous pour les attraper au contact.
+- Chaque bonus rend **4 PV**, sans dépasser le maximum de 30.
 
-> Point à préciser : taux d'apparition, valeur de soin, autres bonus éventuels.
+> Point à préciser : autres bonus éventuels.
 
 ## 3. Design et fonctionnalités des niveaux
 

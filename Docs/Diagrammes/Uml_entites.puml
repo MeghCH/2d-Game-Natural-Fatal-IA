@@ -56,7 +56,6 @@ class Player {
   + {static} SIZE : double
   - playerId : int
   - score : int
-  - lives : int
   - weapon : Weapon
   - controls : InputController
   + shoot() : List<Projectile>
@@ -139,6 +138,10 @@ class Potion {
   + isOutOfScreen() : boolean
   + collect(c : Character) : void
   + isActive() : boolean
+class Bonus {
+  + {static} SIZE : double
+  + {static} HEAL : int
+  + collect(player : Player) : void
 }
 
 class Weapon {
@@ -157,6 +160,7 @@ Damageable <|.. Character
 
 Entity <|-- Character
 Entity <|-- Projectile
+Entity <|-- Bonus
 Character <|-- Player
 Character <|-- Enemy
 
@@ -169,6 +173,7 @@ Player *-- "1" Weapon
 Player *-- "1" InputController
 Weapon ..> Projectile : <<create>>
 Updatable <|.. Weapon
+Bonus ..> Player : soigne
 Projectile --> "1" Character : owner
 
 Enemy o-- "1" MovementStrategy

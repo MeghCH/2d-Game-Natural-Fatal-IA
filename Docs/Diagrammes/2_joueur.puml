@@ -16,7 +16,6 @@ class Player {
   + {static} SIZE : double
   - playerId : int
   - score : int
-  - lives : int
   + shoot() : List<Projectile>
   + getControls() : InputController
   + getScore() : int

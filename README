@@ -1,6 +1,7 @@
 B-OOP-301-STG-3-1-2dgame-5/
 ├── pom.xml
 ├── .gitignore
+├── 2DGame-project.md
 ├── README
 ├── Docs/
 │   ├── Concept.md
@@ -24,21 +25,63 @@ B-OOP-301-STG-3-1-2dgame-5/
     ├── main/
     │   └── java/com/shootemup/
     │       ├── Main.java
+    │       ├── bonus/Bonus.java
+    │       ├── bonus/BonusSpawner.java
     │       ├── core/Game.java
+    │       ├── core/GameLoop.java
+    │       ├── enemy/Enemy.java
+    │       ├── enemy/EnemyType.java
+    │       ├── enemy/EnemyFactory.java
+    │       ├── enemy/Mosquito.java
+    │       ├── enemy/Wasp.java
+    │       ├── enemy/Crow.java
+    │       ├── enemy/EvilAI.java
+    │       ├── enemy/boss/BossPhase.java
+    │       ├── enemy/boss/CalmPhase.java
+    │       ├── enemy/boss/AngryPhase.java
+    │       ├── enemy/boss/BersherkPhase.java
     │       ├── entity/Character.java
     │       ├── entity/Entity.java
     │       ├── entity/Player.java
+    │       ├── entity/Projectile.java
+    │       ├── entity/Weapon.java
     │       ├── input/InputController.java
+    │       ├── level/Level.java
+    │       ├── level/Wave.java
+    │       ├── level/MosquitoLevel.java
+    │       ├── level/WaspLevel.java
+    │       ├── level/CrowLevel.java
+    │       ├── level/BossLevel.java
+    │       ├── level/LevelManager.java
+    │       ├── level/TutorialManager.java
+    │       ├── movement/MovementStrategy.java
+    │       ├── movement/StraightMovement.java
+    │       ├── movement/ZigzagMovement.java
+    │       ├── movement/DiveMovement.java
     │       ├── state/GameState.java
+    │       ├── state/MenuState.java
     │       ├── state/PlayingState.java
     │       ├── state/PauseState.java
+    │       ├── state/GameOverState.java
     │       └── ui/PlayerStatusPanel.java
     └── test/
         └── java/com/shootemup/
+            ├── bonus/BonusTest.java
             ├── core/GameTest.java
+            ├── enemy/EnemyFactoryTest.java
+            ├── enemy/EnemyTest.java
+            ├── enemy/EvilAITest.java
             ├── entity/CharacterTest.java
             ├── entity/EntityTest.java
             ├── entity/PlayerTest.java
+            ├── entity/ProjectileTest.java
+            ├── entity/WeaponTest.java
             ├── input/InputControllerTest.java
+            ├── level/WaveTest.java
+            ├── level/LevelTest.java
+            ├── level/LevelManagerTest.java
+            ├── level/TutorialManagerTest.java
+            ├── movement/MovementTest.java
+            ├── state/PlayingStateTest.java
             ├── state/StateTransitionTest.java
             └── ui/PlayerStatusPanelTest.java

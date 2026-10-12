@@ -40,11 +40,13 @@ class GameOverState
 class PlayingState {
   - players : List<Player>
   - projectiles : List<Projectile>
+  - levelManager : LevelManager
   - statusPanel : PlayerStatusPanel
   + getProjectiles() : List<Projectile>
   - potions : List<Potion>
   - potionSpawner : PotionSpawner
   + getPlayers() : List<Player>
+  + getLevelManager() : LevelManager
 }
 
 class Projectile
@@ -64,10 +66,10 @@ abstract class Level <<Template Method>> {
   + isCompleted() : boolean
 }
 
-class TutorialLevel {
+class MosquitoLevel {
   # buildWaves() : void
 }
-note bottom of TutorialLevel : Niveau 1 - moustiques
+note bottom of MosquitoLevel : Niveau 1 - moustiques
 
 class WaspLevel {
   # buildWaves() : void
@@ -144,12 +146,20 @@ GameState <|.. GameOverState
 PlayingState *-- "*" Player
 PlayingState *-- "*" Projectile
 PlayingState *-- "1" PlayerStatusPanel
+PlayingState *-- "1" LevelManager
 
 LevelManager *-- "4" Level
-Level <|-- TutorialLevel
+Level <|-- MosquitoLevel
 Level <|-- WaspLevel
 Level <|-- CrowLevel
 Level <|-- BossLevel
+
+class TutorialManager {
+  + {static} createProgression(f : EnemyFactory) : LevelManager
+}
+
+TutorialManager ..> LevelManager : <<create>>
+TutorialManager ..> EnemyFactory : <<use>>
 
 Level *-- "*" Wave
 Wave ..> EnemyFactory : <<use>>
@@ -164,9 +174,10 @@ PlayingState o-- "*" Potion
 PotionSpawner ..> Potion : <<create>>
 
 note bottom of PlayingState
-  LevelManager et CollisionManager
-  pas encore branchés ici
-  (prévus pour une prochaine itération)
+  CollisionManager :
+  collisions gérées
+  dans PlayingState
+  (méthode privée)
 end note
 
 @enduml

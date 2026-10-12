@@ -1,6 +1,7 @@
 package com.shootemup.core;
 
 import com.shootemup.state.GameState;
+import com.shootemup.state.MenuState;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 
@@ -19,6 +20,9 @@ public class Game {
     /** L'écran actuellement actif. */
     private GameState currentState;
 
+    /** La boucle de jeu, qui appelle update et render à chaque image. */
+    private GameLoop loop;
+
     /** Largeur de la fenêtre de jeu, en pixels. */
     public static final int WIDTH = 960;
 
@@ -29,6 +33,26 @@ public class Game {
      * Crée le cœur du jeu, sans écran actif.
      */
     public Game() {
+    }
+
+    /**
+     * Démarre le jeu : affiche le menu puis lance la boucle.
+     *
+     * @param loop la boucle de jeu à lancer
+     */
+    public void start(GameLoop loop) {
+        this.loop = Objects.requireNonNull(loop, "La boucle ne peut pas être null.");
+        setState(new MenuState(this));
+        loop.start();
+    }
+
+    /**
+     * Arrête la boucle de jeu. Ne fait rien si le jeu n'est pas démarré.
+     */
+    public void stop() {
+        if (loop != null) {
+            loop.stop();
+        }
     }
 
     /**

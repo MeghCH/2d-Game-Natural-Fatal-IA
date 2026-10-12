@@ -49,6 +49,17 @@ public abstract class Character extends Entity implements Damageable {
     }
 
     /**
+     * Rend des points de vie au personnage, sans dépasser le maximum,
+     * puis prévient les observateurs.
+     *
+     * @param amount nombre de points de vie rendus
+     */
+    public void heal(int amount) {
+        hp = Math.min(maxHp, hp + amount);
+        notifyObservers();
+    }
+
+    /**
      * @return {@code true} s'il reste des points de vie au personnage, {@code false} sinon
      */
     @Override
