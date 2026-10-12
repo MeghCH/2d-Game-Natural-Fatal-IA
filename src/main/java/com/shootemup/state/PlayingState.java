@@ -1,13 +1,13 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
-import com.shootemup.bonus.Bonus;
-import com.shootemup.bonus.BonusSpawner;
 import com.shootemup.enemy.Enemy;
 import com.shootemup.enemy.EnemyFactory;
 import com.shootemup.enemy.EvilAI;
 import com.shootemup.entity.Player;
 import com.shootemup.entity.Projectile;
+import com.shootemup.entity.Potion;
+import com.shootemup.entity.PotionSpawner;
 import com.shootemup.input.InputController;
 import com.shootemup.level.LevelManager;
 import com.shootemup.level.TutorialManager;
@@ -57,13 +57,32 @@ public class PlayingState implements GameState {
     /** Le panneau qui affiche la vie et le score des joueurs. */
     private final PlayerStatusPanel statusPanel = new PlayerStatusPanel();
 
+    /** Potions actuellement à l'écran. */
+    private final List<Potion> potions = new ArrayList<>();
+
+    /** Fait tomber des potions au hasard. */
+    private final PotionSpawner potionSpawner;
+
+    
     /**
-     * Crée une partie à deux joueurs, placés à gauche de l'écran.
+     * Crée une partie à deux joueurs, avec un générateur de potions ordinaire.
      *
      * @param game le jeu auquel appartient cet écran
      */
     public PlayingState(Game game) {
+        this(game, new PotionSpawner());
+    }
+
+    /**
+     * Crée une partie à deux joueurs, placés en bas de l'écran,
+     * le joueur 1 à gauche et le joueur 2 à droite.
+     *
+     * @param game          le jeu auquel appartient cet écran
+     * @param potionSpawner le générateur de potions, par exemple avec un hasard fixe dans les tests
+     */
+    public PlayingState(Game game, PotionSpawner potionSpawner) {
         this.game = game;
+        this.potionSpawner = potionSpawner;
         double startY = Game.HEIGHT - 60;
         double sideMargin = 60;
         addPlayer(new Player(1, sideMargin, startY, InputController.player1()));
@@ -97,6 +116,15 @@ public class PlayingState implements GameState {
      */
     public List<Projectile> getProjectiles() {
         return Collections.unmodifiableList(projectiles);
+    }
+
+    /**
+     * Indique les potions actuellement à l'écran.
+     *
+     * @return les potions actuellement à l'écran, en lecture seule
+     */
+    public List<Potion> getPotions() {
+        return Collections.unmodifiableList(potions);
     }
 
     /**
@@ -137,7 +165,7 @@ public class PlayingState implements GameState {
 
         levelManager.update(dt);
         handleCollisions();
-        updateBonuses(dt);
+        updatePotions(dt);
 
         for (Projectile projectile : projectiles) {
             projectile.update(dt);
@@ -193,31 +221,22 @@ public class PlayingState implements GameState {
     }
 
     /**
-     * Fait tomber les bonus, les donne aux joueurs placés dessous,
-     * et retire ceux qui sont attrapés ou sortis en bas.
+     * Fait apparaître et tomber les potions, les donne aux joueurs qui les touchent,
+     * et retire celles qui ont fini leur effet ou sont sorties en bas.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
-    private void updateBonuses(double dt) {
-        bonusSpawner.update(dt);
-        if (bonusSpawner.isReady()) {
-            bonuses.add(bonusSpawner.spawn());
-        }
-        List<Bonus> taken = new ArrayList<>();
-        for (Bonus bonus : bonuses) {
-            bonus.update(dt);
+    private void updatePotions(double dt) {
+        potions.addAll(potionSpawner.update(dt));
+        for (Potion potion : potions) {
+            potion.update(dt);
             for (Player player : players) {
-                if (player.isAlive() && player.collidesWith(bonus)) {
-                    bonus.collect(player);
-                    taken.add(bonus);
-                    break;
+                if (player.isAlive() && !potion.isCollected() && player.collidesWith(potion)) {
+                    potion.collect(player);
                 }
             }
-            if (bonus.getY() > Game.HEIGHT) {
-                taken.add(bonus);
-            }
         }
-        bonuses.removeAll(taken);
+        potions.removeIf(potion -> !potion.isActive() || potion.isOutOfScreen());
     }
 
     /**
@@ -248,7 +267,7 @@ public class PlayingState implements GameState {
     }
 
     /**
-     * Dessine le fond, les ennemis, les joueurs, les balles, le numéro du niveau,
+     * Dessine le fond, les ennemis, les joueurs, les balles, le numéro du niveau, les potions,
      * puis le panneau d'état par-dessus.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
@@ -263,8 +282,8 @@ public class PlayingState implements GameState {
             enemy.render(gc);
         }
 
-        for (Bonus bonus : bonuses) {
-            bonus.render(gc);
+        for (Potion potion : potions) {
+            potion.render(gc);
         }
 
         for (Player player : players) {

@@ -61,4 +61,17 @@ class PlayerStatusPanelTest {
 
         assertFalse(panel.isFlashing(player));
     }
+
+    @Test
+    void healingDoesNotFlash() {
+        PlayerStatusPanel panel = new PlayerStatusPanel();
+        Player player = new Player(1, 100, 100, InputController.player1());
+        panel.track(player);
+        player.takeDamage(10);
+        panel.update(1);
+
+        player.heal(5);
+
+        assertFalse(panel.isFlashing(player));
+    }
 }
