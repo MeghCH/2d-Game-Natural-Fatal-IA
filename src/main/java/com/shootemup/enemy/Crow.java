@@ -1,6 +1,9 @@
 package com.shootemup.enemy;
 
+import com.shootemup.asset.Animation;
+import com.shootemup.asset.AssetManager;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 /**
@@ -20,6 +23,9 @@ public class Crow extends Enemy {
     /** Points de score donnés quand le corbeau est détruit. */
     private static final int SCORE = 300;
 
+    /** Battement d'ailes : ligne 0 de la planche 64x64, 2 images de 32x32. */
+    private static final Animation FLY = new Animation(32, 32, 0, 2, 6);
+
     /**
      * Crée un corbeau en pleine santé.
      *
@@ -32,8 +38,8 @@ public class Crow extends Enemy {
     }
 
     /**
-     * Dessine le corbeau sous la forme d'un carré bleu. Un corbeau mort
-     * n'est pas dessiné.
+     * Dessine le corbeau avec son sprite animé. Si la planche est introuvable,
+     * dessine un carré bleu à la place. Un corbeau mort n'est pas dessiné.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -42,7 +48,12 @@ public class Crow extends Enemy {
         if (!isAlive()) {
             return;
         }
-        gc.setFill(Color.web("#7A8BB5"));
-        gc.fillRect(x, y, width, height);
+        Image sheet = AssetManager.getInstance().getImage("/sprites/crow.png");
+        if (sheet == null) {
+            gc.setFill(Color.web("#7A8BB5"));
+            gc.fillRect(x, y, width, height);
+            return;
+        }
+        FLY.draw(gc, sheet, animationTime, x, y, width, height);
     }
 }

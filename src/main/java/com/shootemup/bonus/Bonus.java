@@ -1,8 +1,11 @@
 package com.shootemup.bonus;
 
+import com.shootemup.asset.Animation;
+import com.shootemup.asset.AssetManager;
 import com.shootemup.entity.Entity;
 import com.shootemup.entity.Player;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 /**
@@ -19,6 +22,12 @@ public class Bonus extends Entity {
 
     /** Vitesse de chute, en pixels par seconde : assez lente pour l'attraper. */
     private static final double FALL_SPEED = 60;
+
+    /** Scintillement : ligne 0 de la planche 32x32, 2 images de 16x16. */
+    private static final Animation SPARKLE = new Animation(16, 16, 0, 2, 4);
+
+    /** Temps écoulé, qui permet à l'animation de choisir son image. */
+    private double animationTime = 0;
 
     /**
      * Crée un bonus.
@@ -38,6 +47,7 @@ public class Bonus extends Entity {
     @Override
     public void update(double dt) {
         y += FALL_SPEED * dt;
+        animationTime += dt;
     }
 
     /**
@@ -50,14 +60,20 @@ public class Bonus extends Entity {
     }
 
     /**
-     * Dessine le bonus sous la forme d'un carré vert. Un bonus sorti de
-     * l'écran n'est plus dessiné par la partie de toute façon.
+     * Dessine le bonus avec son sprite animé. Si la planche est introuvable,
+     * dessine un carré vert à la place. Un bonus sorti de l'écran n'est plus
+     * dessiné par la partie de toute façon.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#4AE88A"));
-        gc.fillRect(x, y, width, height);
+        Image sheet = AssetManager.getInstance().getImage("/sprites/potion.png");
+        if (sheet == null) {
+            gc.setFill(Color.web("#4AE88A"));
+            gc.fillRect(x, y, width, height);
+            return;
+        }
+        SPARKLE.draw(gc, sheet, animationTime, x, y, width, height);
     }
 }

@@ -1,8 +1,11 @@
 package com.shootemup.enemy;
 
+import com.shootemup.asset.Animation;
+import com.shootemup.asset.AssetManager;
 import com.shootemup.enemy.boss.BossPhase;
 import com.shootemup.enemy.boss.CalmPhase;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 /**
@@ -27,6 +30,12 @@ public class EvilAI extends Enemy {
 
     /** Phase de comportement actuelle du boss. */
     private BossPhase phase = new CalmPhase();
+
+    /** Animation de la phase calme : ligne 0 de la planche 128x128, 2 images de 64x64. */
+    private static final Animation CALM = new Animation(64, 64, 0, 2, 4);
+
+    /** Animation des phases énervées : ligne 1 de la planche, 2 images de 64x64. */
+    private static final Animation ENRAGED = new Animation(64, 64, 1, 2, 6);
 
     /** Sens du balayage horizontal : 1 vers la droite, -1 vers la gauche. */
     private int direction = 1;
@@ -58,6 +67,7 @@ public class EvilAI extends Enemy {
         if (!isAlive()) {
             return;
         }
+        animationTime += dt;
         phase.execute(this, dt);
 
         int reached = 0;
@@ -106,8 +116,9 @@ public class EvilAI extends Enemy {
     }
 
     /**
-     * Dessine le boss sous la forme d'un carré rose. Un boss mort
-     * n'est pas dessiné.
+     * Dessine le boss avec son sprite : ligne 0 au repos, ligne 1 quand il
+     * est énervé. Si la planche est introuvable, dessine un carré rose à la
+     * place. Un boss mort n'est pas dessiné.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -116,7 +127,13 @@ public class EvilAI extends Enemy {
         if (!isAlive()) {
             return;
         }
-        gc.setFill(Color.web("#E24B7A"));
-        gc.fillRect(x, y, width, height);
+        Image sheet = AssetManager.getInstance().getImage("/sprites/boss.png");
+        if (sheet == null) {
+            gc.setFill(Color.web("#E24B7A"));
+            gc.fillRect(x, y, width, height);
+            return;
+        }
+        Animation animation = (phase instanceof CalmPhase) ? CALM : ENRAGED;
+        animation.draw(gc, sheet, animationTime, x, y, width, height);
     }
 }
