@@ -296,11 +296,6 @@ public class PlayingState implements GameState {
             return;
         }
 
-        // DEBUG : blesse le joueur 1 pour tester le panneau. À retirer quand les ennemis existeront.
-        if (code == KeyCode.H) {
-            players.get(0).takeDamage(2);
-        }
-
         for (Player player : players) {
             player.getControls().keyPressed(code);
         }
