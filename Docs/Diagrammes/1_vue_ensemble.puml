@@ -32,7 +32,7 @@ abstract class Character {
 class Projectile
 class Player
 abstract class Enemy
-class Bonus
+class Potion
 
 Updatable <|.. Entity
 Renderable <|.. Entity
@@ -41,7 +41,7 @@ Entity <|-- Projectile
 Damageable <|.. Character
 Character <|-- Player
 Character <|-- Enemy
-Entity <|-- Bonus
+Entity <|-- Potion
 
 note right of Entity
   Tout ce qui existe

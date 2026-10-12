@@ -102,18 +102,22 @@ abstract class Enemy {
 }
 
 class Mosquito {
+  + {static} SIZE : double
   contactDamage = 2
 }
 
 class Wasp {
+  + {static} SIZE : double
   contactDamage = 6
 }
 
 class Crow {
+  + {static} SIZE : double
   contactDamage = 10
 }
 
 class EvilAI {
+  + {static} SIZE : double
   - phase : BossPhase
   - direction : int
   - thresholdsCrossed : int
@@ -150,10 +154,19 @@ class Projectile {
   + getOwner() : Character
 }
 
-class Bonus {
+class Potion {
   + {static} SIZE : double
-  + {static} HEAL : int
-  + collect(player : Player) : void
+  - {static} HEAL_AMOUNT : int
+  - {static} FALLING : Animation
+  - {static} COLLECTED : Animation
+  - active : boolean
+  - collected : boolean
+  - animationTime : double
+  - collectTime : double
+  + isOutOfScreen() : boolean
+  + collect(c : Character) : void
+  + isCollected() : boolean
+  + isActive() : boolean
 }
 
 class Weapon {
@@ -172,7 +185,7 @@ Damageable <|.. Character
 
 Entity <|-- Character
 Entity <|-- Projectile
-Entity <|-- Bonus
+Entity <|-- Potion
 Character <|-- Player
 Character <|-- Enemy
 
@@ -185,7 +198,7 @@ Player *-- "1" Weapon
 Player *-- "1" InputController
 Weapon ..> Projectile : <<create>>
 Updatable <|.. Weapon
-Bonus ..> Player : soigne
+Potion ..> Character : soigne
 Projectile --> "1" Character : owner
 
 Enemy o-- "1" MovementStrategy
@@ -200,10 +213,12 @@ BossPhase <|.. BersherkPhase
 
 Character o-- "*" HealthObserver
 
-note right of Bonus
+note right of Potion
   Tombe du haut de l'écran
-  et rend des PV au joueur
-  qui l'attrape
+  et rend 10 PV au joueur
+  qui l'attrape (une seule fois),
+  puis joue son animation
+  de ramassage
 end note
 
 note right of Enemy

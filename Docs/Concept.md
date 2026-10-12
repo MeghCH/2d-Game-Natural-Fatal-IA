@@ -1,6 +1,6 @@
 # Concept — Natural Fatal IA (B-OOP-301)
 
-> Shoot'em up 2D coopératif (1 à 2 joueurs), vue verticale / du dessus, style arcade années 80.
+> Shoot'em up 2D coopératif à 2 joueurs, vue verticale / du dessus, style arcade années 80.
 > Détail des règles et niveaux : voir `GDD.md`.
 > Stack réelle du projet : Java 21 + Maven + JavaFX + JUnit 5 (voir `Stack.md`).
 
@@ -19,19 +19,19 @@ Attendus Epitech :
 
 **Titre : Natural Fatal IA.**
 
-Deux joueurs en bas de l'écran remontent une zone hostile à scrolling vertical.
-Ils détruisent des vagues d'ennemis venus du haut, esquivent les contacts, attrapent
-des bonus de soin et affrontent un boss final : l'IA Fatale.
+Deux joueurs en bas de l'écran repoussent les vagues d'ennemis venues du haut.
+Ils les détruisent, esquivent les contacts, attrapent des potions de soin
+et affrontent un boss final : l'IA Fatale.
 
 Boucle en 30 secondes : se déplacer -> tirer -> esquiver -> détruire -> marquer -> survivre.
 
 Pourquoi c'est adapté au module OOP :
-- Hiérarchie d'entités naturelle : `Entity -> Character -> Player / Enemy`, `Projectile`, `Bonus`.
+- Hiérarchie d'entités naturelle : `Entity -> Character -> Player / Enemy`, `Projectile`, `Potion`.
 - Patterns visibles : State (écrans + phases du boss), Factory (spawn), Strategy (déplacements),
   Observer (HUD), Template Method (`Level`), Singleton (`AssetManager`).
 - Pas de physique complexe ni d'inventaire : le budget va dans la game-loop, les collisions,
   les vagues et le boss.
-- Démo jouable simple : 4 niveaux de difficulté croissante + boss, win / lose clair.
+- Démo jouable simple : 4 niveaux de difficulté croissante, le dernier contre le boss, et un écran de fin avec le score.
 
 ## 3. Choix figés (alignés sur le GDD et le code)
 
@@ -39,40 +39,43 @@ Pourquoi c'est adapté au module OOP :
 
 - 2D, vue verticale / du dessus. Les ennemis viennent du haut et descendent vers les joueurs.
 - Fenêtre fixe **960 x 540** (`Game.WIDTH / HEIGHT`).
-- **1 à 2 joueurs** en simultané sur le même clavier, en bas de l'écran.
-- Style : shoot'em up arcade des années 80, volontairement simple (rectangles / pixel art, pas d'effets complexes).
+- **2 joueurs** en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
+- Style : shoot'em up arcade des années 80, volontairement simple (sprites animés pour les joueurs, les tirs et les potions, rectangles pour les ennemis, pas d'effets complexes).
 
 ### 3.2 Stack
 
 - Java 21 + Maven + JavaFX 21 + JUnit 5 + JaCoCo (voir `Stack.md`).
 - Boucle via `AnimationTimer` (~60 images/s), dessin sur `Canvas` (`Main`, `Game`).
-- Logique testable sans fenêtre : le modèle ne dépend pas de JavaFX.
+- Logique testable sans fenêtre : JavaFX n'apparaît que dans les méthodes `render` et la gestion des touches.
 
 ### 3.3 Règles reprises du GDD
 
-- Chaque joueur : **30 PV max**, une arme de base, pas d'armes à débloquer.
-- Ennemis et dégâts au contact : moustiques (2, zigzag), guêpes (6, rond),
-  corbeaux (10, ligne droite), IA Fatale (boss, comportement selon ses PV).
-- Apparition progressive et aléatoire par le haut.
-- Bonus de soin qui tombent du haut, à attraper sans se faire toucher.
-- Tuer des ennemis fait gagner score + XP.
+- Chaque joueur : **30 PV max**, une arme de base (1 dégât, un tir toutes les 0,2 s), pas d'armes à débloquer.
+- Ennemis et dégâts au contact : moustiques (2, zigzag), guêpes (6, ligne droite),
+  corbeaux (10, piqué rapide), IA Fatale (boss, 10, comportement selon ses PV).
+- Apparition par vagues depuis le haut : la vague suivante arrive quand la précédente est éliminée.
+- Potions de soin (10 PV) qui tombent du haut toutes les 6 à 12 s, à attraper sans se faire toucher.
+- Tuer un ennemi rapporte du score au joueur qui l'a abattu. Pas d'XP pour l'instant.
 
 ### 3.4 Contrôles (implémentés dans `InputController`)
 
 - Joueur 1 : ZQSD / WASD + Espace pour tirer.
 - Joueur 2 : flèches + Entrée pour tirer.
 - Échap : pause. Chaque joueur a son propre `InputController`, ce qui permet le 2 joueurs sur un clavier.
+- Menu : Entrée pour jouer. Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
 
 ### 3.5 Périmètre MVP (démo jouable)
 
 Inclus :
 - [x] 2 joueurs déplaçables, bornés à l'écran (vitesse 300 px/s), 30 PV.
-- [x] États : Playing / Pause. HUD : PV + score par joueur (`PlayerStatusPanel`, Observer).
-- [ ] 4 niveaux : moustiques -> guêpes -> corbeaux -> boss IA Fatale.
-- [ ] Projectiles joueurs, collisions, cleanup hors écran.
-- [ ] Bonus de soin tombant du haut.
-- [ ] États : Menu / GameOver / Victory + barre de PV du boss.
-- [ ] Score + XP.
+- [x] États : Menu / Playing / Pause / GameOver. HUD : PV + score par joueur (`PlayerStatusPanel`, Observer).
+- [x] 4 niveaux : moustiques -> guêpes -> corbeaux -> boss IA Fatale.
+- [x] Projectiles joueurs, collisions, cleanup hors écran.
+- [x] Potions de soin tombant du haut.
+- [x] Sprites animés pour les joueurs, les tirs et les potions (`AssetManager`, `Animation`).
+- [x] Score par joueur.
+- [ ] Écran de victoire distinct + barre de PV du boss.
+- [ ] XP.
 
 Exclus du MVP :
 - Scrolling horizontal, multijoueur réseau, boutique, particules complexes, audio, sauvegarde fichier.
@@ -85,23 +88,36 @@ Exclus du MVP :
 - Encapsulation : PV, position, score privés, mutations via `takeDamage()`, `heal()`, `addScore()`.
 - Héritage : `Entity` -> `Character` -> `Player` / ennemis.
 - Polymorphisme : `update(dt)`, `render(gc)` redéfinis par sous-classe.
-- Abstraction : interfaces `Updatable`, `Renderable`, `Damageable`, `HealthObserver`.
+- Abstraction : interfaces `Updatable`, `Renderable`, `Damageable`, `HealthObserver`, `MovementStrategy`, `BossPhase`, `GameState`.
 
 Packages réels (`com.shootemup`) :
 ```
-core   -> Game (contexte State), GameLoop
-entity -> Entity, Character, Player, Projectile, Weapon, Renderable, Updatable, Damageable, HealthObserver
-state  -> GameState, PlayingState, PauseState (+ Menu, GameOver à faire)
-ui     -> PlayerStatusPanel (Observer)
-input  -> InputController (factory player1 / player2)
+core     -> Game (contexte State), GameLoop
+entity   -> Entity, Character, Player, Projectile, Weapon, Potion, PotionSpawner,
+            Renderable, Updatable, Damageable, HealthObserver
+enemy    -> Enemy, Mosquito, Wasp, Crow, EvilAI, EnemyType, EnemyFactory
+enemy.boss -> BossPhase, CalmPhase, AngryPhase, BersherkPhase
+movement -> MovementStrategy, StraightMovement, ZigzagMovement, DiveMovement
+level    -> Level, MosquitoLevel, WaspLevel, CrowLevel, BossLevel, Wave, LevelManager, TutorialManager
+state    -> GameState, MenuState, PlayingState, PauseState, GameOverState
+ui       -> PlayerStatusPanel (Observer)
+input    -> InputController (factory player1 / player2)
+asset    -> AssetManager (Singleton), Animation
 ```
 
-## 5. Points à repréciser
+## 5. Points tranchés par le code
 
-1. Dégâts de l'arme des joueurs et PV des ennemis (combien de tirs par moustique / guêpe / corbeau ?).
-2. Dégâts et PV du boss, détail de ses attaques (contact seul ou tirs ?).
-3. Règles XP : à quoi sert l'XP (score seul, soin, amélioration ?).
-4. Bonus : taux d'apparition, valeur de soin, durée / cumul.
-5. Victoire / défaite en coop : que se passe-t-il si un seul joueur meurt ? Fin de niveau au temps ou au quota de kills ?
-6. Menu / GameOver / Victory : contenu exact et touches.
-7. Vitesse, cadence de tir, cooldown : valeurs chiffrées à figer dans le GDD.
+1. Arme des joueurs : 1 dégât par tir, un tir toutes les 0,2 s. PV : moustique 2, guêpe 3, corbeau 5, boss 100.
+2. Boss : 10 dégâts au contact, pas de tirs, trois phases selon ses PV (balayage lent, balayage rapide, descente).
+3. Potions : 10 PV, une seule fois, toutes les 6 à 12 s, perdues si elles sortent par le bas.
+4. Coop : si un joueur meurt, l'autre continue. La partie s'arrête quand les deux sont morts ou que le boss est vaincu.
+5. Fin de niveau : quand toutes les vagues sont éliminées ou sorties de l'écran.
+6. Menu et GameOver : implémentés (Entrée pour jouer / rejouer, Échap pour revenir au menu).
+7. Vitesses : joueur 300 px/s, balle 600 px/s, moustiques et guêpes 100 px/s, corbeaux 250 px/s.
+
+## 6. Points à repréciser
+
+1. Règles XP : à quoi sert l'XP (score seul, soin, amélioration ?).
+2. Écran de victoire : aujourd'hui, la victoire mène au même écran « GAME OVER » que la défaite.
+3. Barre de PV du boss.
+4. Dégâts du boss appliqués à chaque image tant qu'un joueur le touche : ajouter une courte invincibilité ?

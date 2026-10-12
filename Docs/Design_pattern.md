@@ -2,7 +2,7 @@
 
 Ce document présente les patrons de conception utilisés dans le jeu. Pour chacun : le problème qu'il résout dans notre jeu, la solution choisie, les classes concernées et un extrait de code Java.
 
-Les classes citées correspondent aux diagrammes du dossier `Diagrammes/`.
+Les classes citées correspondent aux diagrammes du dossier `Diagrammes/`. Les extraits sont tirés du code du projet ; certaines lignes sont remplacées par `// ...` pour garder l'essentiel.
 
 ## Récapitulatif
 
@@ -13,7 +13,7 @@ Les classes citées correspondent aux diagrammes du dossier `Diagrammes/`.
 | Strategy        | Comportement | `MovementStrategy`                    | varier les déplacements sans multiplier les sous-classes |
 | Observer        | Comportement | `HealthObserver`, `PlayerStatusPanel` | mettre à jour l'affichage quand les PV changent          |
 | Template Method | Comportement | `Level`                               | partager la logique commune des niveaux                  |
-| Singleton       | Création     | `AssetManager`                        | charger les images et sons une seule fois                |
+| Singleton       | Création     | `AssetManager`                        | charger chaque image une seule fois                      |
 
 ---
 
@@ -25,7 +25,7 @@ Le jeu passe par plusieurs écrans : menu, partie, pause, game over. Sans patter
 
 ### Solution
 
-Chaque écran est une classe qui implémente `GameState`. `Game` garde une référence vers l'état courant et lui délègue tout. Changer d'écran revient à changer d'objet.
+Chaque écran est une classe qui implémente `GameState` : `MenuState`, `PlayingState`, `PauseState` et `GameOverState`. `Game` garde une référence vers l'état courant et lui délègue tout. Changer d'écran revient à changer d'objet.
 
 ```java
 /**
@@ -75,7 +75,7 @@ public class Game {
      * @param newState le nouvel écran à afficher
      */
     public void setState(GameState newState) {
-        this.currentState = newState;
+        this.currentState = Objects.requireNonNull(newState, "L'état ne peut pas être null.");
         newState.enter();
     }
 
@@ -84,11 +84,22 @@ public class Game {
     }
 
     public void update(double dt) {
-        currentState.update(dt);
+        state().update(dt);
     }
 
     public void render(GraphicsContext gc) {
-        currentState.render(gc);
+        state().render(gc);
+    }
+
+    // keyPressed() et keyReleased() délèguent de la même façon
+
+    /** Renvoie l'état courant, ou lève une erreur claire s'il n'y en a pas. */
+    private GameState state() {
+        if (currentState == null) {
+            throw new IllegalStateException(
+                    "Aucun état défini : appelez setState() avant de lancer le jeu.");
+        }
+        return currentState;
     }
 }
 ```
@@ -97,27 +108,44 @@ public class Game {
 public class PauseState implements GameState {
 
     private final Game game;
-    private final GameState previous;
+    private final GameState previousState;
 
-    public PauseState(Game game, GameState previous) {
+    public PauseState(Game game, GameState previousState) {
         this.game = game;
-        this.previous = previous;
+        this.previousState = previousState;
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        previousState.render(gc);   // la partie reste visible derrière
+        // ... voile sombre et texte « PAUSE »
     }
 
     @Override
     public void keyPressed(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
-            game.setState(previous);   // retour à la partie
+            game.setState(previousState);   // retour à la partie
         }
     }
 
-    // enter(), update(), render() et keyReleased() : affichage du menu pause
+    // enter(), update() et keyReleased() ne font rien : le jeu est figé
 }
 ```
 
+Les transitions entre écrans :
+
+| Depuis    | Touche / événement                          | Vers      |
+| --------- | ------------------------------------------- | --------- |
+| Menu      | Entrée                                      | Partie    |
+| Partie    | Échap                                       | Pause     |
+| Pause     | Échap                                       | Partie    |
+| Partie    | les deux joueurs sont morts ou boss vaincu  | Game Over |
+| Game Over | Entrée                                      | Partie    |
+| Game Over | Échap                                       | Menu      |
+
 ### Deuxième utilisation : les phases de l'IA maléfique
 
-Le boss change de comportement selon ses points de vie. Chaque phase est un état.
+Le boss change de comportement selon ses points de vie. Chaque phase est un état. Le balayage horizontal, commun à deux phases, est une méthode `default` de l'interface.
 
 ```java
 public interface BossPhase {
@@ -131,6 +159,20 @@ public interface BossPhase {
 
     /** @return la phase suivante, ou cette phase si c'est la dernière */
     BossPhase next();
+
+    /** Balayage horizontal : le boss rebondit sur les bords de l'écran. */
+    default void sweep(EvilAI boss, double dt, double speed) {
+        double maxX = Game.WIDTH - boss.getWidth();
+        double nextX = boss.getX() + speed * dt * boss.getDirection();
+        if (nextX < 0) {
+            nextX = 0;
+            boss.reverseDirection();
+        } else if (nextX > maxX) {
+            nextX = maxX;
+            boss.reverseDirection();
+        }
+        boss.setX(nextX);
+    }
 }
 ```
 
@@ -138,18 +180,42 @@ public interface BossPhase {
 public class EvilAI extends Enemy {
 
     private BossPhase phase = new CalmPhase();
+    private int direction = 1;
+    private int thresholdsCrossed = 0;
 
     @Override
     public void update(double dt) {
-        phase.execute(this, dt);
-        if (hp < maxHp / 3 || (hp < 2 * maxHp / 3 && phase instanceof CalmPhase)) {
-            phase = phase.next();
+        if (!isAlive()) {
+            return;
         }
+        phase.execute(this, dt);
+        int reached = 0;
+        if (hp < maxHp / 3) {
+            reached = 2;
+        } else if (hp < 2 * maxHp / 3) {
+            reached = 1;
+        }
+        while (thresholdsCrossed < reached) {   // un gros coup peut franchir les deux seuils
+            changePhase();
+            thresholdsCrossed++;
+        }
+    }
+
+    public void changePhase() {
+        phase = phase.next();
     }
 }
 ```
 
-Exemple de phases : `CalmPhase` (tir lent), `AngryPhase` (tir rapide), `BerserkPhase` (invoque des moustiques).
+Les trois phases :
+
+| Phase           | Quand             | Comportement                                                  |
+| --------------- | ----------------- | ------------------------------------------------------------- |
+| `CalmPhase`     | au départ         | balayage horizontal lent (60 px/s)                            |
+| `AngryPhase`    | PV sous les 2/3   | balayage horizontal rapide (140 px/s)                         |
+| `BersherkPhase` | PV sous le 1/3    | descend vers les joueurs (80 px/s) jusqu'au milieu de l'écran |
+
+`BersherkPhase.next()` renvoie la phase elle-même : c'est la dernière.
 
 ### Avantage
 
@@ -161,7 +227,7 @@ Ajouter un écran (options, sélection du nombre de joueurs) ou une phase de bos
 
 ### Problème
 
-Les vagues doivent créer des moustiques, des guêpes, des corbeaux et le boss. Si chaque niveau appelait directement `new Mosquito(...)`, `new Wasp(...)`, la configuration des ennemis (mouvement, position) serait dupliquée partout.
+Les vagues doivent créer des moustiques, des guêpes, des corbeaux et le boss. Si chaque niveau appelait directement `new Mosquito(...)`, `new Wasp(...)`, la création des ennemis serait dispersée dans tout le code.
 
 ### Solution
 
@@ -189,14 +255,39 @@ public class EnemyFactory {
      */
     public Enemy create(EnemyType type, double x, double y) {
         return switch (type) {
-            case MOSQUITO -> new Mosquito(x, y, new ZigzagMovement());
-            case WASP     -> new Wasp(x, y, new StraightMovement());
-            case CROW     -> new Crow(x, y, new DiveMovement());
+            case MOSQUITO -> new Mosquito(x, y);
+            case WASP     -> new Wasp(x, y);
+            case CROW     -> new Crow(x, y);
             case EVIL_AI  -> new EvilAI(x, y);
         };
     }
 }
 ```
+
+Chaque ennemi fixe lui-même ses caractéristiques et son déplacement dans son constructeur :
+
+```java
+public class Mosquito extends Enemy {
+
+    public static final double SIZE = 32;
+    private static final int MAX_HP = 2;
+    private static final int DAMAGE = 2;
+    private static final int SCORE = 100;
+
+    public Mosquito(double x, double y) {
+        super(x, y, SIZE, SIZE, MAX_HP, DAMAGE, SCORE, new ZigzagMovement());
+    }
+}
+```
+
+| Ennemi     | PV  | Dégâts au contact | Score | Déplacement                       |
+| ---------- | --- | ----------------- | ----- | --------------------------------- |
+| `Mosquito` | 2   | 2                 | 100   | `ZigzagMovement`                  |
+| `Wasp`     | 3   | 6                 | 200   | `StraightMovement`                |
+| `Crow`     | 5   | 10                | 300   | `DiveMovement`                    |
+| `EvilAI`   | 100 | 10                | 1000  | aucun : ses phases le déplacent   |
+
+`Wave` est le seul client de la fabrique : elle crée ses ennemis puis les répartit sur la largeur de l'écran.
 
 ### Avantage
 
@@ -208,7 +299,7 @@ Les niveaux ne connaissent que `EnemyType`. Pour ajouter un ennemi, on ajoute un
 
 ### Problème
 
-Le moustique vole en zigzag, la guêpe fonce en ligne droite, le corbeau pique sur le joueur. Créer des sous-classes comme `ZigzagMosquito` ou `DivingWasp` ferait exploser le nombre de classes.
+Le moustique descend en zigzag, la guêpe descend en ligne droite, le corbeau pique rapidement vers le bas. Créer des sous-classes comme `ZigzagMosquito` ou `DivingWasp` ferait exploser le nombre de classes.
 
 ### Solution
 
@@ -232,17 +323,19 @@ public interface MovementStrategy {
 ```java
 public class ZigzagMovement implements MovementStrategy {
 
-    private static final double SPEED = 120;
+    private static final double SPEED = 100;
     private static final double AMPLITUDE = 80;
     private static final double FREQUENCY = 0.05;
 
     @Override
     public void move(Entity e, double dt) {
-        e.setX(e.getX() - SPEED * dt);
-        e.setY(e.getY() + Math.cos(e.getX() * FREQUENCY) * AMPLITUDE * dt);
+        e.setY(e.getY() + SPEED * dt);
+        e.setX(e.getX() + Math.cos(e.getY() * FREQUENCY) * AMPLITUDE * dt);
     }
 }
 ```
+
+`StraightMovement` descend tout droit à 100 px/s et `DiveMovement` à 250 px/s.
 
 ```java
 public abstract class Enemy extends Character {
@@ -254,19 +347,24 @@ public abstract class Enemy extends Character {
      * @param movement le nouveau déplacement
      */
     public void setMovement(MovementStrategy movement) {
-        this.movement = movement;
+        this.movement = Objects.requireNonNull(movement, "Le déplacement ne peut pas être null.");
     }
 
     @Override
     public void update(double dt) {
+        if (!isAlive()) {
+            return;
+        }
         movement.move(this, dt);
     }
 }
 ```
 
+`MovementStrategy` n'a qu'une méthode : le boss reçoit donc simplement un déplacement vide, `(e, dt) -> { }`, puisque ce sont ses phases qui le font bouger.
+
 ### Avantage
 
-Les déplacements se combinent librement avec les ennemis et peuvent changer pendant la partie (une guêpe blessée qui passe en zigzag). Comme `ZigzagMovement` ne garde aucun état propre, une même instance peut être partagée par plusieurs ennemis.
+Les déplacements se combinent librement avec les ennemis et peuvent changer pendant la partie (une guêpe blessée qui passerait en zigzag). Comme les déplacements ne gardent aucun état propre, une même instance peut être partagée par plusieurs ennemis.
 
 ---
 
@@ -274,7 +372,7 @@ Les déplacements se combinent librement avec les ennemis et peuvent changer pen
 
 ### Problème
 
-Quand un joueur perd des PV, plusieurs éléments doivent réagir : la barre de vie du PlayerStatusPanel, un son, peut-être un clignotement. Si `Player` appelait directement `PlayerStatusPanel.updateBar()`, la logique du jeu dépendrait de l'interface graphique.
+Quand un joueur perd ou regagne des PV, plusieurs éléments doivent réagir : la barre de vie du `PlayerStatusPanel`, son clignotement, peut-être un son. Si `Player` appelait directement `PlayerStatusPanel.updateBar()`, la logique du jeu dépendrait de l'interface graphique.
 
 ### Solution
 
@@ -310,6 +408,11 @@ public abstract class Character extends Entity implements Damageable {
         notifyObservers();
     }
 
+    public void heal(int amount) {
+        hp = Math.min(maxHp, hp + amount);
+        notifyObservers();
+    }
+
     protected void notifyObservers() {
         for (HealthObserver o : observers) {
             o.onHealthChanged(this);
@@ -321,14 +424,25 @@ public abstract class Character extends Entity implements Damageable {
 ```java
 public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable {
 
+    private static final double FLASH_DURATION = 0.3;
+
+    private final List<Player> players = new ArrayList<>();
+    private final Map<Character, Double> flashTimers = new HashMap<>();
+    private final Map<Character, Integer> lastKnownHp = new HashMap<>();
+
     public void track(Player player) {
         players.add(player);
+        lastKnownHp.put(player, player.getHp());
         player.addObserver(this);
     }
 
     @Override
     public void onHealthChanged(Character c) {
-        flashTimers.put(c, FLASH_DURATION); // déclenche le clignotement
+        int previousHp = lastKnownHp.getOrDefault(c, c.getHp());
+        if (c.getHp() < previousHp) {
+            flashTimers.put(c, FLASH_DURATION); // clignote seulement si les PV baissent
+        }
+        lastKnownHp.put(c, c.getHp());
     }
 
     public boolean isFlashing(Character c) {
@@ -338,6 +452,8 @@ public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable 
     // update() fait avancer les clignotements, render() dessine les barres
 }
 ```
+
+Quand un joueur ramasse une potion, `heal()` prévient aussi le panneau : la barre se remplit, sans clignoter.
 
 ### Avantage
 
@@ -361,12 +477,12 @@ La classe abstraite `Level` fixe le déroulement ; chaque niveau ne redéfinit q
  */
 public abstract class Level {
 
-    protected final Queue<Wave> waves = new LinkedList<>();
+    protected final Queue<Wave> waves = new ArrayDeque<>();
     protected final List<Enemy> activeEnemies = new ArrayList<>();
     private final EnemyFactory factory;
 
     protected Level(EnemyFactory factory) {
-        this.factory = factory;
+        this.factory = Objects.requireNonNull(factory, "La fabrique ne peut pas être null.");
     }
 
     /** Prépare le niveau. Appelée au lancement. */
@@ -378,9 +494,13 @@ public abstract class Level {
 
     /** Méthode modèle : l'ordre des étapes est fixe. */
     public final void update(double dt) {
-        spawnNextWaveIfReady();
-        activeEnemies.forEach(e -> e.update(dt));
-        activeEnemies.removeIf(e -> !e.isAlive());
+        if (activeEnemies.isEmpty() && !waves.isEmpty()) {
+            activeEnemies.addAll(waves.poll().spawn(factory));
+        }
+        for (Enemy enemy : activeEnemies) {
+            enemy.update(dt);
+        }
+        activeEnemies.removeIf(enemy -> !enemy.isAlive() || enemy.getY() > Game.HEIGHT);
     }
 
     /** Étape propre à chaque niveau : définir ses vagues. */
@@ -389,19 +509,13 @@ public abstract class Level {
     public boolean isCompleted() {
         return waves.isEmpty() && activeEnemies.isEmpty();
     }
-
-    private void spawnNextWaveIfReady() {
-        if (activeEnemies.isEmpty() && !waves.isEmpty()) {
-            activeEnemies.addAll(waves.poll().spawn(factory));
-        }
-    }
 }
 ```
 
 ```java
-public class TutorialLevel extends Level {
+public class MosquitoLevel extends Level {
 
-    public TutorialLevel(EnemyFactory factory) {
+    public MosquitoLevel(EnemyFactory factory) {
         super(factory);
     }
 
@@ -414,21 +528,23 @@ public class TutorialLevel extends Level {
 }
 ```
 
+`WaspLevel` (3, 5 et 8 guêpes), `CrowLevel` (3, 5 et 8 corbeaux) et `BossLevel` (1 boss) suivent le même modèle. `TutorialManager.createProgression()` les assemble dans un `LevelManager`, qui passe au niveau suivant quand le courant est terminé.
+
 ### Avantage
 
-`update` est `final` : aucun niveau ne peut casser le déroulement. Créer un niveau se résume à décrire ses vagues.
+`start` et `update` sont `final` : aucun niveau ne peut casser le déroulement. Créer un niveau se résume à décrire ses vagues.
 
 ---
 
-## 6. Singleton - le chargement des ressources
+## 6. Singleton - le chargement des images
 
 ### Problème
 
-Les images et sons doivent être chargés une seule fois. Si chaque moustique chargeait son image, le jeu ralentirait et consommerait beaucoup de mémoire.
+Les images doivent être chargées une seule fois. Les joueurs, les projectiles et les potions demandent leur feuille de sprites à chaque affichage : sans cache, le jeu relirait le fichier 60 fois par seconde pour chaque objet.
 
 ### Solution
 
-Une classe unique, accessible partout, garde les ressources en cache.
+Une classe unique, accessible partout, garde les images en cache.
 
 ```java
 /**
@@ -451,43 +567,43 @@ public final class AssetManager {
 
     /**
      * Renvoie une image, en la chargeant au premier appel.
-     * @param path chemin de la ressource, par exemple "/sprites/mosquito.png"
-     * @return l'image chargée
+     * @param path chemin de la ressource, par exemple "/sprites/player1.png"
+     * @return l'image chargée, ou null si le fichier est introuvable
      */
     public Image getImage(String path) {
-        return images.computeIfAbsent(path,
-                p -> new Image(getClass().getResourceAsStream(p)));
+        if (images.containsKey(path)) {
+            return images.get(path);
+        }
+        InputStream stream = getClass().getResourceAsStream(path);
+        if (stream == null) {
+            return null;   // l'appelant dessine alors un rectangle de couleur
+        }
+        Image image = new Image(stream);
+        images.put(path, image);
+        return image;
     }
 }
 ```
 
+Chaque feuille de sprites est ensuite découpée par une `Animation` (rangée, nombre d'images, vitesse) : `IDLE` et `ATTACK` pour le joueur, `P1_FLIGHT` et `P2_FLIGHT` pour les tirs, `FALLING` et `COLLECTED` pour les potions.
+
 ### Limites assumées
 
-Le Singleton crée un état global, ce qui rend les tests plus difficiles. Nous le limitons donc aux ressources (images, sons), qui sont réellement uniques, et ne l'utilisons pas pour la logique du jeu (joueurs, niveaux), qui passe par des objets transmis explicitement.
+Le Singleton crée un état global, ce qui rend les tests plus difficiles. Nous le limitons donc aux images, qui sont réellement uniques, et ne l'utilisons pas pour la logique du jeu (joueurs, niveaux), qui passe par des objets transmis explicitement. Quand une image manque, `getImage` renvoie `null` et chaque objet se dessine avec un simple rectangle de couleur.
 
 ---
 
-## Ajout au diagramme de structure
+## Dans les diagrammes
 
-Pour que le Singleton apparaisse dans les diagrammes, ajouter dans `Uml_structure_jeu.puml` :
-
-```plantuml
-class AssetManager <<Singleton>> {
-  - {static} instance : AssetManager
-  - images : Map<String, Image>
-  - AssetManager()
-  + {static} getInstance() : AssetManager
-  + getImage(path : String) : Image
-}
-
-PlayingState ..> AssetManager : <<use>>
-```
+Chaque pattern est visible dans le dossier `Diagrammes/` grâce à un stéréotype : `<<State>>` sur `GameState` et `BossPhase`, `<<Factory>>` sur `EnemyFactory`, `<<Strategy>>` sur `MovementStrategy`, `<<Observer>>` sur `HealthObserver`, `<<Template Method>>` sur `Level` et `<<Singleton>>` sur `AssetManager`. L'`AssetManager` figure dans `Uml_structure_jeu.puml`, utilisé par `Player`, `Projectile` et `Potion`.
 
 ## Patterns et tests
 
 Ces patterns facilitent aussi la couverture de tests demandée par le sujet :
 
-- `EnemyFactory` se teste en vérifiant que chaque type renvoie le bon ennemi avec les bons dégâts (2, 6, 10) ;
-- `MovementStrategy` se teste en vérifiant la position d'une entité après un `move` ;
-- l'Observer se teste avec un faux observateur qui compte les notifications ;
-- `Level.isCompleted()` se teste sans interface graphique.
+- `EnemyFactoryTest` vérifie que chaque type renvoie le bon ennemi avec les bons dégâts (2, 6, 10) ;
+- `MovementTest` vérifie la position d'une entité après un `move` ;
+- `CharacterTest` teste l'Observer avec un faux observateur qui compte les notifications, et `PlayerStatusPanelTest` vérifie qu'un soin ne fait pas clignoter la barre ;
+- `EvilAITest` vérifie le passage d'une phase à l'autre, y compris quand un seul coup franchit les deux seuils ;
+- `StateTransitionTest` vérifie les allers-retours entre la partie et la pause ;
+- `LevelTest` vérifie l'enchaînement des vagues et `Level.isCompleted()` sans interface graphique.
