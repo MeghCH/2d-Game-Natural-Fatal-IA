@@ -103,4 +103,24 @@ class CharacterTest {
         assertEquals(1, first.calls);
         assertEquals(1, second.calls);
     }
+
+        @Test
+    void healRestoresHealth() {
+        Character character = new TestCharacter(30);
+        character.takeDamage(20);
+
+        character.heal(5);
+
+        assertEquals(15, character.getHp());
+    }
+
+    @Test
+    void healNeverExceedsMaxHealth() {
+        Character character = new TestCharacter(30);
+        character.takeDamage(2);
+
+        character.heal(10);
+
+        assertEquals(30, character.getHp());
+    }
 }
