@@ -26,4 +26,14 @@ public class WaspLevel extends Level {
         waves.add(new Wave(EnemyType.WASP, 5));
         waves.add(new Wave(EnemyType.WASP, 8));
     }
+
+    /**
+     * Indique la couleur de fond du niveau : olive sombre de la ronde.
+     *
+     * @return la couleur de fond, en hexadécimal
+     */
+    @Override
+    public String getBackgroundColor() {
+        return "#2A2513";
+    }
 }

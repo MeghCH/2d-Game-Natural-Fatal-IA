@@ -68,6 +68,13 @@ public abstract class Level {
     protected abstract void buildWaves();
 
     /**
+     * Indique la couleur de fond du niveau, reprise des croquis.
+     *
+     * @return la couleur de fond, en hexadécimal (par exemple "#101820")
+     */
+    public abstract String getBackgroundColor();
+
+    /**
      * Indique si le niveau est terminé.
      *
      * @return {@code true} quand toutes les vagues sont apparues et qu'il ne reste aucun ennemi

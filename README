@@ -99,5 +99,8 @@ B-OOP-301-STG-3-1-2dgame-5/
             ├── level/TutorialManagerTest.java
             ├── movement/MovementTest.java
             ├── state/PlayingStateTest.java
+            ├── state/MenuStateTest.java
+            ├── state/GameOverStateTest.java
             ├── state/StateTransitionTest.java
-            └── ui/PlayerStatusPanelTest.java
+            ├── ui/PlayerStatusPanelTest.java
+            └── ui/StarfieldTest.java
