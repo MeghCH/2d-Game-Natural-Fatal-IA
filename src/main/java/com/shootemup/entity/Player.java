@@ -2,6 +2,9 @@ package com.shootemup.entity;
 
 import com.shootemup.core.Game;
 import com.shootemup.input.InputController;
+import com.shootemup.asset.Animation;
+import com.shootemup.asset.AssetManager;
+import javafx.scene.image.Image;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import java.util.List;
@@ -17,13 +20,20 @@ import java.util.List;
 public class Player extends Character {
 
     /** Taille du joueur, en pixels. */
-    public static final double SIZE = 40;
+    public static final double WIDTH = 48;
+    public static final double HEIGHT = 64;
 
     /** Vitesse de déplacement, en pixels par seconde. */
     private static final double SPEED = 300;
 
     /** Points de vie de départ : 15 piqûres de moustique, 5 de guêpe ou 3 coups de corbeau. */
     private static final int MAX_HP = 30;
+
+        /** Animation au repos : ligne 0, 2 images, 3 images par seconde. */
+    private static final Animation IDLE = new Animation(24, 32, 0, 2, 3);
+
+    /** Animation d'attaque : ligne 1, 2 images, 12 images par seconde. */
+    private static final Animation ATTACK = new Animation(24, 32, 1, 2, 12);
 
     /** Numéro du joueur : 1 ou 2. */
     private final int playerId;
@@ -33,6 +43,9 @@ public class Player extends Character {
 
     /** Score du joueur, augmenté à chaque ennemi abattu. */
     private int score = 0;
+
+    /** Le temps écoulé, qui permet à l’animation de choisir son image. */
+    private double animationTime = 0;
 
     /** Arme du joueur, qui gère la cadence de tir. */
     private final Weapon weapon = new Weapon();
@@ -46,7 +59,7 @@ public class Player extends Character {
      * @param controls touches de contrôle du joueur
      */
     public Player(int playerId, double x, double y, InputController controls) {
-        super(x, y, SIZE, SIZE, MAX_HP);
+        super(x, y, WIDTH, HEIGHT, MAX_HP);
         this.playerId = playerId;
         this.controls = controls;
     }
@@ -62,6 +75,8 @@ public class Player extends Character {
         if (!isAlive()) {
             return;
         }
+
+        animationTime += dt;
 
         weapon.update(dt);
 
@@ -92,8 +107,9 @@ public class Player extends Character {
     }
 
     /**
-     * Dessine le joueur avec sa couleur : turquoise pour le joueur 1, corail pour le joueur 2.
-     * Un joueur mort n'est pas dessiné.
+     * Dessine le joueur avec sa planche de sprites animée : l'animation d'attaque
+     * quand il tire, l'animation de repos sinon. Si la planche est introuvable,
+     * dessine un rectangle de sa couleur à la place. Un joueur mort n'est pas dessiné.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -103,9 +119,18 @@ public class Player extends Character {
             return;
         }
 
-        Color playerColor = (this.playerId == 1) ? Color.web("#5DCAA5") : Color.web("#F0997B");
-        gc.setFill(playerColor);
-        gc.fillRect(this.x, this.y, this.width, this.height);
+        String path = (playerId == 1) ? "/sprites/player1.png" : "/sprites/player2.png";
+        Image sheet = AssetManager.getInstance().getImage(path);
+
+        if (sheet == null) {
+            Color playerColor = (this.playerId == 1) ? Color.web("#5DCAA5") : Color.web("#F0997B");
+            gc.setFill(playerColor);
+            gc.fillRect(this.x, this.y, this.width, this.height);
+            return;
+        }
+
+        Animation animation = controls.isShooting() ? ATTACK : IDLE;
+        animation.draw(gc, sheet, animationTime, x, y, width, height);
     }
 
     /**
