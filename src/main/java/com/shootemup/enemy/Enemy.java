@@ -23,6 +23,9 @@ public abstract class Enemy extends Character {
     /** Points de score donnés au joueur qui détruit cet ennemi. */
     protected final int scoreValue;
 
+    /** Temps écoulé, qui permet à l'animation de choisir son image. */
+    protected double animationTime = 0;
+
     /**
      * Crée un ennemi en pleine santé.
      *
@@ -53,6 +56,7 @@ public abstract class Enemy extends Character {
         if (!isAlive()) {
             return;
         }
+        animationTime += dt;
         movement.move(this, dt);
     }
 
@@ -99,5 +103,14 @@ public abstract class Enemy extends Character {
      */
     public MovementStrategy getMovement() {
         return movement;
+    }
+
+    /**
+     * Indique le temps écoulé depuis l'apparition, utilisé par l'animation.
+     *
+     * @return le temps d'animation en secondes
+     */
+    public double getAnimationTime() {
+        return animationTime;
     }
 }

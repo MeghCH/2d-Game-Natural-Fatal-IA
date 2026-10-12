@@ -26,4 +26,14 @@ public class MosquitoLevel extends Level {
         waves.add(new Wave(EnemyType.MOSQUITO, 6));
         waves.add(new Wave(EnemyType.MOSQUITO, 10));
     }
+
+    /**
+     * Indique la couleur de fond du niveau : vert sombre du jardin.
+     *
+     * @return la couleur de fond, en hexadécimal
+     */
+    @Override
+    public String getBackgroundColor() {
+        return "#0F2E23";
+    }
 }

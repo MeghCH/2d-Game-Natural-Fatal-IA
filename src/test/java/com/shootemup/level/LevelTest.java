@@ -86,4 +86,12 @@ class LevelTest {
         assertEquals(3, level.getActiveEnemies().size());
         assertFalse(level.isCompleted());
     }
+
+    @Test
+    void eachLevelHasItsBackgroundColor() {
+        assertEquals("#0F2E23", new MosquitoLevel(factory).getBackgroundColor());
+        assertEquals("#2A2513", new WaspLevel(factory).getBackgroundColor());
+        assertEquals("#16223C", new CrowLevel(factory).getBackgroundColor());
+        assertEquals("#221638", new BossLevel(factory).getBackgroundColor());
+    }
 }

@@ -64,6 +64,7 @@ B-OOP-301-STG-3-1-2dgame-5/
     │       ├── state/PauseState.java
     │       ├── state/GameOverState.java
     │       └── ui/PlayerStatusPanel.java
+    │       └── ui/Starfield.java
     └── test/
         └── java/com/shootemup/
             ├── bonus/BonusTest.java
@@ -83,5 +84,8 @@ B-OOP-301-STG-3-1-2dgame-5/
             ├── level/TutorialManagerTest.java
             ├── movement/MovementTest.java
             ├── state/PlayingStateTest.java
+            ├── state/MenuStateTest.java
+            ├── state/GameOverStateTest.java
             ├── state/StateTransitionTest.java
-            └── ui/PlayerStatusPanelTest.java
+            ├── ui/PlayerStatusPanelTest.java
+            └── ui/StarfieldTest.java

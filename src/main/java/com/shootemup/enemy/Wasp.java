@@ -1,6 +1,9 @@
 package com.shootemup.enemy;
 
+import com.shootemup.asset.Animation;
+import com.shootemup.asset.AssetManager;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 /**
@@ -20,20 +23,53 @@ public class Wasp extends Enemy {
     /** Points de score donnés quand la guêpe est détruite. */
     private static final int SCORE = 200;
 
+    /** Battement d'ailes, variante A : ligne 0 de la planche 48x48, 2 images de 24x24. */
+    private static final Animation FLY_A = new Animation(24, 24, 0, 2, 8);
+
+    /** Battement d'ailes, variante B : ligne 1 de la planche, 2 images de 24x24. */
+    private static final Animation FLY_B = new Animation(24, 24, 1, 2, 8);
+
+    /** Variante visuelle de cette guêpe : 0 (ligne 0) ou 1 (ligne 1). */
+    private final int variant;
+
     /**
-     * Crée une guêpe en pleine santé.
+     * Crée une guêpe en pleine santé, avec une variante visuelle tirée au hasard.
      *
      * @param x position horizontale de départ
      * @param y position verticale de départ
      */
     public Wasp(double x, double y) {
-        super(x, y, SIZE, SIZE, MAX_HP, DAMAGE, SCORE,
-                new com.shootemup.movement.StraightMovement());
+        this(x, y, (int) (Math.random() * 2));
     }
 
     /**
-     * Dessine la guêpe sous la forme d'un carré jaune. Une guêpe morte
-     * n'est pas dessinée.
+     * Crée une guêpe en pleine santé, avec la variante visuelle demandée.
+     *
+     * @param x position horizontale de départ
+     * @param y position verticale de départ
+     * @param variant 0 pour la ligne 0 de la planche, 1 pour la ligne 1
+     */
+    public Wasp(double x, double y, int variant) {
+        super(x, y, SIZE, SIZE, MAX_HP, DAMAGE, SCORE,
+                new com.shootemup.movement.StraightMovement());
+        if (variant != 0 && variant != 1) {
+            throw new IllegalArgumentException("La variante doit être 0 ou 1.");
+        }
+        this.variant = variant;
+    }
+
+    /**
+     * Indique la variante visuelle de cette guêpe.
+     *
+     * @return 0 (ligne 0) ou 1 (ligne 1)
+     */
+    public int getVariant() {
+        return variant;
+    }
+
+    /**
+     * Dessine la guêpe avec son sprite animé. Si la planche est introuvable,
+     * dessine un carré jaune à la place. Une guêpe morte n'est pas dessinée.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -42,7 +78,12 @@ public class Wasp extends Enemy {
         if (!isAlive()) {
             return;
         }
-        gc.setFill(Color.web("#E8C84A"));
-        gc.fillRect(x, y, width, height);
+        Image sheet = AssetManager.getInstance().getImage("/sprites/wasp.png");
+        if (sheet == null) {
+            gc.setFill(Color.web("#E8C84A"));
+            gc.fillRect(x, y, width, height);
+            return;
+        }
+        (variant == 0 ? FLY_A : FLY_B).draw(gc, sheet, animationTime, x, y, width, height);
     }
 }

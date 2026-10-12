@@ -19,6 +19,12 @@ public class GameOverState implements GameState {
     /** Score final à afficher. */
     private final int score;
 
+    /** Temps écoulé depuis l'affichage, en secondes. */
+    private double elapsed = 0;
+
+    /** Délai avant d'accepter une touche, en secondes : évite de sauter l'écran avec une touche restée enfoncée. */
+    private static final double INPUT_DELAY = 1.0;
+
     /**
      * Crée l'écran de fin de partie.
      *
@@ -38,12 +44,13 @@ public class GameOverState implements GameState {
     }
 
     /**
-     * L'écran de fin est fixe : rien à mettre à jour.
+     * Fait avancer le délai avant d'accepter les touches.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
     @Override
     public void update(double dt) {
+        elapsed += dt;
     }
 
     /**
@@ -68,12 +75,15 @@ public class GameOverState implements GameState {
     }
 
     /**
-     * Rejoue sur Entrée, retourne au menu sur Échap.
+     * Rejoue sur Entrée, retourne au menu sur Échap, une fois le délai passé.
      *
      * @param code la touche enfoncée
      */
     @Override
     public void keyPressed(KeyCode code) {
+        if (elapsed < INPUT_DELAY) {
+            return;
+        }
         if (code == KeyCode.ENTER) {
             game.setState(new PlayingState(game));
         } else if (code == KeyCode.ESCAPE) {
