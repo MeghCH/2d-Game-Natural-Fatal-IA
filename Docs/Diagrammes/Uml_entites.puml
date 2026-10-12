@@ -46,18 +46,26 @@ abstract class Character {
   # maxHp : int
   - observers : List<HealthObserver>
   + takeDamage(amount : int) : void
+  + heal(amount : int) : void
   + isAlive() : boolean
+  + getHp() : int
+  + getMaxHp() : int
   + addObserver(o : HealthObserver) : void
   # notifyObservers() : void
 }
 
 class Player {
-  + {static} SIZE : double
+  + {static} WIDTH : double
+  + {static} HEIGHT : double
+  - {static} IDLE : Animation
+  - {static} ATTACK : Animation
   - playerId : int
   - score : int
+  - animationTime : double
   - weapon : Weapon
   - controls : InputController
   + shoot() : List<Projectile>
+  + getPlayerId() : int
   + getControls() : InputController
   + getScore() : int
   + addScore(points : int) : void
@@ -86,9 +94,11 @@ abstract class Enemy {
   # contactDamage : int
   # scoreValue : int
   # movement : MovementStrategy
+  + attack(target : Player) : void
   + getContactDamage() : int
+  + getScoreValue() : int
   + setMovement(m : MovementStrategy) : void
-  + {abstract} attack(target : Player) : void
+  + getMovement() : MovementStrategy
 }
 
 class Mosquito {
@@ -105,20 +115,34 @@ class Crow {
 
 class EvilAI {
   - phase : BossPhase
+  - direction : int
+  - thresholdsCrossed : int
   + changePhase() : void
+  + getPhase() : BossPhase
+  + getDirection() : int
+  + reverseDirection() : void
 }
 
 interface BossPhase <<State>> {
   + execute(boss : EvilAI, dt : double) : void
   + next() : BossPhase
+  + sweep(boss : EvilAI, dt : double, speed : double) : void
 }
 
+class CalmPhase
+class AngryPhase
+class BersherkPhase
+
 class Projectile {
+  + {static} SIZE : double
+  - {static} P1_FLIGHT : Animation
+  - {static} P2_FLIGHT : Animation
   - vx : double
   - vy : double
   - damage : int
   - owner : Character
   - active : boolean
+  - animationTime : double
   + isOutOfScreen() : boolean
   + destroy() : void
   + isActive() : boolean
@@ -170,13 +194,24 @@ MovementStrategy <|.. ZigzagMovement
 MovementStrategy <|.. DiveMovement
 
 EvilAI o-- "1" BossPhase
+BossPhase <|.. CalmPhase
+BossPhase <|.. AngryPhase
+BossPhase <|.. BersherkPhase
+
 Character o-- "*" HealthObserver
+
+note right of Bonus
+  Tombe du haut de l'écran
+  et rend des PV au joueur
+  qui l'attrape
+end note
 
 note right of Enemy
   Dégâts au contact :
   moustique = 2
   guêpe = 6
   corbeau = 10
+  IA maléfique = 10
 end note
 
 @enduml

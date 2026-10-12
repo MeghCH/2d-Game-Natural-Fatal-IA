@@ -6,19 +6,38 @@ skinparam shadowing false
 skinparam linetype ortho
 hide empty members
 
+abstract class Application <<JavaFX>>
+abstract class AnimationTimer <<JavaFX>>
+
+class Main {
+  + start(stage : Stage) : void
+  + {static} main(args : String[]) : void
+}
+
 class Game {
   - currentState : GameState
   - loop : GameLoop
   + {static} WIDTH : int
   + {static} HEIGHT : int
+  + start(loop : GameLoop) : void
+  + stop() : void
   + setState(s : GameState) : void
   + getCurrentState() : GameState
-  + start() : void
+  + update(dt : double) : void
+  + render(gc : GraphicsContext) : void
+  + keyPressed(code : KeyCode) : void
+  + keyReleased(code : KeyCode) : void
 }
 
 class GameLoop {
+  - game : Game
+  - gc : GraphicsContext
+  - last : long
   - running : boolean
   + handle(now : long) : void
+  + start() : void
+  + stop() : void
+  + isRunning() : boolean
 }
 
 interface GameState <<State>> {
@@ -29,61 +48,87 @@ interface GameState <<State>> {
   + keyReleased(code : KeyCode) : void
 }
 
-class MenuState
-class PauseState
-class GameOverState
+class MenuState {
+  - game : Game
+}
+
+class PauseState {
+  - game : Game
+  - previousState : GameState
+}
+
+class GameOverState {
+  - game : Game
+  - score : int
+}
 
 class PlayingState {
+  - game : Game
   - players : List<Player>
   - projectiles : List<Projectile>
   - levelManager : LevelManager
+  - bonuses : List<Bonus>
+  - bonusSpawner : BonusSpawner
   - statusPanel : PlayerStatusPanel
+  + getPlayers() : List<Player>
   + getProjectiles() : List<Projectile>
   + getLevelManager() : LevelManager
+  - handleCollisions() : void
+  - updateBonuses(dt : double) : void
 }
 
+class Player
 class Projectile
+class Bonus
+abstract class Enemy
 
 class LevelManager {
   - levels : List<Level>
   - currentIndex : int
-  + getCurrentLevel() : Level
+  + update(dt : double) : void
   + nextLevel() : boolean
+  + isFinished() : boolean
+  + getCurrentLevel() : Level
+  + getCurrentLevelNumber() : int
 }
 
 abstract class Level <<Template Method>> {
   # waves : Queue<Wave>
   # activeEnemies : List<Enemy>
+  - factory : EnemyFactory
+  + start() : void
   + update(dt : double) : void
   # {abstract} buildWaves() : void
   + isCompleted() : boolean
+  + getActiveEnemies() : List<Enemy>
 }
 
 class MosquitoLevel {
   # buildWaves() : void
 }
-note bottom of MosquitoLevel : Niveau 1 - moustiques
+note bottom of MosquitoLevel : Niveau 1 - moustiques (3, 6, 10)
 
 class WaspLevel {
   # buildWaves() : void
 }
-note bottom of WaspLevel : Niveau 2 - guêpes
+note bottom of WaspLevel : Niveau 2 - guêpes (3, 5, 8)
 
 class CrowLevel {
   # buildWaves() : void
 }
-note bottom of CrowLevel : Niveau 3 - corbeaux
+note bottom of CrowLevel : Niveau 3 - corbeaux (3, 5, 8)
 
 class BossLevel {
   # buildWaves() : void
 }
-note bottom of BossLevel : Niveau 4 - IA maléfique
+note bottom of BossLevel : Niveau 4 - IA maléfique (1)
 
 class Wave {
   - type : EnemyType
   - count : int
-  - spawnDelay : double
   + spawn(f : EnemyFactory) : List<Enemy>
+  + getType() : EnemyType
+  + getCount() : int
 }
 
 class EnemyFactory <<Factory>> {
@@ -97,8 +142,8 @@ enum EnemyType {
   EVIL_AI
 }
 
-class CollisionManager {
-  + check(a : List<Entity>, b : List<Entity>) : void
+class TutorialManager {
+  + {static} createProgression(f : EnemyFactory) : LevelManager
 }
 
 interface HealthObserver <<Observer>> {
@@ -114,6 +159,8 @@ interface Renderable {
 }
 
 class PlayerStatusPanel {
+  - players : List<Player>
+  - flashTimers : Map<Character, Double>
   + track(player : Player) : void
   + onHealthChanged(c : Character) : void
   + update(dt : double) : void
@@ -121,45 +168,97 @@ class PlayerStatusPanel {
   + render(gc : GraphicsContext) : void
 }
 
-Game *-- "1" GameLoop
+class BonusSpawner {
+  - random : Random
+  - timer : double
+  + update(dt : double) : void
+  + isReady() : boolean
+  + spawn() : Bonus
+}
+
+class AssetManager <<Singleton>> {
+  - {static} instance : AssetManager
+  - images : Map<String, Image>
+  - AssetManager()
+  + {static} getInstance() : AssetManager
+  + getImage(path : String) : Image
+}
+
+class Animation {
+  - frameWidth : double
+  - frameHeight : double
+  - row : int
+  - col : int
+  - frames : int
+  - fps : double
+  - loop : boolean
+  + frameIndex(time : double) : int
+  + isFinished(time : double) : boolean
+  + draw(gc : GraphicsContext, sheet : Image, time : double, x : double, y : double, width : double, height : double) : void
+}
+
+Application <|-- Main
+AnimationTimer <|-- GameLoop
+Main ..> Game : <<create>>
+Main ..> GameLoop : <<create>>
+
+Game o-- "1" GameLoop
+GameLoop --> "1" Game : update / render
 Game o-- "1" GameState
 
 GameState <|.. MenuState
 GameState <|.. PlayingState
 GameState <|.. PauseState
 GameState <|.. GameOverState
+PauseState o-- "1" GameState : previousState
 
 PlayingState *-- "*" Player
 PlayingState *-- "*" Projectile
+PlayingState *-- "*" Bonus
+PlayingState *-- "1" BonusSpawner
 PlayingState *-- "1" PlayerStatusPanel
 PlayingState *-- "1" LevelManager
+PlayingState ..> TutorialManager : <<use>>
+BonusSpawner ..> Bonus : <<create>>
 
-LevelManager *-- "4" Level
+LevelManager *-- "1..*" Level
 Level <|-- MosquitoLevel
 Level <|-- WaspLevel
 Level <|-- CrowLevel
 Level <|-- BossLevel
 
-class TutorialManager {
-  + {static} createProgression(f : EnemyFactory) : LevelManager
-}
-
 TutorialManager ..> LevelManager : <<create>>
 TutorialManager ..> EnemyFactory : <<use>>
 
 Level *-- "*" Wave
+Level o-- "*" Enemy : activeEnemies
 Wave ..> EnemyFactory : <<use>>
+Wave --> "1" EnemyType
 EnemyFactory ..> EnemyType
+EnemyFactory ..> Enemy : <<create>>
 
 HealthObserver <|.. PlayerStatusPanel
 Updatable <|.. PlayerStatusPanel
 Renderable <|.. PlayerStatusPanel
 
+Player --> "2" Animation : IDLE, ATTACK
+Projectile --> "2" Animation : P1_FLIGHT, P2_FLIGHT
+Player ..> AssetManager : <<use>>
+Projectile ..> AssetManager : <<use>>
+
+note right of GameState
+  Menu → Partie : Entrée
+  Partie → Pause : Échap
+  Pause → Partie : Échap
+  Partie → Game Over : fin de partie
+  Game Over → Partie : Entrée
+  Game Over → Menu : Échap
+end note
+
 note bottom of PlayingState
-  CollisionManager :
-  collisions gérées
+  Collisions gérées
   dans PlayingState
-  (méthode privée)
+  (handleCollisions)
 end note
 
 @enduml

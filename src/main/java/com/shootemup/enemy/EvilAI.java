@@ -31,6 +31,9 @@ public class EvilAI extends Enemy {
     /** Sens du balayage horizontal : 1 vers la droite, -1 vers la gauche. */
     private int direction = 1;
 
+    /** Nombre de seuils de points de vie déjà franchis : 0, 1 ou 2. */
+    private int thresholdsCrossed = 0;
+
     /**
      * Crée le boss en pleine santé, dans sa première phase.
      *
@@ -44,8 +47,9 @@ public class EvilAI extends Enemy {
     }
 
     /**
-     * Exécute la phase actuelle puis change de phase si les points de vie
-     * passent sous un seuil. Un boss mort ne bouge plus.
+     * Exécute la phase actuelle puis change de phase quand les points de vie
+     * franchissent un nouveau seuil. Chaque seuil ne fait changer de phase
+     * qu'une seule fois. Un boss mort ne bouge plus.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
@@ -55,11 +59,16 @@ public class EvilAI extends Enemy {
             return;
         }
         phase.execute(this, dt);
+
+        int reached = 0;
         if (hp < maxHp / 3) {
-            changePhase();
-            changePhase();
+            reached = 2;
         } else if (hp < 2 * maxHp / 3) {
+            reached = 1;
+        }
+        while (thresholdsCrossed < reached) {
             changePhase();
+            thresholdsCrossed++;
         }
     }
 

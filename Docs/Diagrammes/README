@@ -11,7 +11,7 @@ Un ou deux joueurs se défendent en tirant sur des vagues d'ennemis, répartis s
 | 1 - Apprentissage | Moustique    | 2                       |
 | 2                 | Guêpe        | 6                       |
 | 3                 | Corbeau      | 10                      |
-| 4 - Boss final    | IA maléfique | variable selon sa phase |
+| 4 - Boss final    | IA maléfique | 10 (valeur provisoire)  |
 
 ## Ouvrir les diagrammes
 
@@ -118,15 +118,15 @@ Les chiffres près des liens sont les cardinalités : `1` = exactement un, `*` =
 
 ### 1. `1_vue_ensemble.puml` - Vue d'ensemble
 
-La hiérarchie des entités, sans les détails. Tout objet visible à l'écran est une `Entity` ; tout ce qui a des points de vie est un `Character`. On y voit les trois branches principales : `Player`, `Enemy` et `Projectile`, ainsi que les interfaces `Updatable`, `Renderable` et `Damageable`.
+La hiérarchie des entités, sans les détails. Tout objet visible à l'écran est une `Entity` ; tout ce qui a des points de vie est un `Character`. On y voit les branches principales : `Player`, `Enemy`, `Projectile` et `Bonus` (soin qui tombe du haut de l'écran), ainsi que les interfaces `Updatable`, `Renderable` et `Damageable`.
 
 ### 2. `2_joueur.puml` - Le joueur
 
-Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `PlayerStatusPanel` est prévenu à chaque perte de points de vie grâce au pattern **Observer**.
+Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `PlayerStatusPanel` est prévenu à chaque changement de points de vie (coup ou soin) grâce au pattern **Observer**.
 
 ### 3. `3_ennemis.puml` - Les ennemis
 
-Les quatre ennemis héritent de `Enemy` et ne diffèrent que par leurs dégâts et leur comportement. Le déplacement est délégué à une `MovementStrategy` (pattern **Strategy**), et l'IA maléfique change de comportement selon sa `BossPhase` (pattern **State**).
+Les quatre ennemis héritent de `Enemy` et ne diffèrent que par leurs dégâts et leur comportement. Le déplacement est délégué à une `MovementStrategy` (pattern **Strategy**), et l'IA maléfique change de comportement selon sa `BossPhase` (pattern **State**) : `CalmPhase`, puis `AngryPhase` sous 2/3 de ses PV, puis `BersherkPhase` sous 1/3.
 
 ### 4. `Uml_entites.puml` - Entités complètes
 
@@ -134,7 +134,7 @@ La réunion des diagrammes 1, 2 et 3 en un seul schéma, avec tous les attributs
 
 ### 5. `Uml_structure_jeu.puml` - Structure du jeu
 
-Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'écran via `GameState` (pattern **State** : menu, partie, pause, game over). Pendant une partie, le `LevelManager` enchaîne les quatre `Level`, chacun découpé en `Wave` d'ennemis fabriqués par l'`EnemyFactory` (pattern **Factory**). Chaque niveau ne redéfinit que la construction de ses vagues (pattern **Template Method**).
+Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'écran via `GameState` (pattern **State** : menu, partie, pause, game over). Pendant une partie, le `LevelManager` enchaîne les quatre `Level`, chacun découpé en `Wave` d'ennemis fabriqués par l'`EnemyFactory` (pattern **Factory**). Chaque niveau ne redéfinit que la construction de ses vagues (pattern **Template Method**). La partie gère aussi les bonus de soin, que le `BonusSpawner` fait tomber au hasard. Enfin, les images sont chargées une seule fois par l'`AssetManager` (pattern **Singleton**) et découpées en `Animation` pour le joueur et ses balles.
 
 ## Récapitulatif des design patterns
 
@@ -145,6 +145,7 @@ Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'é
 | Factory         | `EnemyFactory`           | centraliser la création des ennemis                            |
 | Template Method | `Level.buildWaves()`     | partager la logique commune des niveaux                        |
 | Observer        | `HealthObserver` / `PlayerStatusPanel` | mettre à jour l'affichage sans coupler le joueur à l'interface |
+| Singleton       | `AssetManager`           | charger chaque image une seule fois, depuis n'importe où       |
 
 ## Ordre de présentation conseillé
 
