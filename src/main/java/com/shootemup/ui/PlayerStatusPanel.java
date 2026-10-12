@@ -45,6 +45,9 @@ public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable 
     /** Personnages en train de clignoter, associés au temps de clignotement restant. */
     private final Map<Character, Double> flashTimers = new HashMap<>();
 
+    /** Dernière valeur de points de vie connue pour chaque personnage suivi. */
+    private final Map<Character, Integer> lastKnownHp = new HashMap<>();
+
     /**
      * Crée un panneau vide, sans joueur suivi.
      */
@@ -58,17 +61,23 @@ public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable 
      */
     public void track(Player player) {
         players.add(player);
+        lastKnownHp.put(player, player.getHp());
         player.addObserver(this);
     }
 
     /**
-     * Lance le clignotement de la barre du personnage touché.
+     * Fait clignoter la barre du personnage seulement s'il a perdu des points de vie,
+     * pas lorsqu'il est soigné.
      *
      * @param c le personnage dont les points de vie ont changé
      */
     @Override
     public void onHealthChanged(Character c) {
-        flashTimers.put(c, FLASH_DURATION);
+        int previousHp = lastKnownHp.getOrDefault(c, c.getHp());
+        if (c.getHp() < previousHp) {
+            flashTimers.put(c, FLASH_DURATION);
+        }
+        lastKnownHp.put(c, c.getHp());
     }
 
     /**
