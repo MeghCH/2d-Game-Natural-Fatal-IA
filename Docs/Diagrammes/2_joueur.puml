@@ -75,7 +75,9 @@ end note
 note bottom of PlayerStatusPanel
   Prévenu à chaque
   changement de PV
-  (coup ou soin)
+  (coup ou soin),
+  clignote seulement
+  quand les PV baissent
 end note
 
 @enduml

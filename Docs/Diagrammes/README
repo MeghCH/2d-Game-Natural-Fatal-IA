@@ -4,14 +4,14 @@ Ce dossier contient les diagrammes de classes du jeu, écrits en PlantUML. Ils d
 
 ## Le jeu en bref
 
-Un ou deux joueurs se défendent en tirant sur des vagues d'ennemis, répartis sur quatre niveaux :
+Deux joueurs se défendent en tirant sur des vagues d'ennemis, réparties sur quatre niveaux, et ramassent les potions de soin qui tombent du haut de l'écran :
 
-| Niveau            | Ennemi       | Dégâts au contact       |
-| ----------------- | ------------ | ----------------------- |
-| 1 - Apprentissage | Moustique    | 2                       |
-| 2                 | Guêpe        | 6                       |
-| 3                 | Corbeau      | 10                      |
-| 4 - Boss final    | IA maléfique | 10 (valeur provisoire)  |
+| Niveau            | Ennemi       | PV  | Dégâts au contact |
+| ----------------- | ------------ | --- | ----------------- |
+| 1 - Apprentissage | Moustique    | 2   | 2                 |
+| 2                 | Guêpe        | 3   | 6                 |
+| 3                 | Corbeau      | 5   | 10                |
+| 4 - Boss final    | IA maléfique | 100 | 10                |
 
 ## Ouvrir les diagrammes
 
@@ -118,11 +118,11 @@ Les chiffres près des liens sont les cardinalités : `1` = exactement un, `*` =
 
 ### 1. `1_vue_ensemble.puml` - Vue d'ensemble
 
-La hiérarchie des entités, sans les détails. Tout objet visible à l'écran est une `Entity` ; tout ce qui a des points de vie est un `Character`. On y voit les branches principales : `Player`, `Enemy`, `Projectile` et `Bonus` (soin qui tombe du haut de l'écran), ainsi que les interfaces `Updatable`, `Renderable` et `Damageable`.
+La hiérarchie des entités, sans les détails. Tout objet visible à l'écran est une `Entity` ; tout ce qui a des points de vie est un `Character`. On y voit les branches principales : `Player`, `Enemy`, `Projectile` et `Potion` (potion de soin qui tombe du haut de l'écran), ainsi que les interfaces `Updatable`, `Renderable` et `Damageable`.
 
 ### 2. `2_joueur.puml` - Le joueur
 
-Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `PlayerStatusPanel` est prévenu à chaque changement de points de vie (coup ou soin) grâce au pattern **Observer**.
+Zoom sur le joueur : il possède un `InputController` (ses touches, ce qui permet le mode deux joueurs) et une `Weapon` qui crée des `Projectile`. Le `PlayerStatusPanel` est prévenu à chaque changement de points de vie (coup ou soin) grâce au pattern **Observer**, et fait clignoter la barre de vie seulement quand les PV baissent.
 
 ### 3. `3_ennemis.puml` - Les ennemis
 
@@ -134,7 +134,7 @@ La réunion des diagrammes 1, 2 et 3 en un seul schéma, avec tous les attributs
 
 ### 5. `Uml_structure_jeu.puml` - Structure du jeu
 
-Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'écran via `GameState` (pattern **State** : menu, partie, pause, game over). Pendant une partie, le `LevelManager` enchaîne les quatre `Level`, chacun découpé en `Wave` d'ennemis fabriqués par l'`EnemyFactory` (pattern **Factory**). Chaque niveau ne redéfinit que la construction de ses vagues (pattern **Template Method**). La partie gère aussi les bonus de soin, que le `BonusSpawner` fait tomber au hasard. Enfin, les images sont chargées une seule fois par l'`AssetManager` (pattern **Singleton**) et découpées en `Animation` pour le joueur et ses balles.
+Comment le jeu est orchestré. `Game` fait tourner une `GameLoop` et change d'écran via `GameState` (pattern **State** : menu, partie, pause, game over). Pendant une partie, le `LevelManager` enchaîne les quatre `Level`, chacun découpé en `Wave` d'ennemis fabriqués par l'`EnemyFactory` (pattern **Factory**). Chaque niveau ne redéfinit que la construction de ses vagues (pattern **Template Method**). La partie gère aussi les potions de soin, que le `PotionSpawner` fait tomber au hasard. Enfin, les images sont chargées une seule fois par l'`AssetManager` (pattern **Singleton**) et découpées en `Animation` pour le joueur, ses balles et les potions.
 
 ## Récapitulatif des design patterns
 

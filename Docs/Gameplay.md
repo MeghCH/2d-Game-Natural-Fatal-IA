@@ -6,37 +6,41 @@
 ## 1. Perspective et vue
 
 - Vue du dessus, en 2D.
-- L'écran est fixe : les joueurs restent visibles en bas, les ennemis arrivent par le haut
+- L'écran est fixe (960 x 540) : les joueurs restent visibles en bas, les ennemis arrivent par le haut
   et descendent vers eux.
 - Pas de vue de côté, pas de scrolling horizontal.
-- Le décor défile vers le bas pour donner l'impression d'avancer, dans un style arcade
-  des années 80, volontairement simple pour rester lisible.
-- Les informations importantes sont toujours visibles : PV des deux joueurs en bas,
-  PV du boss en haut pendant le combat final.
+- Le fond est uni, dans un style arcade des années 80 volontairement simple pour rester lisible.
+  Un décor qui défile vers le bas, pour donner l'impression d'avancer, est prévu mais pas encore implémenté.
+- Les informations importantes sont toujours visibles en haut de l'écran : PV et score de chaque joueur
+  (J1 à gauche, J2 à droite) et numéro du niveau au centre. La barre de PV du boss est prévue mais pas encore implémentée.
 
 ## 2. Contrôles, entrées utilisateur et gestion du temps
 
-- Le jeu se joue à 1 ou 2 joueurs sur le même clavier.
+- Le jeu lance toujours 2 joueurs sur le même clavier. On peut jouer seul : le second joueur reste alors immobile.
   - Joueur 1 : se déplace avec ZQSD (ou WASD), tire avec Espace.
   - Joueur 2 : se déplace avec les flèches, tire avec Entrée.
-  - Échap : pause. Entrée / Espace : valider, recommencer.
-- Le déplacement se fait dans les 4 directions. On ne peut pas sortir de l'écran.
+  - Menu : Entrée pour jouer.
+  - Échap : pause, puis Échap à nouveau pour reprendre.
+  - Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
+- Le déplacement se fait dans les 4 directions, à 300 px/s. On ne peut pas sortir de l'écran.
+- Le tir est automatique tant que la touche est enfoncée, à raison d'un tir toutes les 0,2 s.
 - Le temps est en continu : les ennemis descendent même si on ne bouge pas.
   Il n'y a pas de tour par tour.
-- Être touché fait perdre des PV immédiatement. Il n'y a pas d'invincibilité longue :
-  il faut esquiver en permanence.
+- Être touché fait perdre des PV immédiatement et fait clignoter la barre de vie. Il n'y a pas
+  d'invincibilité après un coup : il faut esquiver en permanence.
 
 ## 3. Comportement des personnages, progression, inventaire et physique
 
-- Chaque joueur commence avec 30 PV. Pas d'armes différentes : une seule arme de base.
-- Pas d'inventaire à gérer. Le seul élément à ramasser est le bonus de soin qui tombe
-  du haut de l'écran.
+- Chaque joueur commence avec 30 PV. Pas d'armes différentes : une seule arme de base, qui inflige 1 dégât par tir.
+- Pas d'inventaire à gérer. Le seul élément à ramasser est la potion de soin (10 PV), qui tombe
+  du haut de l'écran toutes les 6 à 12 secondes.
 - Progression en 4 niveaux, du plus facile au plus dur :
-  1. Moustiques (2 dégâts) : faciles à éliminer, niveau d'introduction.
-  2. Guêpes (6 dégâts) : plus dangereuses.
-  3. Corbeaux (10 dégâts) : très dangereux au contact.
-  4. IA Fatale (boss final) : gros combat, plusieurs comportements.
-- Détruire des ennemis fait gagner du score et de l'XP.
+  1. Moustiques (2 PV, 2 dégâts) : faciles à éliminer, niveau d'introduction.
+  2. Guêpes (3 PV, 6 dégâts) : plus dangereuses.
+  3. Corbeaux (5 PV, 10 dégâts) : rapides et très dangereux au contact.
+  4. IA Fatale (100 PV, 10 dégâts, boss final) : gros combat, trois comportements successifs.
+- Détruire un ennemi rapporte du score au joueur qui l'a abattu (100, 200, 300 ou 1000 points).
+  Il n'y a pas d'XP pour l'instant.
 - Il n'y a pas de physique compliquée : pas de saut, pas de gravité, pas de rebonds.
   Les déplacements et les tirs vont en ligne simple : les joueurs tirent vers le haut,
   les ennemis descendent vers le bas.
@@ -46,21 +50,28 @@
 - La seule interaction avec l'environnement, c'est :
   - esquiver les ennemis qui descendent,
   - détruire les ennemis avec les tirs,
-  - attraper les bonus de soin sans se faire toucher.
-- Les ennemis apparaissent petit à petit par le haut, à des moments aléatoires.
+  - attraper les potions de soin sans se faire toucher.
+- Les ennemis arrivent par vagues depuis le haut, répartis sur la largeur de l'écran.
+  La vague suivante arrive quand la précédente est éliminée ou sortie par le bas.
+- Un ennemi qui touche un joueur lui inflige ses dégâts puis disparaît, sauf le boss qui reste en jeu.
 - Chaque ennemi a sa propre manière de se déplacer :
-  - Moustiques : en zigzag, comme un vrai insecte.
-  - Guêpes : en rond, après être arrivées par le haut.
-  - Corbeaux : tout droit vers le bas, il faut sortir de leur couloir.
+  - Moustiques : en zigzag en descendant, comme un vrai insecte.
+  - Guêpes : tout droit vers le bas (la trajectoire en rond prévue n'est pas encore implémentée).
+  - Corbeaux : piqué rapide vers le bas, il faut sortir de leur couloir.
   - Boss IA Fatale : change de comportement selon ses PV restants
-    (balayage, puis zigzag, puis poursuite des joueurs).
-- Le boss est le seul ennemi avec une barre de vie affichée.
+    (balayage horizontal lent, puis balayage rapide, puis descente vers les joueurs).
 
-## 5. Points à repréciser
+## 5. Points tranchés par le code
 
-1. Combien de tirs pour tuer chaque ennemi ? Combien de dégâts fait l'arme des joueurs ?
-2. Le boss tire-t-il des projectiles ou fait-il seulement des dégâts au contact ?
-3. À quoi sert l'XP : score seul, soin, arme plus forte ?
-4. Bonus de soin : combien de PV rendus, combien de temps à l'écran, fréquence ?
-5. Si un seul des deux joueurs meurt, l'autre continue-t-il seul ?
-6. Fin de niveau : au temps écoulé ou quand tous les ennemis sont tués ?
+1. Arme des joueurs : 1 dégât par tir. Il faut donc 2 tirs pour un moustique, 3 pour une guêpe, 5 pour un corbeau et 100 pour le boss.
+2. Le boss ne tire pas : il fait seulement des dégâts au contact (10).
+3. Potion de soin : 10 PV, une seule fois, toutes les 6 à 12 secondes ; elle disparaît si elle sort par le bas.
+4. Si un seul des deux joueurs meurt, l'autre continue seul. La partie s'arrête quand les deux sont morts.
+5. Fin de niveau : quand toutes les vagues ont été éliminées ou sont sorties de l'écran.
+
+## 6. Points encore ouverts
+
+1. À quoi servirait l'XP : score seul, soin, arme plus forte ?
+2. Le boss inflige ses dégâts à chaque image tant qu'un joueur le touche : faut-il une courte invincibilité après un coup ?
+3. Écran de victoire distinct de l'écran de défaite.
+4. Barre de PV du boss, décor qui défile et trajectoire en rond des guêpes.

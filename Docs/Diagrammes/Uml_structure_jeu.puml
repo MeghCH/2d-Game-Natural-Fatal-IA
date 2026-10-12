@@ -67,19 +67,23 @@ class PlayingState {
   - players : List<Player>
   - projectiles : List<Projectile>
   - levelManager : LevelManager
-  - bonuses : List<Bonus>
-  - bonusSpawner : BonusSpawner
   - statusPanel : PlayerStatusPanel
+  - potions : List<Potion>
+  - potionSpawner : PotionSpawner
   + getPlayers() : List<Player>
   + getProjectiles() : List<Projectile>
+  + getPotions() : List<Potion>
   + getLevelManager() : LevelManager
+  - addPlayer(player : Player) : void
   - handleCollisions() : void
-  - updateBonuses(dt : double) : void
+  - updatePotions(dt : double) : void
+  - anyPlayerAlive() : boolean
+  - totalScore() : int
 }
 
 class Player
 class Projectile
-class Bonus
+class Potion
 abstract class Enemy
 
 class LevelManager {
@@ -161,6 +165,7 @@ interface Renderable {
 class PlayerStatusPanel {
   - players : List<Player>
   - flashTimers : Map<Character, Double>
+  - lastKnownHp : Map<Character, Integer>
   + track(player : Player) : void
   + onHealthChanged(c : Character) : void
   + update(dt : double) : void
@@ -168,12 +173,11 @@ class PlayerStatusPanel {
   + render(gc : GraphicsContext) : void
 }
 
-class BonusSpawner {
+class PotionSpawner {
   - random : Random
   - timer : double
-  + update(dt : double) : void
-  + isReady() : boolean
-  + spawn() : Bonus
+  + update(dt : double) : List<Potion>
+  - nextDelay() : double
 }
 
 class AssetManager <<Singleton>> {
@@ -214,12 +218,12 @@ PauseState o-- "1" GameState : previousState
 
 PlayingState *-- "*" Player
 PlayingState *-- "*" Projectile
-PlayingState *-- "*" Bonus
-PlayingState *-- "1" BonusSpawner
+PlayingState *-- "*" Potion
+PlayingState o-- "1" PotionSpawner
 PlayingState *-- "1" PlayerStatusPanel
 PlayingState *-- "1" LevelManager
 PlayingState ..> TutorialManager : <<use>>
-BonusSpawner ..> Bonus : <<create>>
+PotionSpawner ..> Potion : <<create>>
 
 LevelManager *-- "1..*" Level
 Level <|-- MosquitoLevel
@@ -243,8 +247,10 @@ Renderable <|.. PlayerStatusPanel
 
 Player --> "2" Animation : IDLE, ATTACK
 Projectile --> "2" Animation : P1_FLIGHT, P2_FLIGHT
+Potion --> "2" Animation : FALLING, COLLECTED
 Player ..> AssetManager : <<use>>
 Projectile ..> AssetManager : <<use>>
+Potion ..> AssetManager : <<use>>
 
 note right of GameState
   Menu → Partie : Entrée
@@ -259,6 +265,14 @@ note bottom of PlayingState
   Collisions gérées
   dans PlayingState
   (handleCollisions)
+end note
+
+note bottom of PotionSpawner
+  Fait tomber une potion
+  toutes les 6 à 12 s.
+  Peut être injecté dans
+  PlayingState (Random fixé
+  pour les tests)
 end note
 
 @enduml
