@@ -14,6 +14,10 @@ class Game {
   + setState(s : GameState) : void
   + getCurrentState() : GameState
   + start() : void
+  + update(dt : double) : void
+  + render(gc : GraphicsContext) : void
+  + keyPressed(code : KeyCode) : void
+  + keyReleased(code : KeyCode) : void
 }
 
 class GameLoop {
@@ -38,6 +42,9 @@ class PlayingState {
   - projectiles : List<Projectile>
   - statusPanel : PlayerStatusPanel
   + getProjectiles() : List<Projectile>
+  - potions : List<Potion>
+  - potionSpawner : PotionSpawner
+  + getPlayers() : List<Player>
 }
 
 class Projectile
@@ -119,6 +126,13 @@ class PlayerStatusPanel {
   + render(gc : GraphicsContext) : void
 }
 
+class PotionSpawner {
+  - random : Random
+  - timer : double
+  + PotionSpawner(random : Random)
+  + update(dt : double) : List<Potion>
+}
+
 Game *-- "1" GameLoop
 Game o-- "1" GameState
 
@@ -144,6 +158,10 @@ EnemyFactory ..> EnemyType
 HealthObserver <|.. PlayerStatusPanel
 Updatable <|.. PlayerStatusPanel
 Renderable <|.. PlayerStatusPanel
+
+PlayingState *-- "1" PotionSpawner
+PlayingState o-- "*" Potion
+PotionSpawner ..> Potion : <<create>>
 
 note bottom of PlayingState
   LevelManager et CollisionManager
