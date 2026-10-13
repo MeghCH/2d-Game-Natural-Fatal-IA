@@ -60,7 +60,7 @@ class PlayerStatusPanel {
 }
 
 Character <|-- Player
-Player *-- "1" InputController
+Player o-- "1" InputController
 Player *-- "1" Weapon
 Weapon ..> Projectile : crée
 Updatable <|.. Weapon

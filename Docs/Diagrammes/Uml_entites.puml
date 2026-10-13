@@ -55,8 +55,10 @@ abstract class Character {
 }
 
 class Player {
-  + {static} WIDTH : double
-  + {static} HEIGHT : double
+  + {static} WIDTH : double = 48
+  + {static} HEIGHT : double = 64
+  - {static} SPEED : double = 300
+  - {static} MAX_HP : int = 30
   - {static} IDLE : Animation
   - {static} ATTACK : Animation
   - playerId : int
@@ -88,36 +90,64 @@ class InputController {
   + isRight() : boolean
   + isShooting() : boolean
   + clear() : void
+  - isAnyPressed(keys : Set<KeyCode>) : boolean
 }
+
+class PlayerStatusPanel
 
 abstract class Enemy {
   # contactDamage : int
   # scoreValue : int
   # movement : MovementStrategy
+  # animationTime : double
   + attack(target : Player) : void
   + getContactDamage() : int
   + getScoreValue() : int
   + setMovement(m : MovementStrategy) : void
   + getMovement() : MovementStrategy
+  + getAnimationTime() : double
 }
 
 class Mosquito {
-  + {static} SIZE : double
-  contactDamage = 2
+  + {static} SIZE : double = 32
+  - {static} MAX_HP : int = 2
+  - {static} DAMAGE : int = 2
+  - {static} SCORE : int = 100
+  - {static} FLY_A : Animation
+  - {static} FLY_B : Animation
+  - variant : int
+  + getVariant() : int
 }
 
 class Wasp {
-  + {static} SIZE : double
-  contactDamage = 6
+  + {static} SIZE : double = 32
+  - {static} MAX_HP : int = 3
+  - {static} DAMAGE : int = 6
+  - {static} SCORE : int = 200
+  - {static} FLY_A : Animation
+  - {static} FLY_B : Animation
+  - variant : int
+  + getVariant() : int
 }
 
 class Crow {
-  + {static} SIZE : double
-  contactDamage = 10
+  + {static} SIZE : double = 40
+  - {static} MAX_HP : int = 5
+  - {static} DAMAGE : int = 10
+  - {static} SCORE : int = 300
+  - {static} FLY_A : Animation
+  - {static} FLY_B : Animation
+  - variant : int
+  + getVariant() : int
 }
 
 class EvilAI {
-  + {static} SIZE : double
+  + {static} SIZE : double = 80
+  - {static} MAX_HP : int = 100
+  - {static} DAMAGE : int = 10
+  - {static} SCORE : int = 1000
+  - {static} CALM : Animation
+  - {static} ENRAGED : Animation
   - phase : BossPhase
   - direction : int
   - thresholdsCrossed : int
@@ -133,12 +163,20 @@ interface BossPhase <<State>> {
   + sweep(boss : EvilAI, dt : double, speed : double) : void
 }
 
-class CalmPhase
-class AngryPhase
-class BersherkPhase
+class CalmPhase {
+  - {static} SPEED : double = 60
+}
+
+class AngryPhase {
+  - {static} SPEED : double = 140
+}
+
+class BersherkPhase {
+  - {static} SPEED : double = 80
+}
 
 class Projectile {
-  + {static} SIZE : double
+  + {static} SIZE : double = 16
   - {static} P1_FLIGHT : Animation
   - {static} P2_FLIGHT : Animation
   - vx : double
@@ -155,8 +193,9 @@ class Projectile {
 }
 
 class Potion {
-  + {static} SIZE : double
-  - {static} HEAL_AMOUNT : int
+  + {static} SIZE : double = 32
+  - {static} FALL_SPEED : double = 120
+  - {static} HEAL_AMOUNT : int = 10
   - {static} FALLING : Animation
   - {static} COLLECTED : Animation
   - active : boolean
@@ -170,14 +209,27 @@ class Potion {
 }
 
 class Weapon {
+  - {static} FIRE_DELAY : double = 0.2
+  - {static} BULLET_SPEED : double = 600
+  - {static} DAMAGE : int = 1
   - cooldown : double
   + canFire() : boolean
   + fire(shooter : Character) : List<Projectile>
 }
 
-class StraightMovement
-class ZigzagMovement
-class DiveMovement
+class StraightMovement {
+  - {static} SPEED : double = 100
+}
+
+class ZigzagMovement {
+  - {static} SPEED : double = 100
+  - {static} AMPLITUDE : double = 80
+  - {static} FREQUENCY : double = 0.05
+}
+
+class DiveMovement {
+  - {static} SPEED : double = 250
+}
 
 Updatable <|.. Entity
 Renderable <|.. Entity
@@ -195,7 +247,7 @@ Enemy <|-- Crow
 Enemy <|-- EvilAI
 
 Player *-- "1" Weapon
-Player *-- "1" InputController
+Player o-- "1" InputController
 Weapon ..> Projectile : <<create>>
 Updatable <|.. Weapon
 Potion ..> Character : soigne
@@ -210,8 +262,11 @@ EvilAI o-- "1" BossPhase
 BossPhase <|.. CalmPhase
 BossPhase <|.. AngryPhase
 BossPhase <|.. BersherkPhase
+CalmPhase ..> AngryPhase : next()
+AngryPhase ..> BersherkPhase : next()
 
 Character o-- "*" HealthObserver
+HealthObserver <|.. PlayerStatusPanel
 
 note right of Potion
   Tombe du haut de l'écran
@@ -227,6 +282,11 @@ note right of Enemy
   guêpe = 6
   corbeau = 10
   IA maléfique = 10
+end note
+
+note bottom of PlayerStatusPanel
+  Détail dans
+  Uml_structure_jeu
 end note
 
 @enduml
