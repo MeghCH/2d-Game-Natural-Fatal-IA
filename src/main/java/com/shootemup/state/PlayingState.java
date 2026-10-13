@@ -45,12 +45,6 @@ public class PlayingState implements GameState {
     /** La progression des niveaux : vagues d'ennemis, dans l'ordre. */
     private final LevelManager levelManager;
 
-    /** Les bonus de soin actuellement en chute. */
-    private final List<Bonus> bonuses = new ArrayList<>();
-
-    /** Le planificateur qui fait tomber les bonus. */
-    private final BonusSpawner bonusSpawner = new BonusSpawner();
-
     /** Le ciel étoilé qui défile derrière la partie. */
     private final Starfield background = new Starfield(Game.WIDTH, Game.HEIGHT);
 
