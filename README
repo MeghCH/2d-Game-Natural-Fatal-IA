@@ -13,6 +13,7 @@ B-OOP-301-STG-3-1-2dgame-5/
 │       ├── 1_vue_ensemble.puml
 │       ├── 2_joueur.puml
 │       ├── 3_ennemis.puml
+│       ├── Diagrammes_classes.puml
 │       ├── Uml_entites.puml
 │       └── Uml_structure_jeu.puml
 ├── Images/

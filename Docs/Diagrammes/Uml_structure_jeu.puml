@@ -252,6 +252,8 @@ class Animation {
   - frames : int
   - fps : double
   - loop : boolean
+  + Animation(frameWidth : double, frameHeight : double, row : int, col : int, frames : int, fps : double, loop : boolean)
+  + Animation(frameWidth : double, frameHeight : double, row : int, frames : int, fps : double)
   + frameIndex(time : double) : int
   + isFinished(time : double) : boolean
   + draw(gc : GraphicsContext, sheet : Image, time : double, x : double, y : double, width : double, height : double) : void
