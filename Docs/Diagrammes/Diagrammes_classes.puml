@@ -1,0 +1,207 @@
+@startuml uml_entites
+title Shoot'em up - Diagramme de classes (Niveaux stricts)
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam Padding 4
+hide empty members
+
+' ==========================================
+' NIVEAU 1 : INTERFACES DE BASE
+' ==========================================
+package "Niveau 1 : Interfaces globales" {
+  interface Updatable {
+    + update(dt : double) : void
+  }
+  interface Renderable {
+    + render(gc : GraphicsContext) : void
+  }
+  interface Damageable {
+    + takeDamage(amount : int) : void
+    + isAlive() : boolean
+  }
+  interface HealthObserver <<Observer>> {
+    + onHealthChanged(c : Character) : void
+  }
+  interface MovementStrategy <<Strategy>> {
+    + move(e : Entity, dt : double) : void
+  }
+  interface BossPhase <<State>> {
+    + execute(boss : EvilAI, dt : double) : void
+    + next() : BossPhase
+    + sweep(boss : EvilAI, dt : double, speed : double) : void
+  }
+}
+
+' ==========================================
+' NIVEAU 2 : CLASSES ABSTRAITES
+' ==========================================
+package "Niveau 2 : Classes abstraites" {
+  abstract class Entity {
+    # x : double
+    # y : double
+    # width : double
+    # height : double
+    + getX() : double
+    + getY() : double
+    + getWidth() : double
+    + getHeight() : double
+    + setX(x : double) : void
+    + setY(y : double) : void
+    + collidesWith(other : Entity) : boolean
+  }
+
+  abstract class Character {
+    # hp : int
+    # maxHp : int
+    # observers : List<HealthObserver>
+    + takeDamage(amount : int) : void
+    + heal(amount : int) : void
+    + isAlive() : boolean
+    + getHp() : int
+    + getMaxHp() : int
+    + addObserver(o : HealthObserver) : void
+    # notifyObservers() : void
+  }
+
+  abstract class Enemy {
+    # contactDamage : int
+    # scoreValue : int
+    # movement : MovementStrategy
+    # animationTime : double
+    + attack(target : Player) : void
+    + getContactDamage() : int
+    + getScoreValue() : int
+    + setMovement(m : MovementStrategy) : void
+    + getMovement() : MovementStrategy
+    + getAnimationTime() : double
+  }
+}
+
+' ==========================================
+' NIVEAU 3 : COMPOSANTS ET ENTITÉS PRINCIPALES
+' ==========================================
+package "Niveau 3 : Entités principales et objets" {
+  class Player {
+    + {static} WIDTH : double = 48
+    + {static} HEIGHT : double = 64
+    - {static} SPEED : double = 300
+    - {static} MAX_HP : int = 30
+    - playerId : int
+    - score : int
+    - weapon : Weapon
+    - controls : InputController
+    + shoot() : List<Projectile>
+    + getPlayerId() : int
+    + getScore() : int
+    + addScore(points : int) : void
+  }
+
+  class Projectile {
+    + {static} SIZE : double = 16
+    - vx : double
+    - vy : double
+    - damage : int
+    - active : boolean
+    + isOutOfScreen() : boolean
+    + destroy() : void
+    + isActive() : boolean
+  }
+
+  class Potion {
+    + {static} SIZE : double = 32
+    - {static} FALL_SPEED : double = 120
+    - {static} HEAL_AMOUNT : int = 10
+    - active : boolean
+    - collected : boolean
+    + collect(c : Character) : void
+  }
+
+  class Weapon {
+    - {static} FIRE_DELAY : double = 0.2
+    - cooldown : double
+    + canFire() : boolean
+    + fire(shooter : Character) : List<Projectile>
+  }
+
+  class InputController {
+    + {static} player1() : InputController
+    + {static} player2() : InputController
+    + isUp() : boolean
+    + isDown() : boolean
+    + isShooting() : boolean
+  }
+
+  class PlayerStatusPanel
+}
+
+' ==========================================
+' NIVEAU 4 : IMPLÉMENTATIONS CONCRÈTES (BAS)
+' ==========================================
+package "Niveau 4 : Implémentations concrètes (Ennemis, Stratégies, États)" {
+  class Mosquito {
+    + {static} SIZE : double = 32
+  }
+  class Wasp {
+    + {static} SIZE : double = 32
+  }
+  class Crow {
+    + {static} SIZE : double = 40
+  }
+  class EvilAI {
+    + {static} SIZE : double = 80
+  }
+
+  class StraightMovement
+  class ZigzagMovement
+  class DiveMovement
+
+  class CalmPhase
+  class AngryPhase
+  class BersherkPhase
+}
+
+' ==========================================
+' HIÉRARCHIES ET RELATIONS
+' ==========================================
+Updatable <|.. Entity
+Renderable <|.. Entity
+Damageable <|.. Character
+
+Entity <|-- Character
+Entity <|-- Projectile
+Entity <|-- Potion
+
+Character <|-- Player
+Character <|-- Enemy
+
+Enemy <|-- Mosquito
+Enemy <|-- Wasp
+Enemy <|-- Crow
+Enemy <|-- EvilAI
+
+MovementStrategy <|.. StraightMovement
+MovementStrategy <|.. ZigzagMovement
+MovementStrategy <|.. DiveMovement
+
+BossPhase <|.. CalmPhase
+BossPhase <|.. AngryPhase
+BossPhase <|.. BersherkPhase
+
+HealthObserver <|.. PlayerStatusPanel
+Updatable <|.. Weapon
+
+Player *-right-> "1" Weapon
+Player o-left-> "1" InputController
+Weapon ..> Projectile : <<create>>
+Potion ..> Character : soigne
+Projectile --> "1" Character : owner
+
+Enemy o--> "1" MovementStrategy
+EvilAI o--> "1" BossPhase
+CalmPhase ..> AngryPhase : next()
+AngryPhase ..> BersherkPhase : next()
+Character o--> "*" HealthObserver
+
+@enduml
