@@ -76,7 +76,6 @@ class PlayingState {
   - players : List<Player>
   - projectiles : List<Projectile>
   - levelManager : LevelManager
-  - background : Starfield
   - statusPanel : PlayerStatusPanel
   - potions : List<Potion>
   - potionSpawner : PotionSpawner
@@ -209,7 +208,8 @@ class Starfield {
   - {static} STAR_COUNT : int = 120
   - {static} SLOW_SPEED : double = 20
   - {static} FAST_SPEED : double = 60
-  - width : int
+  - {static} FAST_COLOR : Color
+  - {static} SLOW_COLOR : Color
   - height : int
   - stars : List<Star>
   + update(dt : double) : void
@@ -275,7 +275,6 @@ GameState <|.. GameOverState
 PauseState o-- "1" GameState : previousState
 
 MenuState *-- "1" Starfield : background
-PlayingState *-- "1" Starfield : background
 PlayingState *-- "*" Player
 PlayingState *-- "*" Projectile
 PlayingState *-- "*" Potion

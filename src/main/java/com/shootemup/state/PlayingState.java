@@ -12,7 +12,6 @@ import com.shootemup.input.InputController;
 import com.shootemup.level.LevelManager;
 import com.shootemup.level.TutorialManager;
 import com.shootemup.ui.PlayerStatusPanel;
-import com.shootemup.ui.Starfield;
 
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
@@ -44,9 +43,6 @@ public class PlayingState implements GameState {
 
     /** La progression des niveaux : vagues d'ennemis, dans l'ordre. */
     private final LevelManager levelManager;
-
-    /** Le ciel étoilé qui défile derrière la partie. */
-    private final Starfield background = new Starfield(Game.WIDTH, Game.HEIGHT);
 
     /** Le panneau qui affiche la vie et le score des joueurs. */
     private final PlayerStatusPanel statusPanel = new PlayerStatusPanel();
@@ -151,7 +147,6 @@ public class PlayingState implements GameState {
      */
     @Override
     public void update(double dt) {
-        background.update(dt);
         for (Player player : players) {
             player.update(dt);
             projectiles.addAll(player.shoot());
@@ -261,8 +256,8 @@ public class PlayingState implements GameState {
     }
 
     /**
-     * Dessine le fond, les ennemis, les joueurs, les balles, le numéro du niveau, les potions,
-     * puis le panneau d'état par-dessus.
+     * Dessine le fond uni du niveau, les ennemis, les joueurs, les balles, le numéro du niveau,
+     * les potions, puis le panneau d'état par-dessus.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -270,7 +265,6 @@ public class PlayingState implements GameState {
     public void render(GraphicsContext gc) {
         gc.setFill(Color.web(levelManager.getBackgroundColor()));
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
-        background.render(gc);
 
         for (Enemy enemy : levelManager.getCurrentLevel().getActiveEnemies()) {
             enemy.render(gc);
