@@ -10,7 +10,7 @@
 - **Joueurs :** 2 joueurs en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
 - **Structure :** 4 niveaux avec une difficulté croissante, le dernier contre le boss.
 - **But :** Éliminer les vagues d'ennemis, survivre et vaincre le boss final (IA Fatale).
-- **Style visuel :** Shoot'em up des années 80, volontairement simple : sprites animés pour les joueurs, les tirs et les potions, rectangles de couleur pour les ennemis.
+- **Style visuel :** Shoot'em up des années 80, volontairement simple : sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions.
 
 ## 2. Règles du jeu
 

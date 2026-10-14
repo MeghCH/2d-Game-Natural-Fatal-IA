@@ -10,7 +10,8 @@
   et descendent vers eux.
 - Pas de vue de côté, pas de scrolling horizontal.
 - Le fond est uni, dans un style arcade des années 80 volontairement simple pour rester lisible.
-  Un décor qui défile vers le bas, pour donner l'impression d'avancer, est prévu mais pas encore implémenté.
+  Le ciel étoilé qui défile (`Starfield`) n'est affiché que sur le menu ; en partie,
+  seul le fond uni du niveau est dessiné pour garder les vagues lisibles.
 - Les informations importantes sont toujours visibles en haut de l'écran : PV et score de chaque joueur
   (J1 à gauche, J2 à droite) et numéro du niveau au centre. La barre de PV du boss est prévue mais pas encore implémentée.
 
@@ -74,4 +75,4 @@
 1. À quoi servirait l'XP : score seul, soin, arme plus forte ?
 2. Le boss inflige ses dégâts à chaque image tant qu'un joueur le touche : faut-il une courte invincibilité après un coup ?
 3. Écran de victoire distinct de l'écran de défaite.
-4. Barre de PV du boss, décor qui défile et trajectoire en rond des guêpes.
+4. Barre de PV du boss, trajectoire en rond des guêpes (le décor qui défile existe déjà, mais au menu uniquement).

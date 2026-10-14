@@ -40,7 +40,7 @@ Pourquoi c'est adapté au module OOP :
 - 2D, vue verticale / du dessus. Les ennemis viennent du haut et descendent vers les joueurs.
 - Fenêtre fixe **960 x 540** (`Game.WIDTH / HEIGHT`).
 - **2 joueurs** en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
-- Style : shoot'em up arcade des années 80, volontairement simple (sprites animés pour les joueurs, les tirs et les potions, rectangles pour les ennemis, pas d'effets complexes).
+- Style : shoot'em up arcade des années 80, volontairement simple (sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions ; ciel étoilé procédural uniquement sur le menu, pas d'effets complexes).
 
 ### 3.2 Stack
 
@@ -100,7 +100,7 @@ enemy.boss -> BossPhase, CalmPhase, AngryPhase, BersherkPhase
 movement -> MovementStrategy, StraightMovement, ZigzagMovement, DiveMovement
 level    -> Level, MosquitoLevel, WaspLevel, CrowLevel, BossLevel, Wave, LevelManager, TutorialManager
 state    -> GameState, MenuState, PlayingState, PauseState, GameOverState
-ui       -> PlayerStatusPanel (Observer)
+ui       -> PlayerStatusPanel (Observer), Starfield (décor du menu uniquement)
 input    -> InputController (factory player1 / player2)
 asset    -> AssetManager (Singleton), Animation
 ```
