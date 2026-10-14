@@ -26,6 +26,12 @@ public class Starfield implements Updatable, Renderable {
     /** Vitesse de la couche rapide, en pixels par seconde. */
     private static final double FAST_SPEED = 60;
 
+    /** Couleur des étoiles rapides (devant). */
+    private static final Color FAST_COLOR = Color.web("#FFFFFF");
+
+    /** Couleur des étoiles lentes (loin). */
+    private static final Color SLOW_COLOR = Color.web("#8A93A6");
+
     /**
      * Une étoile : position et couche (taille et vitesse).
      */
@@ -81,9 +87,6 @@ public class Starfield implements Updatable, Renderable {
         }
     }
 
-    /** Largeur du ciel, en pixels. */
-    private final int width;
-
     /** Hauteur du ciel, en pixels. */
     private final int height;
 
@@ -108,7 +111,12 @@ public class Starfield implements Updatable, Renderable {
      * @param random tirage des positions et des couches
      */
     Starfield(int width, int height, Random random) {
-        this.width = width;
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("width and height must be > 0");
+        }
+        if (random == null) {
+            throw new IllegalArgumentException("random must not be null");
+        }
         this.height = height;
         for (int i = 0; i < STAR_COUNT; i++) {
             stars.add(new Star(random.nextDouble() * width, random.nextDouble() * height,
@@ -123,9 +131,16 @@ public class Starfield implements Updatable, Renderable {
      */
     @Override
     public void update(double dt) {
+        if (dt <= 0 || height <= 0) {
+            return;
+        }
         for (Star star : stars) {
-            star.y += (star.fast ? FAST_SPEED : SLOW_SPEED) * dt;
-            star.y %= height;
+            double y = star.y + (star.fast ? FAST_SPEED : SLOW_SPEED) * dt;
+            y %= height;
+            if (y < 0) {
+                y += height;
+            }
+            star.y = y;
         }
     }
 
@@ -138,10 +153,10 @@ public class Starfield implements Updatable, Renderable {
     public void render(GraphicsContext gc) {
         for (Star star : stars) {
             if (star.fast) {
-                gc.setFill(Color.web("#FFFFFF"));
+                gc.setFill(FAST_COLOR);
                 gc.fillRect(star.x, star.y, 3, 3);
             } else {
-                gc.setFill(Color.web("#8A93A6"));
+                gc.setFill(SLOW_COLOR);
                 gc.fillRect(star.x, star.y, 2, 2);
             }
         }
