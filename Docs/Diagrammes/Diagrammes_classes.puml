@@ -1,4 +1,4 @@
-@startuml uml_entites
+@startuml Diagrammes_classes
 title Shoot'em up - Diagramme de classes (Niveaux stricts)
 
 skinparam classAttributeIconSize 0
@@ -30,7 +30,7 @@ package "Niveau 1 : Interfaces globales" {
   interface BossPhase <<State>> {
     + execute(boss : EvilAI, dt : double) : void
     + next() : BossPhase
-    + sweep(boss : EvilAI, dt : double, speed : double) : void
+    + <<default>> sweep(boss : EvilAI, dt : double, speed : double) : void
   }
 }
 
@@ -55,7 +55,7 @@ package "Niveau 2 : Classes abstraites" {
   abstract class Character {
     # hp : int
     # maxHp : int
-    # observers : List<HealthObserver>
+    - observers : List<HealthObserver>
     + takeDamage(amount : int) : void
     + heal(amount : int) : void
     + isAlive() : boolean
@@ -151,6 +151,9 @@ package "Niveau 4 : Implémentations concrètes (Ennemis, Stratégies, États)" 
   }
   class EvilAI {
     + {static} SIZE : double = 80
+    - phase : BossPhase
+    - direction : int
+    - thresholdsCrossed : int
   }
 
   class StraightMovement

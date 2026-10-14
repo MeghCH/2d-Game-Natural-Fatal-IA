@@ -160,7 +160,7 @@ class EvilAI {
 interface BossPhase <<State>> {
   + execute(boss : EvilAI, dt : double) : void
   + next() : BossPhase
-  + sweep(boss : EvilAI, dt : double, speed : double) : void
+  + <<default>> sweep(boss : EvilAI, dt : double, speed : double) : void
 }
 
 class CalmPhase {
