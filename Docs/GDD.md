@@ -10,7 +10,7 @@
 - **Joueurs :** 2 joueurs en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
 - **Structure :** 4 niveaux avec une difficulté croissante, le dernier contre le boss.
 - **But :** Éliminer les vagues d'ennemis, survivre et vaincre le boss final (IA Fatale).
-- **Style visuel :** Shoot'em up des années 80, volontairement simple : sprites animés pour les joueurs, les tirs et les potions, rectangles de couleur pour les ennemis.
+- **Style visuel :** Shoot'em up des années 80, volontairement simple : sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions.
 
 ## 2. Règles du jeu
 
@@ -46,15 +46,14 @@ La difficulté augmente à chaque niveau :
 - Tuer un ennemi rapporte son score au joueur qui l'a abattu.
 - Une fois le boss vaincu, la partie se termine sur l'écran de fin, avec le score total des deux joueurs.
 
-> Point à préciser : XP (pas encore implémentée) et écran de victoire distinct de l'écran de défaite.
+
 
 ### 2.5 Potions de soin
 
 - Une potion tombe du haut de l'écran, à un endroit aléatoire, toutes les **6 à 12 secondes**, à 120 px/s.
-- Il suffit de la toucher pour la ramasser. Elle rend **10 PV**, sans dépasser le maximum de 30, et ne soigne qu'une seule fois.
+- Il suffit de la toucher pour la ramasser. Elle rend **4 PV**, sans dépasser le maximum de 30, et ne soigne qu'une seule fois.
 - Une fois ramassée, elle joue une courte animation puis disparaît. Une potion qui sort par le bas de l'écran est perdue.
 
-> Point à préciser : autres bonus éventuels.
 
 ## 3. Design et fonctionnalités des niveaux
 
@@ -108,7 +107,7 @@ Conseil de jeu : se décaler pour éviter les couloirs de descente.
   - PV sous le 1/3 : descente vers les joueurs, jusqu'au milieu de l'écran.
 - **Affichage :** barre de PV dédiée au boss en haut de l'écran (prévue, pas encore implémentée).
 
-> Point à préciser : patterns d'attaque du boss (tirs ?). Ses dégâts au contact sont appliqués à chaque image tant que le joueur le touche.
+
 
 ## 4. Interface
 
