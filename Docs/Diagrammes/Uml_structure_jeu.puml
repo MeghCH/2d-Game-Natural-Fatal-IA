@@ -4,7 +4,8 @@ title Shoot'em up - Diagramme de classes : structure du jeu
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam linetype ortho
-skinparam nodesep 60
+skinparam nodesep 130
+skinparam ranksep 150
 hide empty members
 
 abstract class Application <<JavaFX>>
@@ -16,8 +17,10 @@ class Main {
 }
 
 class Game {
-  - currentState : GameState
-  - loop : GameLoop
+- currentState : GameState
+
+- loop : GameLoop
+
   + {static} WIDTH : int = 960
   + {static} HEIGHT : int = 540
   + start(loop : GameLoop) : void
@@ -28,14 +31,19 @@ class Game {
   + render(gc : GraphicsContext) : void
   + keyPressed(code : KeyCode) : void
   + keyReleased(code : KeyCode) : void
-  - state() : GameState
+- state() : GameState
+
 }
 
 class GameLoop {
-  - game : Game
-  - gc : GraphicsContext
-  - last : long
-  - running : boolean
+- game : Game
+
+- gc : GraphicsContext
+
+- last : long
+
+- running : boolean
+
   + handle(now : long) : void
   + start() : void
   + stop() : void
@@ -51,57 +59,74 @@ interface GameState <<State>> {
 }
 
 class MenuState {
-  - {static} INPUT_DELAY : double = 1.0
-  - game : Game
-  - background : Starfield
-  - elapsed : double
-  - drawGrid(gc : GraphicsContext) : void
-  - drawScanlines(gc : GraphicsContext) : void
+- {static} INPUT_DELAY : double = 1.0
+
+- game : Game
+
+- background : Starfield
+
+- elapsed : double
+
+- drawGrid(gc : GraphicsContext) : void
+
+- drawScanlines(gc : GraphicsContext) : void
+
 }
 
 class PauseState {
-  - game : Game
-  - previousState : GameState
+- game : Game
+
+- previousState : GameState
+
 }
 
 class GameOverState {
-  - {static} INPUT_DELAY : double = 1.0
-  - game : Game
-  - score : int
-  - elapsed : double
+- {static} INPUT_DELAY : double = 1.0
+
+- game : Game
+
+- score : int
+
+- elapsed : double
+
 }
 
 class PlayingState {
-  - game : Game
-  - players : List<Player>
-  - projectiles : List<Projectile>
-  - levelManager : LevelManager
-  - statusPanel : PlayerStatusPanel
-  - potions : List<Potion>
-  - potionSpawner : PotionSpawner
+- game : Game
+
+- players : List<Player>
+
+- projectiles : List<Projectile>
+
+- levelManager : LevelManager
+
+- statusPanel : PlayerStatusPanel
+
+- potions : List<Potion>
+
+- potionSpawner : PotionSpawner
+
   + getPlayers() : List<Player>
   + getProjectiles() : List<Projectile>
   + getPotions() : List<Potion>
   + getLevelManager() : LevelManager
-  - addPlayer(player : Player) : void
-  - handleCollisions() : void
-  - updatePotions(dt : double) : void
-  - anyPlayerAlive() : boolean
-  - totalScore() : int
+- addPlayer(player : Player) : void
+
+- handleCollisions() : void
+
+- updatePotions(dt : double) : void
+
+- anyPlayerAlive() : boolean
+
+- totalScore() : int
+
 }
 
-class Player
-class Projectile
-class Potion
-abstract class Enemy
-class Mosquito
-class Wasp
-class Crow
-class EvilAI
-
 class LevelManager {
-  - levels : List<Level>
-  - currentIndex : int
+- levels : List<Level>
+
+- currentIndex : int
+
   + update(dt : double) : void
   + nextLevel() : boolean
   + isFinished() : boolean
@@ -113,7 +138,8 @@ class LevelManager {
 abstract class Level <<Template Method>> {
   # waves : Queue<Wave>
   # activeEnemies : List<Enemy>
-  - factory : EnemyFactory
+- factory : EnemyFactory
+
   + start() : void
   + update(dt : double) : void
   # {abstract} buildWaves() : void
@@ -122,44 +148,50 @@ abstract class Level <<Template Method>> {
   + getActiveEnemies() : List<Enemy>
 }
 
-note right of Level
-  start() et update() sont final :
-  le déroulement est figé, seules
-  buildWaves() et getBackgroundColor()
-  changent d'un niveau à l'autre
-end note
-
 class MosquitoLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
 }
-note bottom of MosquitoLevel : Niveau 1 - moustiques (3, 6, 10)
 
 class WaspLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
 }
-note bottom of WaspLevel : Niveau 2 - guêpes (3, 5, 8)
 
 class CrowLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
 }
-note bottom of CrowLevel : Niveau 3 - corbeaux (3, 5, 8)
 
 class BossLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
 }
-note bottom of BossLevel : Niveau 4 - IA maléfique (1)
 
 class Wave {
-  - type : EnemyType
-  - count : int
+- type : EnemyType
+
+- count : int
+
   + spawn(f : EnemyFactory) : List<Enemy>
   + getType() : EnemyType
   + getCount() : int
 }
+
+class TutorialManager {
+- TutorialManager()
+
+  + {static} createProgression(f : EnemyFactory) : LevelManager
+}
+
+class Player
+class Projectile
+class Potion
+abstract class Enemy
+class Mosquito
+class Wasp
+class Crow
+class EvilAI
 
 class EnemyFactory <<Factory>> {
   + create(t : EnemyType, x : double, y : double) : Enemy
@@ -170,11 +202,6 @@ enum EnemyType {
   WASP
   CROW
   EVIL_AI
-}
-
-class TutorialManager {
-  - TutorialManager()
-  + {static} createProgression(f : EnemyFactory) : LevelManager
 }
 
 interface HealthObserver <<Observer>> {
@@ -190,13 +217,20 @@ interface Renderable {
 }
 
 class PlayerStatusPanel {
-  - {static} FLASH_DURATION : double = 0.3
-  - {static} BAR_WIDTH : double = 200
-  - {static} BAR_HEIGHT : double = 16
-  - {static} MARGIN : double = 20
-  - players : List<Player>
-  - flashTimers : Map<Character, Double>
-  - lastKnownHp : Map<Character, Integer>
+- {static} FLASH_DURATION : double = 0.3
+
+- {static} BAR_WIDTH : double = 200
+
+- {static} BAR_HEIGHT : double = 16
+
+- {static} MARGIN : double = 20
+
+- players : List<Player>
+
+- flashTimers : Map<Character, Double>
+
+- lastKnownHp : Map<Character, Integer>
+
   + track(player : Player) : void
   + onHealthChanged(c : Character) : void
   + update(dt : double) : void
@@ -205,13 +239,20 @@ class PlayerStatusPanel {
 }
 
 class Starfield {
-  - {static} STAR_COUNT : int = 120
-  - {static} SLOW_SPEED : double = 20
-  - {static} FAST_SPEED : double = 60
-  - {static} FAST_COLOR : Color
-  - {static} SLOW_COLOR : Color
-  - height : int
-  - stars : List<Star>
+- {static} STAR_COUNT : int = 120
+
+- {static} SLOW_SPEED : double = 20
+
+- {static} FAST_SPEED : double = 60
+
+- {static} FAST_COLOR : Color
+
+- {static} SLOW_COLOR : Color
+
+- height : int
+
+- stars : List<Star>
+
   + update(dt : double) : void
   + render(gc : GraphicsContext) : void
   + getStarCount() : int
@@ -219,39 +260,57 @@ class Starfield {
 }
 
 class "Starfield.Star" as Star {
-  - x : double
-  - y : double
-  - fast : boolean
+- x : double
+
+- y : double
+
+- fast : boolean
+
   + getX() : double
   + getY() : double
   + isFast() : boolean
 }
 
 class PotionSpawner {
-  - {static} MIN_DELAY : double = 6
-  - {static} MAX_DELAY : double = 12
-  - random : Random
-  - timer : double
+- {static} MIN_DELAY : double = 6
+
+- {static} MAX_DELAY : double = 12
+
+- random : Random
+
+- timer : double
+
   + update(dt : double) : List<Potion>
-  - nextDelay() : double
+- nextDelay() : double
+
 }
 
 class AssetManager <<Singleton>> {
-  - {static} instance : AssetManager
-  - images : Map<String, Image>
-  - AssetManager()
+- {static} instance : AssetManager
+
+- images : Map<String, Image>
+
+- AssetManager()
+
   + {static} getInstance() : AssetManager
   + getImage(path : String) : Image
 }
 
 class Animation {
-  - frameWidth : double
-  - frameHeight : double
-  - row : int
-  - col : int
-  - frames : int
-  - fps : double
-  - loop : boolean
+- frameWidth : double
+
+- frameHeight : double
+
+- row : int
+
+- col : int
+
+- frames : int
+
+- fps : double
+
+- loop : boolean
+
   + Animation(frameWidth : double, frameHeight : double, row : int, col : int, frames : int, fps : double, loop : boolean)
   + Animation(frameWidth : double, frameHeight : double, row : int, frames : int, fps : double)
   + frameIndex(time : double) : int
@@ -329,6 +388,18 @@ Mosquito ..> AssetManager
 Wasp ..> AssetManager
 Crow ..> AssetManager
 EvilAI ..> AssetManager
+
+note right of Level
+  start() et update() sont final :
+  le déroulement est figé, seules
+  buildWaves() et getBackgroundColor()
+  changent d'un niveau à l'autre
+end note
+
+note bottom of MosquitoLevel : Niveau 1 - moustiques (3, 6, 10)
+note bottom of WaspLevel : Niveau 2 - guêpes (3, 5, 8)
+note bottom of CrowLevel : Niveau 3 - corbeaux (3, 5, 8)
+note bottom of BossLevel : Niveau 4 - IA maléfique (1)
 
 note right of GameState
   Menu → Partie : Entrée (après 1 s)

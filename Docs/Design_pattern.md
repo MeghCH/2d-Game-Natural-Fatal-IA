@@ -134,14 +134,14 @@ public class PauseState implements GameState {
 
 Les transitions entre écrans :
 
-| Depuis    | Touche / événement                          | Vers      |
-| --------- | ------------------------------------------- | --------- |
-| Menu      | Entrée                                      | Partie    |
-| Partie    | Échap                                       | Pause     |
-| Pause     | Échap                                       | Partie    |
-| Partie    | les deux joueurs sont morts ou boss vaincu  | Game Over |
-| Game Over | Entrée                                      | Partie    |
-| Game Over | Échap                                       | Menu      |
+| Depuis    | Touche / événement                         | Vers      |
+| --------- | ------------------------------------------ | --------- |
+| Menu      | Entrée                                     | Partie    |
+| Partie    | Échap                                      | Pause     |
+| Pause     | Échap                                      | Partie    |
+| Partie    | les deux joueurs sont morts ou boss vaincu | Game Over |
+| Game Over | Entrée                                     | Partie    |
+| Game Over | Échap                                      | Menu      |
 
 ### Deuxième utilisation : les phases de l'IA maléfique
 
@@ -209,11 +209,11 @@ public class EvilAI extends Enemy {
 
 Les trois phases :
 
-| Phase           | Quand             | Comportement                                                  |
-| --------------- | ----------------- | ------------------------------------------------------------- |
-| `CalmPhase`     | au départ         | balayage horizontal lent (60 px/s)                            |
-| `AngryPhase`    | PV sous les 2/3   | balayage horizontal rapide (140 px/s)                         |
-| `BersherkPhase` | PV sous le 1/3    | descend vers les joueurs (80 px/s) jusqu'au milieu de l'écran |
+| Phase           | Quand           | Comportement                                                  |
+| --------------- | --------------- | ------------------------------------------------------------- |
+| `CalmPhase`     | au départ       | balayage horizontal lent (60 px/s)                            |
+| `AngryPhase`    | PV sous les 2/3 | balayage horizontal rapide (140 px/s)                         |
+| `BersherkPhase` | PV sous le 1/3  | descend vers les joueurs (80 px/s) jusqu'au milieu de l'écran |
 
 `BersherkPhase.next()` renvoie la phase elle-même : c'est la dernière.
 
@@ -280,12 +280,12 @@ public class Mosquito extends Enemy {
 }
 ```
 
-| Ennemi     | PV  | Dégâts au contact | Score | Déplacement                       |
-| ---------- | --- | ----------------- | ----- | --------------------------------- |
-| `Mosquito` | 2   | 2                 | 100   | `ZigzagMovement`                  |
-| `Wasp`     | 3   | 6                 | 200   | `StraightMovement`                |
-| `Crow`     | 5   | 10                | 300   | `DiveMovement`                    |
-| `EvilAI`   | 100 | 10                | 1000  | aucun : ses phases le déplacent   |
+| Ennemi     | PV  | Dégâts au contact | Score | Déplacement                     |
+| ---------- | --- | ----------------- | ----- | ------------------------------- |
+| `Mosquito` | 2   | 2                 | 100   | `ZigzagMovement`                |
+| `Wasp`     | 3   | 6                 | 200   | `StraightMovement`              |
+| `Crow`     | 5   | 10                | 300   | `DiveMovement`                  |
+| `EvilAI`   | 100 | 10                | 1000  | aucun : ses phases le déplacent |
 
 `Wave` est le seul client de la fabrique : elle crée ses ennemis puis les répartit sur la largeur de l'écran.
 

@@ -5,6 +5,28 @@ skinparam classAttributeIconSize 0
 skinparam shadowing false
 hide empty members
 
+interface Updatable {
+  + update(dt : double) : void
+}
+
+interface Renderable {
+  + render(gc : GraphicsContext) : void
+}
+
+abstract class Entity {
+  # x : double
+  # y : double
+  # width : double
+  # height : double
+  + getX() : double
+  + getY() : double
+  + getWidth() : double
+  + getHeight() : double
+  + setX(x : double) : void
+  + setY(y : double) : void
+  + collidesWith(other : Entity) : boolean
+}
+
 abstract class Character {
   # hp : int
   - observers : List<HealthObserver>
@@ -59,6 +81,9 @@ class PlayerStatusPanel {
   + onHealthChanged(c : Character) : void
 }
 
+Updatable  <|.. Entity
+Renderable <|.. Entity
+Entity <|-- Character
 Character <|-- Player
 Player o-- "1" InputController
 Player *-- "1" Weapon

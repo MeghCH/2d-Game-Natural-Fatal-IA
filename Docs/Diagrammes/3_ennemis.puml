@@ -5,6 +5,41 @@ skinparam classAttributeIconSize 0
 skinparam shadowing false
 hide empty members
 
+interface Updatable {
+  + update(dt : double) : void
+}
+
+interface Renderable {
+  + render(gc : GraphicsContext) : void
+}
+
+abstract class Entity {
+  # x : double
+  # y : double
+  # width : double
+  # height : double
+  + getX() : double
+  + getY() : double
+  + getWidth() : double
+  + getHeight() : double
+  + setX(x : double) : void
+  + setY(y : double) : void
+  + collidesWith(other : Entity) : boolean
+}
+
+abstract class Character {
+  # hp : int
+  # maxHp : int
+  - observers : List<HealthObserver>
+  + takeDamage(amount : int) : void
+  + heal(amount : int) : void
+  + isAlive() : boolean
+  + getHp() : int
+  + getMaxHp() : int
+  + addObserver(o : HealthObserver) : void
+  # notifyObservers() : void
+}
+
 abstract class Enemy {
   # contactDamage : int
   # scoreValue : int
@@ -54,6 +89,11 @@ interface BossPhase <<State>> {
 class CalmPhase
 class AngryPhase
 class BersherkPhase
+
+Updatable  <|.. Entity
+Renderable <|.. Entity
+Entity <|-- Character
+Character <|-- Enemy
 
 Enemy <|-- Mosquito
 Enemy <|-- Wasp
