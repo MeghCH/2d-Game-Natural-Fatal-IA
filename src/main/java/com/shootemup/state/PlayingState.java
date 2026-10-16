@@ -11,6 +11,7 @@ import com.shootemup.entity.PotionSpawner;
 import com.shootemup.input.InputController;
 import com.shootemup.level.LevelManager;
 import com.shootemup.level.TutorialManager;
+import com.shootemup.ui.BossHealthBar;
 import com.shootemup.ui.PlayerStatusPanel;
 
 import javafx.geometry.VPos;
@@ -46,6 +47,9 @@ public class PlayingState implements GameState {
 
     /** Le panneau qui affiche la vie et le score des joueurs. */
     private final PlayerStatusPanel statusPanel = new PlayerStatusPanel();
+
+    /** La barre de vie du boss, visible pendant le combat final. */
+    private final BossHealthBar bossHealthBar = new BossHealthBar();
 
     /** Potions actuellement à l'écran. */
     private final List<Potion> potions = new ArrayList<>();
@@ -166,6 +170,7 @@ public class PlayingState implements GameState {
         }
 
         statusPanel.update(dt);
+        bossHealthBar.setBoss(findBoss());
 
         if (!anyPlayerAlive() || levelManager.isFinished()) {
             game.setState(new GameOverState(game, totalScore()));
@@ -229,6 +234,29 @@ public class PlayingState implements GameState {
     }
 
     /**
+     * Cherche le boss parmi les ennemis en jeu, pour sa barre de vie.
+     *
+     * @return le boss en jeu, ou {@code null} hors du combat final
+     */
+    private EvilAI findBoss() {
+        for (Enemy enemy : levelManager.getCurrentLevel().getActiveEnemies()) {
+            if (enemy instanceof EvilAI boss) {
+                return boss;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Indique la barre de vie du boss.
+     *
+     * @return la barre de vie du boss
+     */
+    public BossHealthBar getBossHealthBar() {
+        return bossHealthBar;
+    }
+
+    /**
      * Indique si au moins un joueur est encore en vie.
      *
      * @return {@code true} si au moins un joueur est en vie
@@ -289,6 +317,7 @@ public class PlayingState implements GameState {
         gc.fillText("NIVEAU " + levelManager.getCurrentLevelNumber(), Game.WIDTH / 2.0, 20);
 
         statusPanel.render(gc);
+        bossHealthBar.render(gc);
     }
 
     /**
