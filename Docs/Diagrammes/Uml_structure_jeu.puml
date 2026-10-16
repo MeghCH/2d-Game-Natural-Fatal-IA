@@ -102,6 +102,8 @@ class PlayingState {
 
 - statusPanel : PlayerStatusPanel
 
+- bossHealthBar : BossHealthBar
+
 - potions : List<Potion>
 
 - potionSpawner : PotionSpawner
@@ -110,11 +112,14 @@ class PlayingState {
   + getProjectiles() : List<Projectile>
   + getPotions() : List<Potion>
   + getLevelManager() : LevelManager
+  + getBossHealthBar() : BossHealthBar
 - addPlayer(player : Player) : void
 
 - handleCollisions() : void
 
 - updatePotions(dt : double) : void
+
+- findBoss() : EvilAI
 
 - anyPlayerAlive() : boolean
 
@@ -238,6 +243,18 @@ class PlayerStatusPanel {
   + render(gc : GraphicsContext) : void
 }
 
+class BossHealthBar {
+- {static} BAR_WIDTH : double = 300
+
+- {static} BAR_HEIGHT : double = 14
+
+- boss : EvilAI
+
+  + setBoss(boss : EvilAI) : void
+  + getBoss() : EvilAI
+  + render(gc : GraphicsContext) : void
+}
+
 class Starfield {
 - {static} STAR_COUNT : int = 120
 
@@ -339,6 +356,7 @@ PlayingState *-- "*" Projectile
 PlayingState *-- "*" Potion
 PlayingState o-- "1" PotionSpawner
 PlayingState *-- "1" PlayerStatusPanel
+PlayingState *-- "1" BossHealthBar
 PlayingState *-- "1" LevelManager
 PlayingState ..> TutorialManager : <<use>>
 PotionSpawner ..> Potion : <<create>>
@@ -368,6 +386,8 @@ Enemy <|-- EvilAI
 HealthObserver <|.. PlayerStatusPanel
 Updatable <|.. PlayerStatusPanel
 Renderable <|.. PlayerStatusPanel
+Renderable <|.. BossHealthBar
+BossHealthBar --> "0..1" EvilAI : suit
 PlayerStatusPanel o-- "*" Player : players
 
 Updatable <|.. Starfield

@@ -13,7 +13,8 @@
   Le ciel étoilé qui défile (`Starfield`) n'est affiché que sur le menu ; en partie,
   seul le fond uni du niveau est dessiné pour garder les vagues lisibles.
 - Les informations importantes sont toujours visibles en haut de l'écran : PV et score de chaque joueur
-  (J1 à gauche, J2 à droite) et numéro du niveau au centre. La barre de PV du boss est prévue mais pas encore implémentée.
+  (J1 à gauche, J2 à droite) et numéro du niveau au centre. Pendant le combat final, la barre de PV
+  du boss (`BossHealthBar`) est affichée en haut au centre, avec ses PV restants.
 
 ## 2. Contrôles, entrées utilisateur et gestion du temps
 
@@ -58,9 +59,9 @@
 - Chaque ennemi a sa propre manière de se déplacer :
   - Moustiques : en zigzag en descendant, comme un vrai insecte.
   - Guêpes : tout droit vers le bas (la trajectoire en rond prévue n'est pas encore implémentée).
-  - Corbeaux : piqué rapide vers le bas, il faut sortir de leur couloir.
+  - Corbeaux : descente lente puis piqué rapide vers le bas, il faut sortir de leur couloir.
   - Boss IA Fatale : change de comportement selon ses PV restants
-    (balayage horizontal lent, puis balayage rapide, puis descente vers les joueurs).
+    (balayage horizontal lent, puis balayage rapide, puis balayage rapide avec va-et-vient vertical).
 
 ## 5. Points tranchés par le code
 
@@ -75,4 +76,3 @@
 1. À quoi servirait l'XP : score seul, soin, arme plus forte ?
 2. Le boss inflige ses dégâts à chaque image tant qu'un joueur le touche : faut-il une courte invincibilité après un coup ?
 3. Écran de victoire distinct de l'écran de défaite.
-4. Barre de PV du boss, trajectoire en rond des guêpes (le décor qui défile existe déjà, mais au menu uniquement).

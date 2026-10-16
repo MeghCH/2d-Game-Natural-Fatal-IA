@@ -95,6 +95,14 @@ class InputController {
 
 class PlayerStatusPanel
 
+class BossHealthBar {
+  - {static} BAR_WIDTH : double = 300
+  - {static} BAR_HEIGHT : double = 14
+  - boss : EvilAI
+  + setBoss(boss : EvilAI) : void
+  + getBoss() : EvilAI
+}
+
 abstract class Enemy {
   # contactDamage : int
   # scoreValue : int
@@ -172,7 +180,11 @@ class AngryPhase {
 }
 
 class BersherkPhase {
-  - {static} SPEED : double = 80
+  - {static} SPEED_X : double = 220
+  - {static} SPEED_Y : double = 130
+  - {static} MIN_Y : double = 60
+  - {static} MAX_Y : double = Game.HEIGHT / 2
+  - yDirection : int
 }
 
 class Projectile {
@@ -228,7 +240,9 @@ class ZigzagMovement {
 }
 
 class DiveMovement {
-  - {static} SPEED : double = 250
+  - {static} SLOW_SPEED : double = 70
+  - {static} DIVE_SPEED : double = 425
+  - {static} DIVE_DELAY : double = 0.8
 }
 
 Updatable <|.. Entity
@@ -267,6 +281,8 @@ AngryPhase ..> BersherkPhase : next()
 
 Character o-- "*" HealthObserver
 HealthObserver <|.. PlayerStatusPanel
+Renderable <|.. BossHealthBar
+BossHealthBar --> "0..1" EvilAI : suit
 
 note right of Potion
   Tombe du haut de l'écran
