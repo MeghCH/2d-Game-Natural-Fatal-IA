@@ -134,6 +134,8 @@ package "Niveau 3 : Entités principales et objets" {
   }
 
   class PlayerStatusPanel
+
+  class BossHealthBar
 }
 
 ' ==========================================
@@ -193,6 +195,7 @@ BossPhase <|.. AngryPhase
 BossPhase <|.. BersherkPhase
 
 HealthObserver <|.. PlayerStatusPanel
+Renderable <|.. BossHealthBar
 Updatable <|.. Weapon
 
 Player *-right-> "1" Weapon

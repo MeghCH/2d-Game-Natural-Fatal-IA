@@ -35,7 +35,7 @@ La difficulté augmente à chaque niveau :
 | ------ | ---------------------- | --- | ----------------- | ----- | ----------------------------------- | -------- |
 | 1      | Moustiques             | 2   | 2                 | 100   | Zigzag en descendant (100 px/s)     | 3, 6, 10 |
 | 2      | Guêpes                 | 3   | 6                 | 200   | Ligne droite vers le bas (100 px/s) | 3, 5, 8  |
-| 3      | Corbeaux               | 5   | 10                | 300   | Piqué rapide vers le bas (250 px/s) | 3, 5, 8  |
+| 3      | Corbeaux               | 5   | 10                | 300   | Descente lente (70 px/s) puis piqué (425 px/s) | 3, 5, 8  |
 | 4      | IA Fatale (boss final) | 100 | 10                | 1000  | Évolutif selon ses PV (voir 3.4)    | 1        |
 
 ### 2.4 Apparition et combat
@@ -90,7 +90,7 @@ Conseil de jeu : tirer dès leur arrivée, avant qu'elles n'atteignent le bas de
 ![Croquis du niveau 3](../Images/level3.png)
 
 - **Ennemis :** corbeaux, en 3 vagues (3, 5 puis 8).
-- **Déplacement :** piqué rapide, tout droit du haut vers les joueurs.
+- **Déplacement :** descente lente (70 px/s pendant 0,8 s) puis piqué rapide vers le bas (425 px/s), comme un corbeau qui fond sur les joueurs.
 - **Dégâts :** 10 au contact. **PV :** 5.
 
 Conseil de jeu : se décaler pour éviter les couloirs de descente.
@@ -102,10 +102,10 @@ Conseil de jeu : se décaler pour éviter les couloirs de descente.
 - **Ennemi :** Robot IA (boss final, combat final), seul.
 - **PV :** 100. **Dégâts :** 10 au contact, pas de tirs.
 - **Déplacement :** évolutif selon ses PV :
-  - PV au-dessus des 2/3 : balayage horizontal lent.
-  - PV sous les 2/3 : balayage horizontal rapide.
-  - PV sous le 1/3 : descente vers les joueurs, jusqu'au milieu de l'écran.
-- **Affichage :** barre de PV dédiée au boss en haut de l'écran (prévue, pas encore implémentée).
+  - PV au-dessus des 2/3 : balayage horizontal lent (60 px/s).
+  - PV sous les 2/3 : balayage horizontal rapide (140 px/s).
+  - PV sous le 1/3 : balayage horizontal rapide (220 px/s) avec va-et-vient vertical (130 px/s, entre y = 60 et la moitié de l'écran), pour ne jamais rester immobile sous les tirs.
+- **Affichage :** barre de PV dédiée au boss en haut de l'écran (`BossHealthBar`, 300 px centrée, avec `PV/max`).
 
 
 
@@ -116,4 +116,4 @@ Conseil de jeu : se décaler pour éviter les couloirs de descente.
 - Haut de l'écran : barre de PV, PV (`30/30`) et score de chaque joueur (J1 à gauche, J2 à droite), numéro du niveau au centre.
 - Pause (Échap) : la partie reste visible, assombrie, avec « PAUSE ».
 - Fin de partie : « GAME OVER », score total, Entrée pour rejouer, Échap pour revenir au menu.
-- Niveau 4 : barre de PV du boss prévue, pas encore implémentée.
+- Niveau 4 : barre de PV du boss affichée en haut au centre, avec ses PV (`EVIL AI hp/max`).

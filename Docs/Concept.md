@@ -52,7 +52,7 @@ Pourquoi c'est adapté au module OOP :
 
 - Chaque joueur : **30 PV max**, une arme de base (1 dégât, un tir toutes les 0,2 s), pas d'armes à débloquer.
 - Ennemis et dégâts au contact : moustiques (2, zigzag), guêpes (6, ligne droite),
-  corbeaux (10, piqué rapide), IA Fatale (boss, 10, comportement selon ses PV).
+  corbeaux (10, descente lente puis piqué), IA Fatale (boss, 10, comportement selon ses PV).
 - Apparition par vagues depuis le haut : la vague suivante arrive quand la précédente est éliminée.
 - Potions de soin (10 PV) qui tombent du haut toutes les 6 à 12 s, à attraper sans se faire toucher.
 - Tuer un ennemi rapporte du score au joueur qui l'a abattu. Pas d'XP pour l'instant.
@@ -74,7 +74,8 @@ Inclus :
 - [x] Potions de soin tombant du haut.
 - [x] Sprites animés pour les joueurs, les tirs et les potions (`AssetManager`, `Animation`).
 - [x] Score par joueur.
-- [ ] Écran de victoire distinct + barre de PV du boss.
+- [x] Barre de PV du boss (`BossHealthBar`).
+- [ ] Écran de victoire distinct.
 - [ ] XP.
 
 Exclus du MVP :
@@ -100,7 +101,7 @@ enemy.boss -> BossPhase, CalmPhase, AngryPhase, BersherkPhase
 movement -> MovementStrategy, StraightMovement, ZigzagMovement, DiveMovement
 level    -> Level, MosquitoLevel, WaspLevel, CrowLevel, BossLevel, Wave, LevelManager, TutorialManager
 state    -> GameState, MenuState, PlayingState, PauseState, GameOverState
-ui       -> PlayerStatusPanel (Observer), Starfield (décor du menu uniquement)
+ui       -> PlayerStatusPanel (Observer), BossHealthBar (barre de vie du boss), Starfield (décor du menu uniquement)
 input    -> InputController (factory player1 / player2)
 asset    -> AssetManager (Singleton), Animation
 ```
@@ -108,16 +109,15 @@ asset    -> AssetManager (Singleton), Animation
 ## 5. Points tranchés par le code
 
 1. Arme des joueurs : 1 dégât par tir, un tir toutes les 0,2 s. PV : moustique 2, guêpe 3, corbeau 5, boss 100.
-2. Boss : 10 dégâts au contact, pas de tirs, trois phases selon ses PV (balayage lent, balayage rapide, descente).
+2. Boss : 10 dégâts au contact, pas de tirs, trois phases selon ses PV (balayage lent, balayage rapide, balayage rapide avec va-et-vient vertical), avec barre de PV affichée.
 3. Potions : 10 PV, une seule fois, toutes les 6 à 12 s, perdues si elles sortent par le bas.
 4. Coop : si un joueur meurt, l'autre continue. La partie s'arrête quand les deux sont morts ou que le boss est vaincu.
 5. Fin de niveau : quand toutes les vagues sont éliminées ou sorties de l'écran.
 6. Menu et GameOver : implémentés (Entrée pour jouer / rejouer, Échap pour revenir au menu).
-7. Vitesses : joueur 300 px/s, balle 600 px/s, moustiques et guêpes 100 px/s, corbeaux 250 px/s.
+7. Vitesses : joueur 300 px/s, balle 600 px/s, moustiques et guêpes 100 px/s, corbeaux 70 px/s puis 425 px/s en piqué, boss 60 / 140 / 220 px/s selon la phase.
 
 ## 6. Points à repréciser
 
 1. Règles XP : à quoi sert l'XP (score seul, soin, amélioration ?).
 2. Écran de victoire : aujourd'hui, la victoire mène au même écran « GAME OVER » que la défaite.
-3. Barre de PV du boss.
-4. Dégâts du boss appliqués à chaque image tant qu'un joueur le touche : ajouter une courte invincibilité ?
+3. Dégâts du boss appliqués à chaque image tant qu'un joueur le touche : ajouter une courte invincibilité ?

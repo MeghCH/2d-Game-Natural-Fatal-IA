@@ -213,7 +213,7 @@ Les trois phases :
 | --------------- | --------------- | ------------------------------------------------------------- |
 | `CalmPhase`     | au départ       | balayage horizontal lent (60 px/s)                            |
 | `AngryPhase`    | PV sous les 2/3 | balayage horizontal rapide (140 px/s)                         |
-| `BersherkPhase` | PV sous le 1/3  | descend vers les joueurs (80 px/s) jusqu'au milieu de l'écran |
+| `BersherkPhase` | PV sous le 1/3  | balayage horizontal rapide (220 px/s) avec va-et-vient vertical (130 px/s) |
 
 `BersherkPhase.next()` renvoie la phase elle-même : c'est la dernière.
 
@@ -335,7 +335,7 @@ public class ZigzagMovement implements MovementStrategy {
 }
 ```
 
-`StraightMovement` descend tout droit à 100 px/s et `DiveMovement` à 250 px/s.
+`StraightMovement` descend tout droit à 100 px/s et `DiveMovement` descend lentement à 70 px/s pendant 0,8 s puis pique à 425 px/s, comme un corbeau qui fond sur les joueurs.
 
 ```java
 public abstract class Enemy extends Character {
@@ -595,7 +595,7 @@ Le Singleton crée un état global, ce qui rend les tests plus difficiles. Nous 
 
 ## Dans les diagrammes
 
-Chaque pattern est visible dans le dossier `Diagrammes/` grâce à un stéréotype : `<<State>>` sur `GameState` et `BossPhase`, `<<Factory>>` sur `EnemyFactory`, `<<Strategy>>` sur `MovementStrategy`, `<<Observer>>` sur `HealthObserver`, `<<Template Method>>` sur `Level` et `<<Singleton>>` sur `AssetManager`. L'`AssetManager` figure dans `Uml_structure_jeu.puml`, utilisé par `Player`, `Projectile` et `Potion`.
+Chaque pattern est visible dans le dossier `Diagrammes/` grâce à un stéréotype : `<<State>>` sur `GameState` et `BossPhase`, `<<Factory>>` sur `EnemyFactory`, `<<Strategy>>` sur `MovementStrategy`, `<<Observer>>` sur `HealthObserver`, `<<Template Method>>` sur `Level` et `<<Singleton>>` sur `AssetManager`. L'`AssetManager` figure dans `Uml_structure_jeu.puml`, utilisé par `Player`, `Projectile` et `Potion`. La `BossHealthBar` (barre de vie du boss, simple affichage relu à chaque image) figure dans `Uml_structure_jeu.puml`, possédée par `PlayingState`.
 
 ## Patterns et tests
 
