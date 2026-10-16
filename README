@@ -69,6 +69,7 @@ B-OOP-301-STG-3-1-2dgame-5/
     │   │   ├── state/PlayingState.java
     │   │   ├── state/PauseState.java
     │   │   ├── state/GameOverState.java
+│   │   ├── state/VictoryState.java
     │   │   └── ui/PlayerStatusPanel.java
 │   │   └── ui/BossHealthBar.java
     │   │   └── ui/Starfield.java
@@ -104,6 +105,8 @@ B-OOP-301-STG-3-1-2dgame-5/
             ├── state/PlayingStateTest.java
             ├── state/MenuStateTest.java
             ├── state/GameOverStateTest.java
+            ├── state/VictoryStateTest.java
             ├── state/StateTransitionTest.java
             ├── ui/PlayerStatusPanelTest.java
+            ├── ui/BossHealthBarTest.java
             └── ui/StarfieldTest.java

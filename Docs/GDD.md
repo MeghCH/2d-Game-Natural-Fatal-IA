@@ -115,5 +115,5 @@ Conseil de jeu : se décaler pour éviter les couloirs de descente.
 - En partie : ennemis en haut, tirs vers le haut, joueurs J1 / J2 en bas.
 - Haut de l'écran : barre de PV, PV (`30/30`) et score de chaque joueur (J1 à gauche, J2 à droite), numéro du niveau au centre.
 - Pause (Échap) : la partie reste visible, assombrie, avec « PAUSE ».
-- Fin de partie : « GAME OVER », score total, Entrée pour rejouer, Échap pour revenir au menu.
+- Fin de partie : « GAME OVER » en néon rouge quand les deux joueurs sont éliminés, « VICTOIRE » en néon vert quand le boss est vaincu, avec le score total dans les deux cas, Entrée pour rejouer, Échap pour revenir au menu. Les deux écrans reprennent le style rétro du menu : ciel étoilé, grille néon et scanlines, avec invite clignotante.
 - Niveau 4 : barre de PV du boss affichée en haut au centre, avec ses PV (`EVIL AI hp/max`).
