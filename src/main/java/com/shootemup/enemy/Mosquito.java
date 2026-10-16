@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 /**
- * Moustique du niveau 1 : descend en zigzag et inflige 2 dégâts au contact.
+ * Moustique du niveau 1 : descend en zigzag et inflige 2 dégâts au contact. mettre en private aussi la size et avoir un set et get 
  */
 public class Mosquito extends Enemy {
 
