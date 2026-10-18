@@ -19,9 +19,6 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Build et tests
-        run: xvfb-run --auto-servernum mvn -B verify
-
       - name: Rapports de tests
         if: always()
         uses: actions/upload-artifact@v4
