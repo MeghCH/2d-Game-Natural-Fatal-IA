@@ -47,12 +47,12 @@ AWT/Swing fonctionnerait, mais demande de gérer soi-même le rafraîchissement 
 
 JavaFX est volontairement cantonné à la couche d'affichage et d'entrées.
 
-| Couche        | Contenu                                                                                                              | Dépend de JavaFX ?        |
-| ------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| Modèle        | `Entity`, `Character`, `Enemy`, `Weapon`, `Potion`, `Level`, `Wave`, `LevelManager`, `EnemyFactory`, `MovementStrategy`, `BossPhase` | seulement pour `render`   |
-| Affichage     | méthodes `render`, `PlayerStatusPanel`, `AssetManager`, `Animation`                                                  | oui                       |
-| Entrées       | `InputController`, `keyPressed` / `keyReleased` des `GameState`                                                      | oui                       |
-| Orchestration | `Game`, `GameLoop` (`AnimationTimer`), `PlayingState` (qui gère aussi les collisions)                                | oui                       |
+| Couche        | Contenu                                                                                                                              | Dépend de JavaFX ?      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| Modèle        | `Entity`, `Character`, `Enemy`, `Weapon`, `Potion`, `Level`, `Wave`, `LevelManager`, `EnemyFactory`, `MovementStrategy`, `BossPhase` | seulement pour `render` |
+| Affichage     | méthodes `render`, `PlayerStatusPanel`, `AssetManager`, `Animation`                                                                  | oui                     |
+| Entrées       | `InputController`, `keyPressed` / `keyReleased` des `GameState`                                                                      | oui                     |
+| Orchestration | `Game`, `GameLoop` (`AnimationTimer`), `PlayingState` (qui gère aussi les collisions)                                                | oui                     |
 
 Conséquence directe : toute la logique du jeu (dégâts, déplacements, vagues, fin de niveau) se teste avec JUnit **sans ouvrir de fenêtre**, ce qui permet une bonne couverture JaCoCo.
 
