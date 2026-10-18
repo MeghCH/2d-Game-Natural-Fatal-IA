@@ -89,6 +89,29 @@ class GameOverState {
 
 - elapsed : double
 
+- background : Starfield
+
+- drawGrid(gc : GraphicsContext) : void
+
+- drawScanlines(gc : GraphicsContext) : void
+
+}
+
+class VictoryState {
+- {static} INPUT_DELAY : double = 1.0
+
+- game : Game
+
+- score : int
+
+- elapsed : double
+
+- background : Starfield
+
+- drawGrid(gc : GraphicsContext) : void
+
+- drawScanlines(gc : GraphicsContext) : void
+
 }
 
 class PlayingState {
@@ -348,9 +371,12 @@ GameState <|.. MenuState
 GameState <|.. PlayingState
 GameState <|.. PauseState
 GameState <|.. GameOverState
+GameState <|.. VictoryState
 PauseState o-- "1" GameState : previousState
 
 MenuState *-- "1" Starfield : background
+GameOverState *-- "1" Starfield : background
+VictoryState *-- "1" Starfield : background
 PlayingState *-- "*" Player
 PlayingState *-- "*" Projectile
 PlayingState *-- "*" Potion
@@ -425,9 +451,12 @@ note right of GameState
   Menu → Partie : Entrée (après 1 s)
   Partie → Pause : Échap
   Pause → Partie : Échap
-  Partie → Game Over : fin de partie
+  Partie → Game Over : joueurs morts
+  Partie → Victoire : boss vaincu
   Game Over → Partie : Entrée (après 1 s)
   Game Over → Menu : Échap (après 1 s)
+  Victoire → Partie : Entrée (après 1 s)
+  Victoire → Menu : Échap (après 1 s)
 end note
 
 note bottom of PlayingState

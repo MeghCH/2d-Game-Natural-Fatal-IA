@@ -31,7 +31,7 @@ Pourquoi c'est adapté au module OOP :
   Observer (HUD), Template Method (`Level`), Singleton (`AssetManager`).
 - Pas de physique complexe ni d'inventaire : le budget va dans la game-loop, les collisions,
   les vagues et le boss.
-- Démo jouable simple : 4 niveaux de difficulté croissante, le dernier contre le boss, et un écran de fin avec le score.
+- Démo jouable simple : 4 niveaux de difficulté croissante, le dernier contre le boss, et des écrans de fin (victoire / game over) avec le score.
 
 ## 3. Choix figés (alignés sur le GDD et le code)
 
@@ -68,14 +68,14 @@ Pourquoi c'est adapté au module OOP :
 
 Inclus :
 - [x] 2 joueurs déplaçables, bornés à l'écran (vitesse 300 px/s), 30 PV.
-- [x] États : Menu / Playing / Pause / GameOver. HUD : PV + score par joueur (`PlayerStatusPanel`, Observer).
+- [x] États : Menu / Playing / Pause / GameOver / Victory. HUD : PV + score par joueur (`PlayerStatusPanel`, Observer).
 - [x] 4 niveaux : moustiques -> guêpes -> corbeaux -> boss IA Fatale.
 - [x] Projectiles joueurs, collisions, cleanup hors écran.
 - [x] Potions de soin tombant du haut.
 - [x] Sprites animés pour les joueurs, les tirs et les potions (`AssetManager`, `Animation`).
 - [x] Score par joueur.
 - [x] Barre de PV du boss (`BossHealthBar`).
-- [ ] Écran de victoire distinct.
+- [x] Écran de victoire distinct (`VictoryState`).
 - [ ] XP.
 
 Exclus du MVP :
@@ -119,5 +119,4 @@ asset    -> AssetManager (Singleton), Animation
 ## 6. Points à repréciser
 
 1. Règles XP : à quoi sert l'XP (score seul, soin, amélioration ?).
-2. Écran de victoire : aujourd'hui, la victoire mène au même écran « GAME OVER » que la défaite.
-3. Dégâts du boss appliqués à chaque image tant qu'un joueur le touche : ajouter une courte invincibilité ?
+2. Dégâts du boss appliqués à chaque image tant qu'un joueur le touche : ajouter une courte invincibilité ?

@@ -24,6 +24,7 @@
   - Menu : Entrée pour jouer.
   - Échap : pause, puis Échap à nouveau pour reprendre.
   - Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
+- Écran de victoire : « VICTOIRE » quand le boss est vaincu, avec le score total.
 - Le déplacement se fait dans les 4 directions, à 300 px/s. On ne peut pas sortir de l'écran.
 - Le tir est automatique tant que la touche est enfoncée, à raison d'un tir toutes les 0,2 s.
 - Le temps est en continu : les ennemis descendent même si on ne bouge pas.
@@ -75,4 +76,5 @@
 
 1. À quoi servirait l'XP : score seul, soin, arme plus forte ?
 2. Le boss inflige ses dégâts à chaque image tant qu'un joueur le touche : faut-il une courte invincibilité après un coup ?
-3. Écran de victoire distinct de l'écran de défaite.
+
+La partie est perdue (« GAME OVER ») quand les deux joueurs sont morts, gagnée (« VICTOIRE ») quand le boss est vaincu.

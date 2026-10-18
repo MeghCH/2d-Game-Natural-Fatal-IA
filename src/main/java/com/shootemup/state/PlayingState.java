@@ -144,8 +144,8 @@ public class PlayingState implements GameState {
     /**
      * Met à jour les joueurs et leurs tirs, fait avancer les balles et les ennemis,
      * applique les collisions, passe au niveau suivant quand il est terminé,
-     * puis met à jour le panneau d'état. Termine la partie quand tous les joueurs
-     * sont morts ou quand la progression est finie.
+     * puis met à jour le panneau d'état. Partie perdue quand tous les joueurs
+     * sont morts, gagnée quand la progression est finie (boss vaincu).
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
@@ -172,8 +172,10 @@ public class PlayingState implements GameState {
         statusPanel.update(dt);
         bossHealthBar.setBoss(findBoss());
 
-        if (!anyPlayerAlive() || levelManager.isFinished()) {
+        if (!anyPlayerAlive()) {
             game.setState(new GameOverState(game, totalScore()));
+        } else if (levelManager.isFinished()) {
+            game.setState(new VictoryState(game, totalScore()));
         }
     }
 

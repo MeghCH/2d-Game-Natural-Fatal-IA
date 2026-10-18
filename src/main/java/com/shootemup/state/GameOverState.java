@@ -1,6 +1,7 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
+import com.shootemup.ui.Starfield;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
@@ -21,6 +22,9 @@ public class GameOverState implements GameState {
 
     /** Temps écoulé depuis l'affichage, en secondes. */
     private double elapsed = 0;
+
+    /** Le ciel étoilé qui défile derrière l'écran, comme au menu. */
+    private final Starfield background = new Starfield(Game.WIDTH, Game.HEIGHT);
 
     /** Délai avant d'accepter une touche, en secondes : évite de sauter l'écran avec une touche restée enfoncée. */
     private static final double INPUT_DELAY = 1.0;
@@ -44,17 +48,19 @@ public class GameOverState implements GameState {
     }
 
     /**
-     * Fait avancer le délai avant d'accepter les touches.
+     * Fait avancer le délai avant d'accepter les touches et défiler le fond.
      *
      * @param dt temps écoulé depuis la dernière image, en secondes
      */
     @Override
     public void update(double dt) {
         elapsed += dt;
+        background.update(dt);
     }
 
     /**
-     * Dessine le titre, le score et les choix (rejouer ou menu).
+     * Dessine le fond rétro (étoiles, grille néon, scanlines), le titre,
+     * le score et les choix (rejouer ou menu).
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -62,16 +68,55 @@ public class GameOverState implements GameState {
     public void render(GraphicsContext gc) {
         gc.setFill(Color.web("#101820"));
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+        background.render(gc);
+        drawGrid(gc);
 
-        gc.setFill(Color.WHITE);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
         gc.setFont(Font.font(48));
+        gc.setFill(Color.web("#7A1F2B"));
+        gc.fillText("GAME OVER", Game.WIDTH / 2.0 + 3, Game.HEIGHT / 2.0 - 57);
+        gc.setFill(Color.web("#E24B4A"));
         gc.fillText("GAME OVER", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 - 60);
         gc.setFont(Font.font(24));
+        gc.setFill(Color.WHITE);
         gc.fillText("SCORE : " + score, Game.WIDTH / 2.0, Game.HEIGHT / 2.0);
-        gc.setFont(Font.font(20));
-        gc.fillText("ENTREE : REJOUER   -   ECHAP : MENU", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 60);
+
+        if (elapsed % 1.0 < 0.6) {
+            gc.setFont(Font.font(20));
+            gc.fillText("ENTREE : REJOUER   -   ECHAP : MENU", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 60);
+        }
+        drawScanlines(gc);
+    }
+
+    /**
+     * Dessine le sol en grille néon, lignes rouges convergentes vers l'horizon.
+     *
+     * @param gc contexte graphique du canvas sur lequel dessiner
+     */
+    private void drawGrid(GraphicsContext gc) {
+        double horizon = Game.HEIGHT * 0.68;
+        gc.setStroke(Color.web("#E24B4A"));
+        gc.setLineWidth(2);
+        for (int i = 0; i < 4; i++) {
+            double y = horizon + i * i * 8 + i * 12;
+            gc.strokeLine(0, y, Game.WIDTH, y);
+        }
+        for (int i = -6; i <= 6; i++) {
+            gc.strokeLine(Game.WIDTH / 2.0 + i * 40, horizon, Game.WIDTH / 2.0 + i * 140, Game.HEIGHT);
+        }
+    }
+
+    /**
+     * Dessine des lignes sombres sur tout l'écran, effet écran cathodique.
+     *
+     * @param gc contexte graphique du canvas sur lequel dessiner
+     */
+    private void drawScanlines(GraphicsContext gc) {
+        gc.setFill(Color.rgb(0, 0, 0, 0.15));
+        for (int y = 0; y < Game.HEIGHT; y += 4) {
+            gc.fillRect(0, y, Game.WIDTH, 2);
+        }
     }
 
     /**

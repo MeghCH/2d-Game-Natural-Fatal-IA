@@ -25,7 +25,7 @@ Le jeu passe par plusieurs écrans : menu, partie, pause, game over. Sans patter
 
 ### Solution
 
-Chaque écran est une classe qui implémente `GameState` : `MenuState`, `PlayingState`, `PauseState` et `GameOverState`. `Game` garde une référence vers l'état courant et lui délègue tout. Changer d'écran revient à changer d'objet.
+Chaque écran est une classe qui implémente `GameState` : `MenuState`, `PlayingState`, `PauseState`, `GameOverState` et `VictoryState`. `Game` garde une référence vers l'état courant et lui délègue tout. Changer d'écran revient à changer d'objet.
 
 ```java
 /**
@@ -139,9 +139,12 @@ Les transitions entre écrans :
 | Menu      | Entrée                                     | Partie    |
 | Partie    | Échap                                      | Pause     |
 | Pause     | Échap                                      | Partie    |
-| Partie    | les deux joueurs sont morts ou boss vaincu | Game Over |
+| Partie    | les deux joueurs sont morts                        | Game Over |
+| Partie    | boss vaincu (progression finie)                    | Victoire  |
 | Game Over | Entrée                                     | Partie    |
 | Game Over | Échap                                      | Menu      |
+| Victoire  | Entrée                                     | Partie    |
+| Victoire  | Échap                                      | Menu      |
 
 ### Deuxième utilisation : les phases de l'IA maléfique
 
