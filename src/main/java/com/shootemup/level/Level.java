@@ -75,6 +75,27 @@ public abstract class Level {
     public abstract String getBackgroundColor();
 
     /**
+     * Indique la couleur d'accent du niveau, utilisée par le décor et le HUD.
+     * <p>
+     * Chaque secteur peut la redéfinir pour garder son ambiance ; la valeur
+     * par défaut convient aux niveaux qui n'en définissent pas.
+     *
+     * @return la couleur d'accent, en hexadécimal
+     */
+    public String getAccentColor() {
+        return "#55F0C8";
+    }
+
+    /**
+     * Indique le nom du secteur affiché dans le HUD.
+     *
+     * @return le nom du secteur
+     */
+    public String getLevelName() {
+        return "SECTEUR";
+    }
+
+    /**
      * Indique si le niveau est terminé.
      *
      * @return {@code true} quand toutes les vagues sont apparues et qu'il ne reste aucun ennemi

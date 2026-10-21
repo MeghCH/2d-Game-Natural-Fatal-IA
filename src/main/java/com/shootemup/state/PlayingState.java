@@ -9,17 +9,17 @@ import com.shootemup.entity.Projectile;
 import com.shootemup.entity.Potion;
 import com.shootemup.entity.PotionSpawner;
 import com.shootemup.input.InputController;
+import com.shootemup.level.Level;
 import com.shootemup.level.LevelManager;
 import com.shootemup.level.TutorialManager;
+import com.shootemup.ui.ArcadeTheme;
 import com.shootemup.ui.BossHealthBar;
+import com.shootemup.ui.LevelBackdrop;
 import com.shootemup.ui.PlayerStatusPanel;
 
-import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +56,9 @@ public class PlayingState implements GameState {
 
     /** Fait tomber des potions au hasard. */
     private final PotionSpawner potionSpawner;
+
+    /** Décor animé du niveau : dégradé, poussières et grille d'horizon. */
+    private final LevelBackdrop backdrop = new LevelBackdrop(Game.WIDTH, Game.HEIGHT);
 
     
     /**
@@ -157,6 +160,7 @@ public class PlayingState implements GameState {
         }
 
         levelManager.update(dt);
+        backdrop.update(dt);
         handleCollisions();
         updatePotions(dt);
 
@@ -286,17 +290,17 @@ public class PlayingState implements GameState {
     }
 
     /**
-     * Dessine le fond uni du niveau, les ennemis, les joueurs, les balles, le numéro du niveau,
-     * les potions, puis le panneau d'état par-dessus.
+     * Dessine le décor animé du niveau, les ennemis, les joueurs, les balles,
+     * les potions, le badge de stage, puis le panneau d'état par-dessus.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web(levelManager.getBackgroundColor()));
-        gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+        Level level = levelManager.getCurrentLevel();
+        backdrop.render(gc, level.getBackgroundColor(), level.getAccentColor());
 
-        for (Enemy enemy : levelManager.getCurrentLevel().getActiveEnemies()) {
+        for (Enemy enemy : level.getActiveEnemies()) {
             enemy.render(gc);
         }
 
@@ -312,14 +316,35 @@ public class PlayingState implements GameState {
             projectile.render(gc);
         }
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font(14));
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.TOP);
-        gc.fillText("NIVEAU " + levelManager.getCurrentLevelNumber(), Game.WIDTH / 2.0, 20);
+        drawStageBadge(gc, level);
 
         statusPanel.render(gc);
         bossHealthBar.render(gc);
+        ArcadeTheme.crtFrame(gc, Game.WIDTH, Game.HEIGHT);
+    }
+
+    /**
+     * Dessine le badge « STAGE » au centre du haut de l'écran.
+     *
+     * @param gc    contexte graphique
+     * @param level le niveau en cours
+     */
+    private void drawStageBadge(GraphicsContext gc, Level level) {
+        double width = 300;
+        double x = (Game.WIDTH - width) / 2.0;
+        gc.setFill(ArcadeTheme.withAlpha(ArcadeTheme.PANEL, 0.72));
+        gc.fillRect(x, 8, width, 24);
+        gc.setStroke(ArcadeTheme.withAlpha(Color.web(level.getAccentColor()), 0.7));
+        gc.setLineWidth(1);
+        gc.strokeRect(x + 0.5, 8.5, width - 1, 23);
+
+        gc.setFill(Color.web(level.getAccentColor()));
+        gc.fillRect(x, 30, width, 2);
+
+        ArcadeTheme.centered(gc,
+                String.format("STAGE %02d // %s",
+                        levelManager.getCurrentLevelNumber(), level.getLevelName()),
+                Game.WIDTH / 2.0, 20, 12, ArcadeTheme.WHITE, ArcadeTheme.VOID);
     }
 
     /**
