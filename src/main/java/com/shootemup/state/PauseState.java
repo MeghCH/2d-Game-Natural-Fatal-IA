@@ -1,12 +1,10 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
-import javafx.geometry.VPos;
+import com.shootemup.ui.ArcadeTheme;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 /**
  * Écran de pause, affiché par-dessus la partie en cours.
@@ -57,14 +55,16 @@ public class PauseState implements GameState {
     public void render(GraphicsContext gc) {
         previousState.render(gc);
 
-        gc.setFill(Color.rgb(0, 0, 0, 0.6));
+        gc.setFill(Color.rgb(0, 0, 0, 0.66));
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font(48));
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.CENTER);
-        gc.fillText("PAUSE", Game.WIDTH / 2.0, Game.HEIGHT / 2.0);
+        double centerX = Game.WIDTH / 2.0;
+        ArcadeTheme.panel(gc, centerX - 210, Game.HEIGHT / 2.0 - 70,
+                420, 140, ArcadeTheme.CYAN);
+        ArcadeTheme.glowCentered(gc, "PAUSE", centerX, Game.HEIGHT / 2.0 - 18,
+                48, ArcadeTheme.WHITE, ArcadeTheme.CYAN);
+        ArcadeTheme.centered(gc, "ESC // RESUME MISSION", centerX,
+                Game.HEIGHT / 2.0 + 34, 14, ArcadeTheme.MUTED, ArcadeTheme.VOID);
     }
 
     /**

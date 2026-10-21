@@ -6,11 +6,8 @@ import com.shootemup.entity.HealthObserver;
 import com.shootemup.entity.Player;
 import com.shootemup.entity.Renderable;
 import com.shootemup.entity.Updatable;
-import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,31 +107,33 @@ public class PlayerStatusPanel implements HealthObserver, Updatable, Renderable 
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFont(Font.font(14));
-        gc.setTextAlign(TextAlignment.LEFT);
-        gc.setTextBaseline(VPos.BASELINE);
-
         for (Player player : players) {
             double barX = (player.getPlayerId() == 1)
                     ? MARGIN
                     : Game.WIDTH - MARGIN - BAR_WIDTH;
-            double barY = MARGIN;
+            double barY = 32;
 
-            gc.setFill(Color.web("#2C2C2A"));
-            gc.fillRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
-
-            double filled = BAR_WIDTH * player.getHp() / player.getMaxHp();
             Color playerColor = (player.getPlayerId() == 1)
-                    ? Color.web("#5DCAA5")
-                    : Color.web("#F0997B");
-            gc.setFill(isFlashing(player) ? Color.web("#E24B4A") : playerColor);
-            gc.fillRect(barX, barY, filled, BAR_HEIGHT);
+                    ? ArcadeTheme.PLAYER_ONE
+                    : ArcadeTheme.PLAYER_TWO;
 
-            gc.setFill(Color.WHITE);
-            String text = "J" + player.getPlayerId()
-                    + "  " + player.getHp() + "/" + player.getMaxHp()
-                    + "  Score : " + player.getScore();
-            gc.fillText(text, barX, barY + BAR_HEIGHT + 16);
+            ArcadeTheme.panel(gc, barX - 8, 12, BAR_WIDTH + 16, 64,
+                    playerColor);
+
+            ArcadeTheme.text(gc, player.getPlayerId() + "P", barX, 26,
+                    11, playerColor, ArcadeTheme.VOID);
+
+            double ratio = player.getMaxHp() == 0
+                    ? 0
+                    : (double) player.getHp() / player.getMaxHp();
+            ArcadeTheme.segmentedBar(gc, barX, barY, BAR_WIDTH, BAR_HEIGHT,
+                    ratio,
+                    isFlashing(player) ? ArcadeTheme.RED : playerColor);
+
+            String text = String.format("HP %02d/%02d   SCORE %06d",
+                    player.getHp(), player.getMaxHp(), player.getScore());
+            ArcadeTheme.text(gc, text, barX, 64, 11, ArcadeTheme.WHITE,
+                    ArcadeTheme.VOID);
         }
     }
 }

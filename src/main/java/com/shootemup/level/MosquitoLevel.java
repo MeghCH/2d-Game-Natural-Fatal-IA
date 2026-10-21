@@ -36,4 +36,24 @@ public class MosquitoLevel extends Level {
     public String getBackgroundColor() {
         return "#0F2E23";
     }
+
+    /**
+     * Indique la couleur d'accent du niveau : vert lumineux du jardin.
+     *
+     * @return la couleur d'accent, en hexadécimal
+     */
+    @Override
+    public String getAccentColor() {
+        return "#55F08B";
+    }
+
+    /**
+     * Indique le nom du secteur : le jardin.
+     *
+     * @return le nom du secteur
+     */
+    @Override
+    public String getLevelName() {
+        return "JARDIN";
+    }
 }
