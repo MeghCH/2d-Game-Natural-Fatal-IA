@@ -1,16 +1,16 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
+import com.shootemup.ui.ArcadeTheme;
 import com.shootemup.ui.Starfield;
-import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 /**
  * Écran de fin de partie : score final, Entrée pour rejouer, Échap pour le menu.
+ * <p>
+ * Présenté comme un écran d'arcade « GAME OVER » : titre qui grésille,
+ * panneau de score et invite à insérer une pièce.
  */
 public class GameOverState implements GameState {
 
@@ -59,64 +59,64 @@ public class GameOverState implements GameState {
     }
 
     /**
-     * Dessine le fond rétro (étoiles, grille néon, scanlines), le titre,
-     * le score et les choix (rejouer ou menu).
+     * Dessine l'écran « GAME OVER » : fond rouge, titre qui grésille,
+     * panneau de score et choix (rejouer ou menu).
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#101820"));
+        double centerX = Game.WIDTH / 2.0;
+
+        gc.setFill(ArcadeTheme.VOID);
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
         background.render(gc);
-        drawGrid(gc);
+        ArcadeTheme.horizonGrid(gc, Game.WIDTH, Game.HEIGHT,
+                Game.HEIGHT * 0.67, ArcadeTheme.RED, elapsed * 0.5);
+        ArcadeTheme.vignette(gc, Game.WIDTH, Game.HEIGHT);
 
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.CENTER);
-        gc.setFont(Font.font(48));
-        gc.setFill(Color.web("#7A1F2B"));
-        gc.fillText("GAME OVER", Game.WIDTH / 2.0 + 3, Game.HEIGHT / 2.0 - 57);
-        gc.setFill(Color.web("#E24B4A"));
-        gc.fillText("GAME OVER", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 - 60);
-        gc.setFont(Font.font(24));
-        gc.setFill(Color.WHITE);
-        gc.fillText("SCORE : " + score, Game.WIDTH / 2.0, Game.HEIGHT / 2.0);
+        ArcadeTheme.centered(gc, "SIGNAL LOST // CONNECTION TERMINATED",
+                centerX, 46, 12, ArcadeTheme.RED, ArcadeTheme.VOID);
 
-        if (elapsed % 1.0 < 0.6) {
-            gc.setFont(Font.font(20));
-            gc.fillText("ENTREE : REJOUER   -   ECHAP : MENU", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 60);
+        double titleY = 168;
+        if (elapsed % 2.4 < 0.12) {
+            ArcadeTheme.centered(gc, "GAME OVER", centerX - 6, titleY, 72,
+                    ArcadeTheme.CYAN, null);
+            ArcadeTheme.centered(gc, "GAME OVER", centerX + 6, titleY, 72,
+                    ArcadeTheme.MAGENTA, null);
         }
-        drawScanlines(gc);
-    }
+        ArcadeTheme.centered(gc, "GAME OVER", centerX + 4, titleY + 4, 72,
+                ArcadeTheme.withAlpha(ArcadeTheme.RED, 0.45), null);
+        ArcadeTheme.glowCentered(gc, "GAME OVER", centerX, titleY,
+                72, ArcadeTheme.RED, ArcadeTheme.RED);
 
-    /**
-     * Dessine le sol en grille néon, lignes rouges convergentes vers l'horizon.
-     *
-     * @param gc contexte graphique du canvas sur lequel dessiner
-     */
-    private void drawGrid(GraphicsContext gc) {
-        double horizon = Game.HEIGHT * 0.68;
-        gc.setStroke(Color.web("#E24B4A"));
-        gc.setLineWidth(2);
-        for (int i = 0; i < 4; i++) {
-            double y = horizon + i * i * 8 + i * 12;
-            gc.strokeLine(0, y, Game.WIDTH, y);
-        }
-        for (int i = -6; i <= 6; i++) {
-            gc.strokeLine(Game.WIDTH / 2.0 + i * 40, horizon, Game.WIDTH / 2.0 + i * 140, Game.HEIGHT);
-        }
-    }
+        ArcadeTheme.centered(gc, "THE LAST FIGHTER HAS FALLEN",
+                centerX, 222, 14, ArcadeTheme.MUTED, ArcadeTheme.VOID);
 
-    /**
-     * Dessine des lignes sombres sur tout l'écran, effet écran cathodique.
-     *
-     * @param gc contexte graphique du canvas sur lequel dessiner
-     */
-    private void drawScanlines(GraphicsContext gc) {
-        gc.setFill(Color.rgb(0, 0, 0, 0.15));
-        for (int y = 0; y < Game.HEIGHT; y += 4) {
-            gc.fillRect(0, y, Game.WIDTH, 2);
+        double panelX = centerX - 230;
+        double panelY = 258;
+        ArcadeTheme.panel(gc, panelX, panelY, 460, 96, ArcadeTheme.RED);
+        ArcadeTheme.centered(gc, "FINAL SCORE", centerX, panelY + 24,
+                12, ArcadeTheme.MUTED, null);
+        ArcadeTheme.centered(gc, String.format("%06d", score), centerX,
+                panelY + 62, 38, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
+
+        if (elapsed % 1.0 < 0.62) {
+            ArcadeTheme.centered(gc, "PRESS ENTER // CONTINUE",
+                    centerX, 404, 20, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
         }
+        ArcadeTheme.centered(gc, "ESC // TITLE SCREEN", centerX, 438,
+                12, ArcadeTheme.MUTED, ArcadeTheme.VOID);
+
+        if (elapsed % 1.4 < 0.8) {
+            ArcadeTheme.centered(gc, "INSERT COIN", centerX, Game.HEIGHT - 60,
+                    12, ArcadeTheme.RED, null);
+        }
+        ArcadeTheme.centered(gc, "© 1987 NATURAL FATAL SOFT",
+                centerX, Game.HEIGHT - 36, 11, ArcadeTheme.MUTED, null);
+
+        ArcadeTheme.scanlines(gc, Game.WIDTH, Game.HEIGHT);
+        ArcadeTheme.crtFrame(gc, Game.WIDTH, Game.HEIGHT);
     }
 
     /**

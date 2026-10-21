@@ -6,7 +6,6 @@ import com.shootemup.entity.Renderable;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 /**
@@ -62,20 +61,26 @@ public class BossHealthBar implements Renderable {
             return;
         }
         double barX = (Game.WIDTH - BAR_WIDTH) / 2.0;
-        double barY = 40;
+        double barY = 46;
+        double ratio = boss.getMaxHp() == 0
+                ? 0
+                : (double) boss.getHp() / boss.getMaxHp();
+        Color barColor = ratio > 0.3 ? ArcadeTheme.MAGENTA : ArcadeTheme.RED;
 
-        gc.setFill(Color.web("#2C2C2A"));
-        gc.fillRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
+        ArcadeTheme.panel(gc, barX - 12, barY - 12, BAR_WIDTH + 24, 52,
+                barColor);
 
-        double filled = BAR_WIDTH * boss.getHp() / (double) boss.getMaxHp();
-        gc.setFill(Color.web("#E24B7A"));
-        gc.fillRect(barX, barY, filled, BAR_HEIGHT);
+        ArcadeTheme.text(gc, "WARNING // EVIL AI", barX, barY + 2,
+                10, barColor, ArcadeTheme.VOID);
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font(12));
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.TOP);
-        gc.fillText("EVIL AI  " + boss.getHp() + "/" + boss.getMaxHp(),
-                Game.WIDTH / 2.0, barY + BAR_HEIGHT + 4);
+        ArcadeTheme.segmentedBar(gc, barX, barY + 8, BAR_WIDTH, BAR_HEIGHT,
+                ratio, barColor);
+
+        String hp = String.format("%03d/%03d", boss.getHp(), boss.getMaxHp());
+        gc.setFont(ArcadeTheme.font(9));
+        gc.setFill(ArcadeTheme.WHITE);
+        gc.setTextAlign(TextAlignment.RIGHT);
+        gc.setTextBaseline(VPos.BASELINE);
+        gc.fillText(hp, barX + BAR_WIDTH, barY + 2);
     }
 }

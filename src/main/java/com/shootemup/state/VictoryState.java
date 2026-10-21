@@ -1,17 +1,18 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
+import com.shootemup.ui.ArcadeTheme;
 import com.shootemup.ui.Starfield;
-import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 /**
- * Écran de victoire : le boss final est vaincu, score final,
+ * Écran de victoire : le boss final est vaincu, score final et rang,
  * Entrée pour rejouer, Échap pour le menu.
+ * <p>
+ * Présenté comme un écran de fin de mission arcade : « MISSION COMPLETE »,
+ * bilan de score et rang à la manière des vieux shoot'em up.
  */
 public class VictoryState implements GameState {
 
@@ -29,6 +30,15 @@ public class VictoryState implements GameState {
 
     /** Délai avant d'accepter une touche, en secondes : évite de sauter l'écran avec une touche restée enfoncée. */
     private static final double INPUT_DELAY = 1.0;
+
+    /** Score à partir duquel le joueur obtient le rang S. */
+    private static final int RANK_S = 9000;
+
+    /** Score à partir duquel le joueur obtient le rang A. */
+    private static final int RANK_A = 7000;
+
+    /** Score à partir duquel le joueur obtient le rang B. */
+    private static final int RANK_B = 4500;
 
     /**
      * Crée l'écran de victoire.
@@ -60,65 +70,104 @@ public class VictoryState implements GameState {
     }
 
     /**
-     * Dessine le fond rétro (étoiles, grille néon, scanlines), le titre,
-     * le score et les choix (rejouer ou menu).
+     * Dessine l'écran de victoire : fond vert, titre « MISSION COMPLETE »,
+     * bilan de score, rang et choix (rejouer ou menu).
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#101820"));
+        double centerX = Game.WIDTH / 2.0;
+
+        gc.setFill(ArcadeTheme.VOID);
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
         background.render(gc);
-        drawGrid(gc);
+        ArcadeTheme.horizonGrid(gc, Game.WIDTH, Game.HEIGHT,
+                Game.HEIGHT * 0.67, ArcadeTheme.GREEN, elapsed * 0.5);
+        ArcadeTheme.vignette(gc, Game.WIDTH, Game.HEIGHT);
 
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.CENTER);
-        gc.setFont(Font.font(48));
-        gc.setFill(Color.web("#1F5C46"));
-        gc.fillText("VICTOIRE", Game.WIDTH / 2.0 + 3, Game.HEIGHT / 2.0 - 57);
-        gc.setFill(Color.web("#5DCAA5"));
-        gc.fillText("VICTOIRE", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 - 60);
-        gc.setFont(Font.font(24));
-        gc.setFill(Color.WHITE);
-        gc.fillText("IA FATALE VAINCUE", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 - 10);
-        gc.fillText("SCORE : " + score, Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 25);
+        ArcadeTheme.centered(gc, "MISSION REPORT // SECTOR CLEARED",
+                centerX, 46, 12, ArcadeTheme.GREEN, ArcadeTheme.VOID);
 
-        if (elapsed % 1.0 < 0.6) {
-            gc.setFont(Font.font(20));
-            gc.fillText("ENTREE : REJOUER   -   ECHAP : MENU", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 70);
+        double bob = Math.sin(elapsed * 2.6) * 4;
+        ArcadeTheme.ship(gc, 120, 160 + bob, ArcadeTheme.PLAYER_ONE, 1.2, elapsed);
+        ArcadeTheme.ship(gc, Game.WIDTH - 120, 160 - bob, ArcadeTheme.PLAYER_TWO, 1.2, elapsed);
+
+        ArcadeTheme.centered(gc, "MISSION COMPLETE", centerX + 4, 164,
+                52, ArcadeTheme.withAlpha(ArcadeTheme.GREEN, 0.45), null);
+        ArcadeTheme.glowCentered(gc, "MISSION COMPLETE", centerX, 160,
+                52, ArcadeTheme.GREEN, ArcadeTheme.AMBER);
+
+        ArcadeTheme.centered(gc, "EVIL AI DESTROYED", centerX, 216,
+                18, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
+
+        double panelX = centerX - 230;
+        double panelY = 252;
+        double panelWidth = 460;
+        double panelHeight = 104;
+        ArcadeTheme.panel(gc, panelX, panelY, panelWidth, panelHeight, ArcadeTheme.GREEN);
+
+        double dividerX = panelX + 310;
+        gc.setStroke(ArcadeTheme.withAlpha(ArcadeTheme.GREEN, 0.45));
+        gc.setLineWidth(1);
+        gc.strokeLine(dividerX, panelY + 16, dividerX, panelY + panelHeight - 16);
+
+        ArcadeTheme.centered(gc, "FINAL SCORE", panelX + 155, panelY + 26,
+                12, ArcadeTheme.MUTED, null);
+        ArcadeTheme.centered(gc, String.format("%06d", score), panelX + 155,
+                panelY + 66, 36, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
+
+        ArcadeTheme.centered(gc, "RANK", panelX + 385, panelY + 26,
+                12, ArcadeTheme.MUTED, null);
+        ArcadeTheme.centered(gc, rank(), panelX + 385, panelY + 64,
+                40, rankColor(), ArcadeTheme.VOID);
+
+        if (elapsed % 1.0 < 0.62) {
+            ArcadeTheme.centered(gc, "PRESS ENTER // NEW GAME",
+                    centerX, 410, 20, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
         }
-        drawScanlines(gc);
+        ArcadeTheme.centered(gc, "ESC // TITLE SCREEN", centerX, 442,
+                12, ArcadeTheme.MUTED, ArcadeTheme.VOID);
+
+        ArcadeTheme.centered(gc, "THANK YOU FOR PLAYING", centerX,
+                Game.HEIGHT - 58, 12, ArcadeTheme.GREEN, null);
+        ArcadeTheme.centered(gc, "© 1987 NATURAL FATAL SOFT",
+                centerX, Game.HEIGHT - 36, 11, ArcadeTheme.MUTED, null);
+
+        ArcadeTheme.scanlines(gc, Game.WIDTH, Game.HEIGHT);
+        ArcadeTheme.crtFrame(gc, Game.WIDTH, Game.HEIGHT);
     }
 
     /**
-     * Dessine le sol en grille néon, lignes vertes convergentes vers l'horizon.
+     * Calcule le rang obtenu selon le score final.
      *
-     * @param gc contexte graphique du canvas sur lequel dessiner
+     * @return le rang, de S (meilleur) à C
      */
-    private void drawGrid(GraphicsContext gc) {
-        double horizon = Game.HEIGHT * 0.68;
-        gc.setStroke(Color.web("#5DCAA5"));
-        gc.setLineWidth(2);
-        for (int i = 0; i < 4; i++) {
-            double y = horizon + i * i * 8 + i * 12;
-            gc.strokeLine(0, y, Game.WIDTH, y);
+    private String rank() {
+        if (score >= RANK_S) {
+            return "S";
         }
-        for (int i = -6; i <= 6; i++) {
-            gc.strokeLine(Game.WIDTH / 2.0 + i * 40, horizon, Game.WIDTH / 2.0 + i * 140, Game.HEIGHT);
+        if (score >= RANK_A) {
+            return "A";
         }
+        if (score >= RANK_B) {
+            return "B";
+        }
+        return "C";
     }
 
     /**
-     * Dessine des lignes sombres sur tout l'écran, effet écran cathodique.
+     * Renvoie la couleur associée au rang obtenu.
      *
-     * @param gc contexte graphique du canvas sur lequel dessiner
+     * @return la couleur du rang
      */
-    private void drawScanlines(GraphicsContext gc) {
-        gc.setFill(Color.rgb(0, 0, 0, 0.15));
-        for (int y = 0; y < Game.HEIGHT; y += 4) {
-            gc.fillRect(0, y, Game.WIDTH, 2);
-        }
+    private Color rankColor() {
+        return switch (rank()) {
+            case "S" -> ArcadeTheme.AMBER;
+            case "A" -> ArcadeTheme.GREEN;
+            case "B" -> ArcadeTheme.CYAN;
+            default -> ArcadeTheme.MUTED;
+        };
     }
 
     /**

@@ -33,7 +33,9 @@ public class Main extends Application {
     public void start(Stage stage) {
         Canvas canvas = new Canvas(Game.WIDTH, Game.HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setImageSmoothing(false);
         Scene scene = new Scene(new StackPane(canvas));
+        scene.setFill(javafx.scene.paint.Color.BLACK);
 
         Game game = new Game();
         GameLoop loop = new GameLoop(game, gc);
@@ -42,7 +44,7 @@ public class Main extends Application {
         scene.setOnKeyPressed(e -> game.keyPressed(e.getCode()));
         scene.setOnKeyReleased(e -> game.keyReleased(e.getCode()));
 
-        stage.setTitle("Shoot'em up");
+        stage.setTitle("NATURAL FATAL IA");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

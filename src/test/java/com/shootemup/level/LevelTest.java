@@ -94,4 +94,17 @@ class LevelTest {
         assertEquals("#16223C", new CrowLevel(factory).getBackgroundColor());
         assertEquals("#221638", new BossLevel(factory).getBackgroundColor());
     }
+
+    @Test
+    void eachLevelHasItsAccentColorAndSectorName() {
+        assertEquals("#55F08B", new MosquitoLevel(factory).getAccentColor());
+        assertEquals("#FFC93C", new WaspLevel(factory).getAccentColor());
+        assertEquals("#59B8FF", new CrowLevel(factory).getAccentColor());
+        assertEquals("#FF3D9A", new BossLevel(factory).getAccentColor());
+
+        assertEquals("JARDIN", new MosquitoLevel(factory).getLevelName());
+        assertEquals("NID DE GUEPES", new WaspLevel(factory).getLevelName());
+        assertEquals("CIEL NOIR", new CrowLevel(factory).getLevelName());
+        assertEquals("COEUR DE L'IA", new BossLevel(factory).getLevelName());
+    }
 }

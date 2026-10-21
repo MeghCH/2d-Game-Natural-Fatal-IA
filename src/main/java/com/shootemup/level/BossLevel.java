@@ -34,4 +34,24 @@ public class BossLevel extends Level {
     public String getBackgroundColor() {
         return "#221638";
     }
+
+    /**
+     * Indique la couleur d'accent du niveau : magenta du cœur de l'IA.
+     *
+     * @return la couleur d'accent, en hexadécimal
+     */
+    @Override
+    public String getAccentColor() {
+        return "#FF3D9A";
+    }
+
+    /**
+     * Indique le nom du secteur : le cœur de l'IA.
+     *
+     * @return le nom du secteur
+     */
+    @Override
+    public String getLevelName() {
+        return "COEUR DE L'IA";
+    }
 }

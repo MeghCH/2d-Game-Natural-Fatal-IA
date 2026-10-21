@@ -36,4 +36,24 @@ public class WaspLevel extends Level {
     public String getBackgroundColor() {
         return "#2A2513";
     }
+
+    /**
+     * Indique la couleur d'accent du niveau : ambre du nid de guêpes.
+     *
+     * @return la couleur d'accent, en hexadécimal
+     */
+    @Override
+    public String getAccentColor() {
+        return "#FFC93C";
+    }
+
+    /**
+     * Indique le nom du secteur : le nid.
+     *
+     * @return le nom du secteur
+     */
+    @Override
+    public String getLevelName() {
+        return "NID DE GUEPES";
+    }
 }

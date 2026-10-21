@@ -36,4 +36,24 @@ public class CrowLevel extends Level {
     public String getBackgroundColor() {
         return "#16223C";
     }
+
+    /**
+     * Indique la couleur d'accent du niveau : bleu glacé de la traversée.
+     *
+     * @return la couleur d'accent, en hexadécimal
+     */
+    @Override
+    public String getAccentColor() {
+        return "#59B8FF";
+    }
+
+    /**
+     * Indique le nom du secteur : le ciel noir.
+     *
+     * @return le nom du secteur
+     */
+    @Override
+    public String getLevelName() {
+        return "CIEL NOIR";
+    }
 }
