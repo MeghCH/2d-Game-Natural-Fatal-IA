@@ -21,8 +21,14 @@
 - Le jeu lance toujours 2 joueurs sur le même clavier. On peut jouer seul : le second joueur reste alors immobile.
   - Joueur 1 : se déplace avec ZQSD (ou WASD), tire avec Espace.
   - Joueur 2 : se déplace avec les flèches, tire avec Entrée.
-  - Menu : Entrée pour jouer.
-  - Échap : pause, puis Échap à nouveau pour reprendre.
+  - Menu : Entrée pour jouer, T pour changer les touches.
+  - Écran des touches : les flèches choisissent un joueur et une action, Entrée puis une touche la remplace,
+    Échap annule ou revient à l'écran précédent (menu ou pause). Si la touche servait déjà à une autre action (même de l'autre joueur),
+    elle lui est retirée ; si cette action n'a plus de touche, elle récupère les anciennes touches (échange).
+    Échap ne peut pas être choisie (pause). Les touches choisies restent valables pour toutes les parties
+    jusqu'à la fermeture du jeu.
+  - Échap : pause, puis Échap à nouveau pour reprendre. En pause, T ouvre l'écran des touches :
+    les touches changées sont gardées en mémoire et la partie les utilise dès la reprise.
   - Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
 - Écran de victoire : « VICTOIRE » quand le boss est vaincu, avec le score total.
 - Le déplacement se fait dans les 4 directions, à 300 px/s. On ne peut pas sortir de l'écran.

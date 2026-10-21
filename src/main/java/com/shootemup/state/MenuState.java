@@ -1,18 +1,24 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
+import com.shootemup.input.Action;
+import com.shootemup.input.InputController;
 import com.shootemup.ui.ArcadeTheme;
 import com.shootemup.ui.Starfield;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
+import java.util.List;
+import java.util.Set;
+
 /**
- * Écran du menu : écran titre de borne d'arcade, contrôles, Entrée pour jouer.
+ * Écran du menu : titre, touches actuelles des joueurs, Entrée pour jouer,
+ * T pour changer les touches.
  */
 public class MenuState implements GameState {
 
-    /** Le jeu, utilisé pour lancer la partie. */
+    /** Le jeu, utilisé pour lancer la partie et lire les touches des joueurs. */
     private final Game game;
 
     /** Le ciel étoilé qui défile derrière le menu. */
@@ -90,11 +96,12 @@ public class MenuState implements GameState {
         gc.setLineWidth(1);
         gc.strokeLine(centerX - 300, 226, centerX + 300, 226);
 
+        List<InputController> controls = game.getPlayerControls();
         double panelY = 258;
         drawControlPanel(gc, centerX - CONTROL_PANEL_WIDTH - 12, panelY,
-                "1P", "ZQSD + ESPACE", ArcadeTheme.PLAYER_ONE);
+                "1P", keysOf(controls.get(0)), ArcadeTheme.PLAYER_ONE);
         drawControlPanel(gc, centerX + 12, panelY,
-                "2P", "FLECHES + ENTREE", ArcadeTheme.PLAYER_TWO);
+                "2P", keysOf(controls.get(1)), ArcadeTheme.PLAYER_TWO);
 
         double promptY = 408;
         double bob = Math.sin(elapsed * 3.0) * 3;
@@ -102,8 +109,8 @@ public class MenuState implements GameState {
         ArcadeTheme.ship(gc, centerX + 250, promptY + bob, ArcadeTheme.PLAYER_TWO, 1.0, elapsed);
 
         if (elapsed % 1.0 < 0.62) {
-            ArcadeTheme.centered(gc, "> PRESS ENTER TO START <",
-                    centerX, promptY, 22, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
+            ArcadeTheme.centered(gc, "> PRESS ENTER TO START <", centerX, promptY, 22, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
+            ArcadeTheme.centered(gc, "T // CONTROLS", centerX, promptY + 34, 14, ArcadeTheme.MUTED, ArcadeTheme.VOID);
         }
 
         ArcadeTheme.centered(gc, "FREE PLAY", 70, Game.HEIGHT - 38,
@@ -117,7 +124,35 @@ public class MenuState implements GameState {
         ArcadeTheme.crtFrame(gc, Game.WIDTH, Game.HEIGHT);
     }
 
+          /**
+       * Résume les touches d'un joueur, par exemple « Z Q S D + ESPACE ».
+       * Seule la première touche de chaque action est affichée.
+       *
+       * @param controls touches du joueur
+       * @return le résumé des touches du joueur
+       */
+      private static String keysOf(InputController controls) {
+          return firstKey(controls, Action.UP) + " "
+                  + firstKey(controls, Action.LEFT) + " "
+                  + firstKey(controls, Action.DOWN) + " "
+                  + firstKey(controls, Action.RIGHT) + " + "
+                  + firstKey(controls, Action.SHOOT);
+      }
+
     /**
+     * Donne le nom de la première touche d'une action.
+     *
+     * @param controls touches du joueur
+     * @param action   l'action
+     * @return le nom de la première touche, ou « --- » si l'action n'en a aucune
+     */
+    private static String firstKey(InputController controls, Action action) {
+        Set<KeyCode> keys = controls.getKeys(action);
+        return keys.isEmpty() ? "---" : ControlsState.keyName(keys.iterator().next());
+    }
+
+    /**
+     * Dessine le sol en grille néon, lignes roses convergentes vers l'horizon.
      * Dessine un panneau de contrôles pour un joueur.
      *
      * @param gc    contexte graphique
@@ -135,14 +170,19 @@ public class MenuState implements GameState {
     }
 
     /**
-     * Lance la partie sur Entrée, une fois le délai passé.
+     * Lance la partie sur Entrée, ouvre l'écran des touches sur T, une fois le délai passé.
      *
      * @param code la touche enfoncée
      */
     @Override
     public void keyPressed(KeyCode code) {
-        if (code == KeyCode.ENTER && elapsed >= INPUT_DELAY) {
+        if (elapsed < INPUT_DELAY) {
+            return;
+        }
+        if (code == KeyCode.ENTER) {
             game.setState(new PlayingState(game));
+        } else if (code == KeyCode.T) {
+            game.setState(new ControlsState(game, this));
         }
     }
 

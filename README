@@ -51,6 +51,7 @@ B-OOP-301-STG-3-1-2dgame-5/
     │   │   ├── entity/Weapon.java
     │   │   ├── entity/Potion.java
     │   │   ├── entity/PotionSpawner.java
+    │   │   ├── input/Action.java
     │   │   ├── input/InputController.java
     │   │   ├── level/Level.java
     │   │   ├── level/Wave.java
@@ -66,6 +67,7 @@ B-OOP-301-STG-3-1-2dgame-5/
     │   │   ├── movement/DiveMovement.java
     │   │   ├── state/GameState.java
     │   │   ├── state/MenuState.java
+    │   │   ├── state/ControlsState.java
     │   │   ├── state/PlayingState.java
     │   │   ├── state/PauseState.java
     │   │   ├── state/GameOverState.java
@@ -104,6 +106,7 @@ B-OOP-301-STG-3-1-2dgame-5/
             ├── movement/MovementTest.java
             ├── state/PlayingStateTest.java
             ├── state/MenuStateTest.java
+            ├── state/ControlsStateTest.java
             ├── state/GameOverStateTest.java
             ├── state/VictoryStateTest.java
             ├── state/StateTransitionTest.java

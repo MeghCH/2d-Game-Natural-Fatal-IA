@@ -32,6 +32,43 @@ class StateTransitionTest {
     }
 
     @Test
+    void tInPauseOpensTheControlsScreen() {
+        Game game = new Game();
+        PlayingState playing = new PlayingState(game);
+        game.setState(playing);
+
+        game.keyPressed(KeyCode.ESCAPE);
+        game.keyPressed(KeyCode.T);
+
+        assertInstanceOf(ControlsState.class, game.getCurrentState());
+    }
+
+    @Test
+    void keysChangedDuringPauseAreKeptWhenResuming() {
+        Game game = new Game();
+        PlayingState playing = new PlayingState(game);
+        game.setState(playing);
+
+        game.keyPressed(KeyCode.ESCAPE);
+        game.keyPressed(KeyCode.T);
+        game.keyPressed(KeyCode.UP);
+        game.keyPressed(KeyCode.ENTER);
+        game.keyPressed(KeyCode.K);
+        game.keyPressed(KeyCode.ESCAPE);
+        assertInstanceOf(PauseState.class, game.getCurrentState());
+        game.keyPressed(KeyCode.ESCAPE);
+        assertSame(playing, game.getCurrentState());
+
+        game.keyPressed(KeyCode.SPACE);
+        game.update(0.016);
+        assertTrue(playing.getProjectiles().isEmpty());
+
+        game.keyPressed(KeyCode.K);
+        game.update(0.016);
+        assertEquals(1, playing.getProjectiles().size());
+    }
+
+    @Test
     void otherKeysDoNotLeavePause() {
         Game game = new Game();
         PlayingState playing = new PlayingState(game);

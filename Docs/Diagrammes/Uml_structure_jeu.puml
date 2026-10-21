@@ -449,6 +449,9 @@ note bottom of BossLevel : Niveau 4 - IA maléfique (1)
 
 note right of GameState
   Menu → Partie : Entrée (après 1 s)
+  Menu → Touches : T (après 1 s)
+  Pause → Touches : T
+  Touches → écran précédent : Échap
   Partie → Pause : Échap
   Pause → Partie : Échap
   Partie → Game Over : joueurs morts

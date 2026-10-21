@@ -1,10 +1,12 @@
 package com.shootemup.core;
 
+import com.shootemup.input.InputController;
 import com.shootemup.state.GameState;
 import com.shootemup.state.MenuState;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -14,6 +16,9 @@ import java.util.Objects;
  * ne sait pas quel écran est affiché (partie, pause, menu...). Elle transmet
  * simplement chaque mise à jour, affichage et touche à l'état courant.
  * Changer d'écran se fait avec {@link #setState(GameState)}.
+ * <p>
+ * Garde aussi les touches des joueurs, pour que les touches choisies
+ * dans l'écran des touches restent les mêmes d'une partie à l'autre.
  */
 public class Game {
 
@@ -22,6 +27,10 @@ public class Game {
 
     /** La boucle de jeu, qui appelle update et render à chaque image. */
     private GameLoop loop;
+
+    /** Les touches des joueurs : joueur 1 puis joueur 2. */
+    private final List<InputController> playerControls =
+            List.of(InputController.player1(), InputController.player2());
 
     /** Largeur de la fenêtre de jeu, en pixels. */
     public static final int WIDTH = 960;
@@ -73,6 +82,15 @@ public class Game {
      */
     public GameState getCurrentState() {
         return this.currentState;
+    }
+
+    /**
+     * Indique les touches des joueurs, partagées par toutes les parties.
+     *
+     * @return les touches du joueur 1 puis du joueur 2, en lecture seule
+     */
+    public List<InputController> getPlayerControls() {
+        return playerControls;
     }
 
     /**
