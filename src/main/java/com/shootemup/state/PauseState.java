@@ -13,7 +13,8 @@ import javafx.scene.text.TextAlignment;
  * <p>
  * État du pattern <b>State</b> : tant qu'il est actif, la partie n'est plus
  * mise à jour, donc le jeu est figé. Échap rend la main à l'état précédent,
- * qui reprend exactement là où il s'était arrêté.
+ * qui reprend exactement là où il s'était arrêté. T ouvre l'écran des touches :
+ * les touches changées sont gardées en mémoire et servent dès la reprise.
  */
 public class PauseState implements GameState {
 
@@ -49,7 +50,8 @@ public class PauseState implements GameState {
     }
 
     /**
-     * Dessine la partie figée, un voile sombre par-dessus, puis le texte « PAUSE ».
+     * Dessine la partie figée, un voile sombre par-dessus, puis le texte « PAUSE »
+     * et les touches possibles.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -65,10 +67,13 @@ public class PauseState implements GameState {
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
         gc.fillText("PAUSE", Game.WIDTH / 2.0, Game.HEIGHT / 2.0);
+
+        gc.setFont(Font.font(20));
+        gc.fillText("ECHAP : REPRENDRE   -   T : TOUCHES", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 60);
     }
 
     /**
-     * Reprend la partie quand le joueur appuie sur Échap.
+     * Reprend la partie quand le joueur appuie sur Échap, ouvre l'écran des touches sur T.
      *
      * @param code la touche enfoncée
      */
@@ -76,6 +81,8 @@ public class PauseState implements GameState {
     public void keyPressed(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
             game.setState(previousState);
+        } else if (code == KeyCode.T) {
+            game.setState(new ControlsState(game, this));
         }
     }
 

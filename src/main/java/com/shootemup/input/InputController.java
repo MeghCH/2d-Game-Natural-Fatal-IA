@@ -2,35 +2,29 @@ package com.shootemup.input;
 
 import javafx.scene.input.KeyCode;
 
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Touches de contrôle d'un joueur et état actuel de ces touches.
  * <p>
- * Chaque action (monter, descendre, tirer...) peut être associée à plusieurs
- * touches, ce qui permet par exemple d'accepter à la fois ZQSD (clavier AZERTY)
- * et WASD (clavier QWERTY). Chaque joueur possède son propre contrôleur, ce qui
- * permet de jouer à deux sur le même clavier. Les méthodes statiques
- * {@link #player1()} et {@link #player2()} fournissent les configurations
- * prêtes à l'emploi, à la manière d'une petite <b>Factory</b>.
+ * Chaque {@link Action} (monter, descendre, tirer...) peut être associée à
+ * plusieurs touches, ce qui permet par exemple d'accepter à la fois ZQSD
+ * (clavier AZERTY) et WASD (clavier QWERTY). Les touches peuvent être changées
+ * en cours de route avec {@link #setKeys(Action, Set)}. Chaque joueur possède
+ * son propre contrôleur, ce qui permet de jouer à deux sur le même clavier.
+ * Les méthodes statiques {@link #player1()} et {@link #player2()} fournissent
+ * les configurations prêtes à l'emploi, à la manière d'une petite <b>Factory</b>.
  */
 public class InputController {
 
-    /** Touches pour monter. */
-    private final Set<KeyCode> up;
-
-    /** Touches pour descendre. */
-    private final Set<KeyCode> down;
-
-    /** Touches pour aller à gauche. */
-    private final Set<KeyCode> left;
-
-    /** Touches pour aller à droite. */
-    private final Set<KeyCode> right;
-
-    /** Touches pour tirer. */
-    private final Set<KeyCode> shoot;
+    /** Touches associées à chaque action, dans l'ordre où elles ont été données. */
+    private final Map<Action, Set<KeyCode>> bindings = new EnumMap<>(Action.class);
 
     /** Touches actuellement enfoncées. */
     private final Set<KeyCode> pressed = new HashSet<>();
@@ -46,11 +40,11 @@ public class InputController {
      */
     public InputController(Set<KeyCode> up, Set<KeyCode> down, Set<KeyCode> left,
                            Set<KeyCode> right, Set<KeyCode> shoot) {
-        this.up = up;
-        this.down = down;
-        this.left = left;
-        this.right = right;
-        this.shoot = shoot;
+        setKeys(Action.UP, up);
+        setKeys(Action.DOWN, down);
+        setKeys(Action.LEFT, left);
+        setKeys(Action.RIGHT, right);
+        setKeys(Action.SHOOT, shoot);
     }
 
     /**
@@ -60,11 +54,11 @@ public class InputController {
      */
     public static InputController player1() {
         return new InputController(
-                Set.of(KeyCode.Z, KeyCode.W),
-                Set.of(KeyCode.S),
-                Set.of(KeyCode.Q, KeyCode.A),
-                Set.of(KeyCode.D),
-                Set.of(KeyCode.SPACE));
+                keys(KeyCode.Z, KeyCode.W),
+                keys(KeyCode.S),
+                keys(KeyCode.Q, KeyCode.A),
+                keys(KeyCode.D),
+                keys(KeyCode.SPACE));
     }
 
     /**
@@ -74,11 +68,56 @@ public class InputController {
      */
     public static InputController player2() {
         return new InputController(
-                Set.of(KeyCode.UP),
-                Set.of(KeyCode.DOWN),
-                Set.of(KeyCode.LEFT),
-                Set.of(KeyCode.RIGHT),
-                Set.of(KeyCode.ENTER));
+                keys(KeyCode.UP),
+                keys(KeyCode.DOWN),
+                keys(KeyCode.LEFT),
+                keys(KeyCode.RIGHT),
+                keys(KeyCode.ENTER));
+    }
+
+    /**
+     * Regroupe des touches en gardant leur ordre, pour les afficher dans cet ordre.
+     *
+     * @param codes les touches
+     * @return les touches, dans l'ordre donné
+     */
+    private static Set<KeyCode> keys(KeyCode... codes) {
+        return new LinkedHashSet<>(List.of(codes));
+    }
+
+    /**
+     * Indique les touches associées à une action.
+     *
+     * @param action l'action
+     * @return les touches de cette action, en lecture seule
+     */
+    public Set<KeyCode> getKeys(Action action) {
+        return Collections.unmodifiableSet(bindings.get(action));
+    }
+
+    /**
+     * Remplace les touches associées à une action.
+     *
+     * @param action l'action à modifier
+     * @param keys   les nouvelles touches de cette action
+     */
+    public void setKeys(Action action, Set<KeyCode> keys) {
+        bindings.put(action, new LinkedHashSet<>(keys));
+    }
+
+    /**
+     * Retire une touche de l'action qui l'utilise, s'il y en a une.
+     *
+     * @param code la touche à retirer
+     * @return l'action qui utilisait cette touche, ou {@code null} si aucune
+     */
+    public Action removeKey(KeyCode code) {
+        for (Map.Entry<Action, Set<KeyCode>> binding : bindings.entrySet()) {
+            if (binding.getValue().remove(code)) {
+                return binding.getKey();
+            }
+        }
+        return null;
     }
 
     /**
@@ -100,12 +139,22 @@ public class InputController {
     }
 
     /**
+     * Indique si le joueur fait une action.
+     *
+     * @param action l'action à tester
+     * @return {@code true} si une touche de cette action est enfoncée
+     */
+    public boolean isPressed(Action action) {
+        return isAnyPressed(bindings.get(action));
+    }
+
+    /**
      * Indique si le joueur monte.
      *
      * @return {@code true} si une touche pour monter est enfoncée
      */
     public boolean isUp() {
-        return isAnyPressed(up);
+        return isPressed(Action.UP);
     }
 
     /**
@@ -114,7 +163,7 @@ public class InputController {
      * @return {@code true} si une touche pour descendre est enfoncée
      */
     public boolean isDown() {
-        return isAnyPressed(down);
+        return isPressed(Action.DOWN);
     }
 
     /**
@@ -123,7 +172,7 @@ public class InputController {
      * @return {@code true} si une touche pour aller à gauche est enfoncée
      */
     public boolean isLeft() {
-        return isAnyPressed(left);
+        return isPressed(Action.LEFT);
     }
 
     /**
@@ -132,7 +181,7 @@ public class InputController {
      * @return {@code true} si une touche pour aller à droite est enfoncée
      */
     public boolean isRight() {
-        return isAnyPressed(right);
+        return isPressed(Action.RIGHT);
     }
 
     /**
@@ -141,7 +190,7 @@ public class InputController {
      * @return {@code true} si une touche de tir est enfoncée
      */
     public boolean isShooting() {
-        return isAnyPressed(shoot);
+        return isPressed(Action.SHOOT);
     }
 
     /**

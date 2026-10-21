@@ -74,14 +74,14 @@ class Player {
 }
 
 class InputController {
-  - up : Set<KeyCode>
-  - down : Set<KeyCode>
-  - left : Set<KeyCode>
-  - right : Set<KeyCode>
-  - shoot : Set<KeyCode>
+  - bindings : Map<Action, Set<KeyCode>>
   - pressed : Set<KeyCode>
   + {static} player1() : InputController
   + {static} player2() : InputController
+  + getKeys(a : Action) : Set<KeyCode>
+  + setKeys(a : Action, k : Set<KeyCode>) : void
+  + removeKey(code : KeyCode) : Action
+  + isPressed(a : Action) : boolean
   + keyPressed(code : KeyCode) : void
   + keyReleased(code : KeyCode) : void
   + isUp() : boolean
@@ -282,7 +282,7 @@ AngryPhase ..> BersherkPhase : next()
 Character o-- "*" HealthObserver
 HealthObserver <|.. PlayerStatusPanel
 Renderable <|.. BossHealthBar
-BossHealthBar --> "0..1" EvilAI : suit
+BossHealthBar -left-> "0..1" EvilAI : suit
 
 note right of Potion
   Tombe du haut de l'écran

@@ -61,8 +61,9 @@ Pourquoi c'est adapté au module OOP :
 
 - Joueur 1 : ZQSD / WASD + Espace pour tirer.
 - Joueur 2 : flèches + Entrée pour tirer.
-- Échap : pause. Chaque joueur a son propre `InputController`, ce qui permet le 2 joueurs sur un clavier.
-- Menu : Entrée pour jouer. Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
+- Échap : pause ; en pause, T pour changer les touches, gardées pour la reprise. Chaque joueur a son propre `InputController`, ce qui permet le 2 joueurs sur un clavier.
+- Menu : Entrée pour jouer, T pour changer les touches. Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
+- Écran des touches (`ControlsState`) : chaque action (`Action`) de chaque joueur peut être réassignée.
 
 ### 3.5 Périmètre MVP (démo jouable)
 
@@ -100,9 +101,9 @@ enemy    -> Enemy, Mosquito, Wasp, Crow, EvilAI, EnemyType, EnemyFactory
 enemy.boss -> BossPhase, CalmPhase, AngryPhase, BersherkPhase
 movement -> MovementStrategy, StraightMovement, ZigzagMovement, DiveMovement
 level    -> Level, MosquitoLevel, WaspLevel, CrowLevel, BossLevel, Wave, LevelManager, TutorialManager
-state    -> GameState, MenuState, PlayingState, PauseState, GameOverState
+state    -> GameState, MenuState, ControlsState, PlayingState, PauseState, GameOverState, VictoryState
 ui       -> PlayerStatusPanel (Observer), BossHealthBar (barre de vie du boss), Starfield (décor du menu uniquement)
-input    -> InputController (factory player1 / player2)
+input    -> InputController (factory player1 / player2, touches modifiables), Action
 asset    -> AssetManager (Singleton), Animation
 ```
 

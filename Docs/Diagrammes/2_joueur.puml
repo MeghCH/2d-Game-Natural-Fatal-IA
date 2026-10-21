@@ -48,13 +48,13 @@ class Player {
 }
 
 class InputController {
-  - up : Set<KeyCode>
-  - down : Set<KeyCode>
-  - left : Set<KeyCode>
-  - right : Set<KeyCode>
-  - shoot : Set<KeyCode>
+  - bindings : Map
   + {static} player1() : InputController
   + {static} player2() : InputController
+  + getKeys(a) : Set
+  + setKeys(a, k) : void
+  + isPressed(a) : boolean
+  + removeKey(c) : Action
   + clear() : void
 }
 

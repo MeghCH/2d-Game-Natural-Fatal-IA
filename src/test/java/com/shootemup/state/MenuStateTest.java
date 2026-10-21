@@ -39,4 +39,15 @@ class MenuStateTest {
 
         assertInstanceOf(MenuState.class, game.getCurrentState());
     }
+
+    @Test
+    void tOpensTheControlsScreenOnceDelayed() {
+        Game game = new Game();
+        game.setState(new MenuState(game));
+        game.update(1.2);
+
+        game.keyPressed(KeyCode.T);
+
+        assertInstanceOf(ControlsState.class, game.getCurrentState());
+    }
 }

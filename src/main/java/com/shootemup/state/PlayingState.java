@@ -69,7 +69,7 @@ public class PlayingState implements GameState {
 
     /**
      * Crée une partie à deux joueurs, placés en bas de l'écran,
-     * le joueur 1 à gauche et le joueur 2 à droite.
+     * le joueur 1 à gauche et le joueur 2 à droite, avec les touches choisies dans le jeu.
      *
      * @param game          le jeu auquel appartient cet écran
      * @param potionSpawner le générateur de potions, par exemple avec un hasard fixe dans les tests
@@ -79,8 +79,9 @@ public class PlayingState implements GameState {
         this.potionSpawner = potionSpawner;
         double startY = Game.HEIGHT - 60;
         double sideMargin = 60;
-        addPlayer(new Player(1, sideMargin, startY, InputController.player1()));
-        addPlayer(new Player(2, Game.WIDTH - sideMargin - Player.WIDTH, startY, InputController.player2()));
+        List<InputController> controls = game.getPlayerControls();
+        addPlayer(new Player(1, sideMargin, startY, controls.get(0)));
+        addPlayer(new Player(2, Game.WIDTH - sideMargin - Player.WIDTH, startY, controls.get(1)));
         this.levelManager = TutorialManager.createProgression(new EnemyFactory());
     }
 

@@ -1,6 +1,8 @@
 package com.shootemup.state;
 
 import com.shootemup.core.Game;
+import com.shootemup.input.Action;
+import com.shootemup.input.InputController;
 import com.shootemup.ui.Starfield;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,12 +11,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
+import java.util.List;
+import java.util.Set;
+
 /**
- * Écran du menu : titre, contrôles, Entrée pour jouer.
+ * Écran du menu : titre, touches actuelles des joueurs, Entrée pour jouer,
+ * T pour changer les touches.
  */
 public class MenuState implements GameState {
 
-    /** Le jeu, utilisé pour lancer la partie. */
+    /** Le jeu, utilisé pour lancer la partie et lire les touches des joueurs. */
     private final Game game;
 
     /** Le ciel étoilé qui défile derrière le menu. */
@@ -55,8 +61,8 @@ public class MenuState implements GameState {
     }
 
     /**
-     * Dessine le fond étoilé, le titre en néon, les contrôles en couleurs
-     * et l'invite à jouer clignotante.
+     * Dessine le fond étoilé, le titre en néon, les touches actuelles des joueurs
+     * en couleurs et l'invite à jouer clignotante.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
@@ -75,15 +81,16 @@ public class MenuState implements GameState {
         gc.setFill(Color.WHITE);
         gc.fillText("NATURAL FATAL IA", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 - 80);
 
+        List<InputController> controls = game.getPlayerControls();
         gc.setFont(Font.font(20));
         gc.setFill(Color.web("#5DCAA5"));
-        gc.fillText("J1 : ZQSD + ESPACE", Game.WIDTH / 2.0, Game.HEIGHT / 2.0);
+        gc.fillText(summary(1, controls.get(0)), Game.WIDTH / 2.0, Game.HEIGHT / 2.0);
         gc.setFill(Color.web("#F0997B"));
-        gc.fillText("J2 : FLECHES + ENTREE", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 30);
+        gc.fillText(summary(2, controls.get(1)), Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 30);
 
         if (elapsed % 1.0 < 0.6) {
             gc.setFill(Color.WHITE);
-            gc.fillText("ENTREE : JOUER", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 80);
+            gc.fillText("ENTREE : JOUER   -   T : TOUCHES", Game.WIDTH / 2.0, Game.HEIGHT / 2.0 + 80);
         }
 
         gc.setFont(Font.font(14));
@@ -91,6 +98,35 @@ public class MenuState implements GameState {
         gc.fillText("SHOOT'EM UP COOPERATIF - 1 A 2 JOUEURS", Game.WIDTH / 2.0, Game.HEIGHT - 40);
 
         drawScanlines(gc);
+    }
+
+    /**
+     * Résume les touches d'un joueur sur une ligne, par exemple « J1 : Z Q S D + ESPACE ».
+     * Seule la première touche de chaque action est affichée.
+     *
+     * @param number   numéro du joueur
+     * @param controls touches du joueur
+     * @return le résumé des touches du joueur
+     */
+    private static String summary(int number, InputController controls) {
+        return "J" + number + " : "
+                + firstKey(controls, Action.UP) + " "
+                + firstKey(controls, Action.LEFT) + " "
+                + firstKey(controls, Action.DOWN) + " "
+                + firstKey(controls, Action.RIGHT) + " + "
+                + firstKey(controls, Action.SHOOT);
+    }
+
+    /**
+     * Donne le nom de la première touche d'une action.
+     *
+     * @param controls touches du joueur
+     * @param action   l'action
+     * @return le nom de la première touche, ou « --- » si l'action n'en a aucune
+     */
+    private static String firstKey(InputController controls, Action action) {
+        Set<KeyCode> keys = controls.getKeys(action);
+        return keys.isEmpty() ? "---" : ControlsState.keyName(keys.iterator().next());
     }
 
     /**
@@ -124,14 +160,19 @@ public class MenuState implements GameState {
     }
 
     /**
-     * Lance la partie sur Entrée, une fois le délai passé.
+     * Lance la partie sur Entrée, ouvre l'écran des touches sur T, une fois le délai passé.
      *
      * @param code la touche enfoncée
      */
     @Override
     public void keyPressed(KeyCode code) {
-        if (code == KeyCode.ENTER && elapsed >= INPUT_DELAY) {
+        if (elapsed < INPUT_DELAY) {
+            return;
+        }
+        if (code == KeyCode.ENTER) {
             game.setState(new PlayingState(game));
+        } else if (code == KeyCode.T) {
+            game.setState(new ControlsState(game, this));
         }
     }
 
