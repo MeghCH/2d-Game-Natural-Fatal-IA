@@ -9,12 +9,13 @@
 - L'écran est fixe (960 x 540) : les joueurs restent visibles en bas, les ennemis arrivent par le haut
   et descendent vers eux.
 - Pas de vue de côté, pas de scrolling horizontal.
-- Le fond est uni, dans un style arcade des années 80 volontairement simple pour rester lisible.
-  Le ciel étoilé qui défile (`Starfield`) n'est affiché que sur le menu ; en partie,
-  seul le fond uni du niveau est dessiné pour garder les vagues lisibles.
+- Chaque niveau possède un décor animé (`LevelBackdrop`) : dégradé teinté, poussières en parallaxe
+  et grille d'horizon, avec une couleur d'accent propre au secteur. Le tout est recouvert d'un
+  vignettage et de scanlines pour l'effet écran cathodique.
 - Les informations importantes sont toujours visibles en haut de l'écran : PV et score de chaque joueur
-  (J1 à gauche, J2 à droite) et numéro du niveau au centre. Pendant le combat final, la barre de PV
-  du boss (`BossHealthBar`) est affichée en haut au centre, avec ses PV restants.
+  (1P à gauche, 2P à droite) et badge de stage (`STAGE 01 // JARDIN`) au centre. Pendant le combat final,
+  la barre de PV du boss (`BossHealthBar`) est affichée en haut au centre, avec ses PV restants.
+- Le jeu démarre en plein écran. `F11` bascule entre plein écran et fenêtré.
 
 ## 2. Contrôles, entrées utilisateur et gestion du temps
 
@@ -30,7 +31,8 @@
   - Échap : pause, puis Échap à nouveau pour reprendre. En pause, T ouvre l'écran des touches :
     les touches changées sont gardées en mémoire et la partie les utilise dès la reprise.
   - Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
-- Écran de victoire : « VICTOIRE » quand le boss est vaincu, avec le score total.
+  - `F11` : bascule plein écran / fenêtré, à tout moment, sans mettre le jeu en pause.
+- Écran de victoire : « MISSION COMPLETE » quand le boss est vaincu, avec le score total et un rang (S, A, B ou C).
 - Le déplacement se fait dans les 4 directions, à 300 px/s. On ne peut pas sortir de l'écran.
 - Le tir est automatique tant que la touche est enfoncée, à raison d'un tir toutes les 0,2 s.
 - Le temps est en continu : les ennemis descendent même si on ne bouge pas.
@@ -83,4 +85,4 @@
 1. À quoi servirait l'XP : score seul, soin, arme plus forte ?
 2. Le boss inflige ses dégâts à chaque image tant qu'un joueur le touche : faut-il une courte invincibilité après un coup ?
 
-La partie est perdue (« GAME OVER ») quand les deux joueurs sont morts, gagnée (« VICTOIRE ») quand le boss est vaincu.
+La partie est perdue (« GAME OVER ») quand les deux joueurs sont morts, gagnée (« MISSION COMPLETE ») quand le boss est vaincu.

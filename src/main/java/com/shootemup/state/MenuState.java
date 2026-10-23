@@ -110,7 +110,8 @@ public class MenuState implements GameState {
 
         if (elapsed % 1.0 < 0.62) {
             ArcadeTheme.centered(gc, "> PRESS ENTER TO START <", centerX, promptY, 22, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
-            ArcadeTheme.centered(gc, "T // CONTROLS", centerX, promptY + 34, 14, ArcadeTheme.MUTED, ArcadeTheme.VOID);
+            ArcadeTheme.centered(gc, "T // CONFIGURER LES TOUCHES", centerX,
+                    promptY + 34, 12, ArcadeTheme.MUTED, ArcadeTheme.VOID);
         }
 
         ArcadeTheme.centered(gc, "FREE PLAY", 70, Game.HEIGHT - 38,
@@ -119,25 +120,27 @@ public class MenuState implements GameState {
                 11, ArcadeTheme.AMBER, null);
         ArcadeTheme.centered(gc, "© 1987 NATURAL FATAL SOFT",
                 centerX, Game.HEIGHT - 38, 11, ArcadeTheme.MUTED, null);
+        ArcadeTheme.centered(gc, "F11 // FULLSCREEN",
+                centerX, Game.HEIGHT - 18, 9, ArcadeTheme.MUTED, null);
 
         ArcadeTheme.scanlines(gc, Game.WIDTH, Game.HEIGHT);
         ArcadeTheme.crtFrame(gc, Game.WIDTH, Game.HEIGHT);
     }
 
-          /**
-       * Résume les touches d'un joueur, par exemple « Z Q S D + ESPACE ».
-       * Seule la première touche de chaque action est affichée.
-       *
-       * @param controls touches du joueur
-       * @return le résumé des touches du joueur
-       */
-      private static String keysOf(InputController controls) {
-          return firstKey(controls, Action.UP) + " "
-                  + firstKey(controls, Action.LEFT) + " "
-                  + firstKey(controls, Action.DOWN) + " "
-                  + firstKey(controls, Action.RIGHT) + " + "
-                  + firstKey(controls, Action.SHOOT);
-      }
+    /**
+     * Résume les touches d'un joueur, par exemple « Z Q S D + ESPACE ».
+     * Seule la première touche de chaque action est affichée.
+     *
+     * @param controls touches du joueur
+     * @return le résumé des touches du joueur
+     */
+    private static String keysOf(InputController controls) {
+        return firstKey(controls, Action.UP) + " "
+                + firstKey(controls, Action.LEFT) + " "
+                + firstKey(controls, Action.DOWN) + " "
+                + firstKey(controls, Action.RIGHT) + " + "
+                + firstKey(controls, Action.SHOOT);
+    }
 
     /**
      * Donne le nom de la première touche d'une action.
@@ -152,7 +155,6 @@ public class MenuState implements GameState {
     }
 
     /**
-     * Dessine le sol en grille néon, lignes roses convergentes vers l'horizon.
      * Dessine un panneau de contrôles pour un joueur.
      *
      * @param gc    contexte graphique

@@ -21,12 +21,15 @@ class Game {
 
 - loop : GameLoop
 
+- playerControls : List<InputController>
+
   + {static} WIDTH : int = 960
   + {static} HEIGHT : int = 540
   + start(loop : GameLoop) : void
   + stop() : void
   + setState(s : GameState) : void
   + getCurrentState() : GameState
+  + getPlayerControls() : List<InputController>
   + update(dt : double) : void
   + render(gc : GraphicsContext) : void
   + keyPressed(code : KeyCode) : void
@@ -61,16 +64,54 @@ interface GameState <<State>> {
 class MenuState {
 - {static} INPUT_DELAY : double = 1.0
 
+- {static} CONTROL_PANEL_WIDTH : double = 340
+
+- {static} CONTROL_PANEL_HEIGHT : double = 82
+
 - game : Game
 
 - background : Starfield
 
 - elapsed : double
 
-- drawGrid(gc : GraphicsContext) : void
+- drawControlPanel(gc : GraphicsContext, x : double, y : double, label : String, keys : String, color : Color) : void
+- {static} keysOf(controls : InputController) : String
+- {static} firstKey(controls : InputController, action : Action) : String
+}
 
-- drawScanlines(gc : GraphicsContext) : void
+class ControlsState {
+- game : Game
 
+- previousState : GameState
+
+- background : Starfield
+
+- {static} ACTIONS : Action[]
+
+- {static} PLAYER_COLORS : Color[]
+
+- {static} FIRST_ROW_Y : double = 176
+
+- {static} ROW_SPACING : double = 42
+
+- {static} COLUMN_WIDTH : double = 360
+
+- {static} COLUMN_TOP : double = 112
+
+- {static} COLUMN_HEIGHT : double = 286
+
+- selectedPlayer : int
+
+- selectedAction : int
+
+- waitingForKey : boolean
+
+- elapsed : double
+
+- drawColumn(gc : GraphicsContext, player : int, controls : InputController) : void
+- assign(code : KeyCode) : void
++ {static} describe(keys : Set<KeyCode>) : String
++ {static} keyName(key : KeyCode) : String
 }
 
 class PauseState {
@@ -91,14 +132,16 @@ class GameOverState {
 
 - background : Starfield
 
-- drawGrid(gc : GraphicsContext) : void
-
-- drawScanlines(gc : GraphicsContext) : void
-
 }
 
 class VictoryState {
 - {static} INPUT_DELAY : double = 1.0
+
+- {static} RANK_S : int = 9000
+
+- {static} RANK_A : int = 7000
+
+- {static} RANK_B : int = 4500
 
 - game : Game
 
@@ -108,10 +151,8 @@ class VictoryState {
 
 - background : Starfield
 
-- drawGrid(gc : GraphicsContext) : void
-
-- drawScanlines(gc : GraphicsContext) : void
-
+- rank() : String
+- rankColor() : Color
 }
 
 class PlayingState {
@@ -131,6 +172,8 @@ class PlayingState {
 
 - potionSpawner : PotionSpawner
 
+- backdrop : LevelBackdrop
+
   + getPlayers() : List<Player>
   + getProjectiles() : List<Projectile>
   + getPotions() : List<Potion>
@@ -147,6 +190,8 @@ class PlayingState {
 - anyPlayerAlive() : boolean
 
 - totalScore() : int
+
+- drawStageBadge(gc : GraphicsContext, level : Level) : void
 
 }
 
@@ -172,6 +217,8 @@ abstract class Level <<Template Method>> {
   + update(dt : double) : void
   # {abstract} buildWaves() : void
   + {abstract} getBackgroundColor() : String
+  + getAccentColor() : String
+  + getLevelName() : String
   + isCompleted() : boolean
   + getActiveEnemies() : List<Enemy>
 }
@@ -179,21 +226,29 @@ abstract class Level <<Template Method>> {
 class MosquitoLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
+  + getAccentColor() : String
+  + getLevelName() : String
 }
 
 class WaspLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
+  + getAccentColor() : String
+  + getLevelName() : String
 }
 
 class CrowLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
+  + getAccentColor() : String
+  + getLevelName() : String
 }
 
 class BossLevel {
   # buildWaves() : void
   + getBackgroundColor() : String
+  + getAccentColor() : String
+  + getLevelName() : String
 }
 
 class Wave {
@@ -210,6 +265,57 @@ class TutorialManager {
 - TutorialManager()
 
   + {static} createProgression(f : EnemyFactory) : LevelManager
+}
+
+class InputController {
+- bindings : Map<Action, Set<KeyCode>>
+- pressed : Set<KeyCode>
+
+  + {static} player1() : InputController
+  + {static} player2() : InputController
+  + getKeys(a : Action) : Set<KeyCode>
+  + setKeys(a : Action, keys : Set<KeyCode>) : void
+  + removeKey(code : KeyCode) : Action
+  + keyPressed(code : KeyCode) : void
+  + keyReleased(code : KeyCode) : void
+  + isPressed(a : Action) : boolean
+  + isUp() : boolean
+  + isDown() : boolean
+  + isLeft() : boolean
+  + isRight() : boolean
+  + isShooting() : boolean
+  + clear() : void
+}
+
+enum Action {
+  UP
+  DOWN
+  LEFT
+  RIGHT
+  SHOOT
+}
+
+class ArcadeTheme <<utility>> {
+  + {static} font(size : double) : Font
+  + {static} text(gc : GraphicsContext, text : String, x : double, y : double, size : double, fill : Color, shadow : Color) : void
+  + {static} centered(gc : GraphicsContext, text : String, centerX : double, y : double, size : double, fill : Color, shadow : Color) : void
+  + {static} glowCentered(gc : GraphicsContext, text : String, centerX : double, y : double, size : double, fill : Color, glow : Color) : void
+  + {static} panel(gc : GraphicsContext, x : double, y : double, w : double, h : double, border : Color) : void
+  + {static} segmentedBar(gc : GraphicsContext, x : double, y : double, w : double, h : double, ratio : double, color : Color) : void
+  + {static} scanlines(gc : GraphicsContext, w : double, h : double) : void
+  + {static} vignette(gc : GraphicsContext, w : double, h : double) : void
+  + {static} crtFrame(gc : GraphicsContext, w : double, h : double) : void
+  + {static} horizonGrid(gc : GraphicsContext, w : double, h : double, horizon : double, color : Color, phase : double) : void
+  + {static} ship(gc : GraphicsContext, cx : double, cy : double, color : Color, scale : double, time : double) : void
+}
+
+class LevelBackdrop {
+- width : int
+- height : int
+- time : double
+
+  + update(dt : double) : void
+  + render(gc : GraphicsContext, background : String, accent : String) : void
 }
 
 class Player
@@ -366,17 +472,32 @@ Main ..> GameLoop : <<create>>
 Game o-- "1" GameLoop
 GameLoop --> "1" Game : update / render
 Game o-- "1" GameState
+Game o-- "2" InputController : playerControls
 
 GameState <|.. MenuState
+GameState <|.. ControlsState
 GameState <|.. PlayingState
 GameState <|.. PauseState
 GameState <|.. GameOverState
 GameState <|.. VictoryState
 PauseState o-- "1" GameState : previousState
+ControlsState o-- "1" GameState : previousState
+MenuState ..> ControlsState : <<create>>
+PauseState ..> ControlsState : <<create>>
+ControlsState ..> InputController : modifie
+ControlsState ..> Action : utilise
 
 MenuState *-- "1" Starfield : background
+ControlsState *-- "1" Starfield : background
 GameOverState *-- "1" Starfield : background
 VictoryState *-- "1" Starfield : background
+PlayingState *-- "1" LevelBackdrop : backdrop
+MenuState ..> ArcadeTheme
+ControlsState ..> ArcadeTheme
+GameOverState ..> ArcadeTheme
+VictoryState ..> ArcadeTheme
+PlayingState ..> ArcadeTheme
+LevelBackdrop ..> ArcadeTheme
 PlayingState *-- "*" Player
 PlayingState *-- "*" Projectile
 PlayingState *-- "*" Potion
@@ -420,6 +541,8 @@ Updatable <|.. Starfield
 Renderable <|.. Starfield
 Starfield *-- "*" Star : stars
 
+InputController --> "*" Action : bindings
+
 Player --> "2" Animation : IDLE, ATTACK
 Projectile --> "2" Animation : P1_FLIGHT, P2_FLIGHT
 Potion --> "2" Animation : FALLING, COLLECTED
@@ -438,7 +561,8 @@ EvilAI ..> AssetManager
 note right of Level
   start() et update() sont final :
   le déroulement est figé, seules
-  buildWaves() et getBackgroundColor()
+  buildWaves(), getBackgroundColor(),
+  getAccentColor() et getLevelName()
   changent d'un niveau à l'autre
 end note
 
@@ -466,6 +590,13 @@ note bottom of PlayingState
   Collisions gérées
   dans PlayingState
   (handleCollisions)
+end note
+
+note bottom of Game
+  Game garde les InputController :
+  les touches configurées dans
+  ControlsState sont partagées
+  par toutes les parties.
 end note
 
 note bottom of AssetManager

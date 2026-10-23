@@ -126,11 +126,28 @@ package "Niveau 3 : Entités principales et objets" {
   }
 
   class InputController {
+    - bindings : Map<Action, Set<KeyCode>>
+    - pressed : Set<KeyCode>
     + {static} player1() : InputController
     + {static} player2() : InputController
+    + getKeys(a : Action) : Set<KeyCode>
+    + setKeys(a : Action, keys : Set<KeyCode>) : void
+    + removeKey(code : KeyCode) : Action
+    + keyPressed(code : KeyCode) : void
+    + keyReleased(code : KeyCode) : void
+    + isPressed(a : Action) : boolean
     + isUp() : boolean
     + isDown() : boolean
     + isShooting() : boolean
+    + clear() : void
+  }
+
+  enum Action {
+    UP
+    DOWN
+    LEFT
+    RIGHT
+    SHOOT
   }
 
   class PlayerStatusPanel
@@ -200,6 +217,7 @@ Updatable <|.. Weapon
 
 Player *-right-> "1" Weapon
 Player o-left-> "1" InputController
+InputController --> "*" Action : bindings
 Weapon ..> Projectile : <<create>>
 Potion ..> Character : soigne
 Projectile --> "1" Character : owner

@@ -93,6 +93,14 @@ class InputController {
   - isAnyPressed(keys : Set<KeyCode>) : boolean
 }
 
+enum Action {
+  UP
+  DOWN
+  LEFT
+  RIGHT
+  SHOOT
+}
+
 class PlayerStatusPanel
 
 class BossHealthBar {
@@ -262,6 +270,7 @@ Enemy <|-- EvilAI
 
 Player *-- "1" Weapon
 Player o-- "1" InputController
+InputController --> "*" Action : bindings
 Weapon ..> Projectile : <<create>>
 Updatable <|.. Weapon
 Potion ..> Character : soigne
@@ -283,6 +292,12 @@ Character o-- "*" HealthObserver
 HealthObserver <|.. PlayerStatusPanel
 Renderable <|.. BossHealthBar
 BossHealthBar -left-> "0..1" EvilAI : suit
+
+note bottom of InputController
+  Touches modifiables dans ControlsState.
+  Game garde les contrôleurs pour
+  conserver les choix entre les parties.
+end note
 
 note right of Potion
   Tombe du haut de l'écran

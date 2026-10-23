@@ -130,6 +130,17 @@ class ControlsStateTest {
     }
 
     @Test
+    void escapeCannotBeChosenAsANewKey() {
+        Game game = gameOnControlsScreen();
+
+        game.keyPressed(KeyCode.ENTER);
+        game.keyPressed(KeyCode.ESCAPE);
+
+        assertEquals(Set.of(KeyCode.Z, KeyCode.W), player(game, 0).getKeys(Action.UP));
+        assertInstanceOf(ControlsState.class, game.getCurrentState());
+    }
+
+    @Test
     void keysAreDescribedInOrder() {
         assertEquals("Z / W", ControlsState.describe(InputController.player1().getKeys(Action.UP)));
         assertEquals("ESPACE", ControlsState.describe(Set.of(KeyCode.SPACE)));

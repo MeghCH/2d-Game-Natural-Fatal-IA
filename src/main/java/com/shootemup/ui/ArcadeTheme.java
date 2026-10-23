@@ -95,6 +95,30 @@ public final class ArcadeTheme {
     }
 
     /**
+     * Dessine un texte aligné à droite avec une ombre portée décalée.
+     *
+     * @param gc     contexte graphique
+     * @param text   texte à dessiner
+     * @param x      position horizontale du bord droit du texte
+     * @param y      position verticale
+     * @param size   taille de la police
+     * @param fill   couleur du texte
+     * @param shadow couleur de l'ombre, ou {@code null}
+     */
+    public static void rightText(GraphicsContext gc, String text, double x, double y,
+                                 double size, Color fill, Color shadow) {
+        gc.setTextAlign(TextAlignment.RIGHT);
+        gc.setTextBaseline(VPos.BASELINE);
+        gc.setFont(font(size));
+        if (shadow != null) {
+            gc.setFill(shadow);
+            gc.fillText(text, x + 2, y + 2);
+        }
+        gc.setFill(fill);
+        gc.fillText(text, x, y);
+    }
+
+    /**
      * Dessine un texte centré horizontalement avec une ombre portée décalée.
      *
      * @param gc      contexte graphique

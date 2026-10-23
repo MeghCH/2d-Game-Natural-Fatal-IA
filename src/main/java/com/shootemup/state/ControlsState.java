@@ -3,13 +3,11 @@ package com.shootemup.state;
 import com.shootemup.core.Game;
 import com.shootemup.input.Action;
 import com.shootemup.input.InputController;
+import com.shootemup.ui.ArcadeTheme;
 import com.shootemup.ui.Starfield;
-import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -46,16 +44,25 @@ public class ControlsState implements GameState {
     private static final Action[] ACTIONS = Action.values();
 
     /** Couleur de chaque joueur, la même que dans le menu. */
-    private static final String[] PLAYER_COLORS = {"#5DCAA5", "#F0997B"};
+    private static final Color[] PLAYER_COLORS = {
+            ArcadeTheme.PLAYER_ONE,
+            ArcadeTheme.PLAYER_TWO
+    };
 
-    /** Hauteur de la première ligne d'actions, en pixels. */
-    private static final double FIRST_ROW_Y = 190;
+    /** Ordonnée de la première ligne d'actions, en pixels. */
+    private static final double FIRST_ROW_Y = 176;
 
     /** Écart vertical entre deux lignes d'actions, en pixels. */
-    private static final double ROW_SPACING = 44;
+    private static final double ROW_SPACING = 42;
 
     /** Largeur d'une colonne de joueur, en pixels. */
     private static final double COLUMN_WIDTH = 360;
+
+    /** Ordonnée du haut du panneau d'un joueur, en pixels. */
+    private static final double COLUMN_TOP = 112;
+
+    /** Hauteur du panneau d'un joueur, en pixels. */
+    private static final double COLUMN_HEIGHT = 286;
 
     /** Index du joueur dont une ligne est sélectionnée. */
     private int selectedPlayer = 0;
@@ -103,50 +110,59 @@ public class ControlsState implements GameState {
     }
 
     /**
-     * Dessine le fond étoilé, le titre, une colonne de touches par joueur
-     * et l'aide en bas de l'écran.
+     * Dessine l'écran de configuration : titre néon, une colonne encadrée
+     * par joueur, lignes d'actions sélectionnables et aide en bas de l'écran.
      *
      * @param gc contexte graphique du canvas sur lequel dessiner
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.web("#101820"));
+        double centerX = Game.WIDTH / 2.0;
+
+        gc.setFill(ArcadeTheme.VOID);
         gc.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
         background.render(gc);
+        ArcadeTheme.horizonGrid(gc, Game.WIDTH, Game.HEIGHT,
+                Game.HEIGHT * 0.7, ArcadeTheme.CYAN, elapsed * 0.55);
+        ArcadeTheme.vignette(gc, Game.WIDTH, Game.HEIGHT);
 
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.CENTER);
-        gc.setFont(Font.font(40));
-        gc.setFill(Color.web("#E24B7A"));
-        gc.fillText("TOUCHES", Game.WIDTH / 2.0 + 3, 73);
-        gc.setFill(Color.WHITE);
-        gc.fillText("TOUCHES", Game.WIDTH / 2.0, 70);
+        ArcadeTheme.centered(gc, "NATURAL FATAL SOFT // SYSTEM CONFIG",
+                centerX, 30, 11, ArcadeTheme.MUTED, null);
+        ArcadeTheme.centered(gc, "TOUCHES", centerX + 3, 67,
+                38, ArcadeTheme.MAGENTA, null);
+        ArcadeTheme.glowCentered(gc, "TOUCHES", centerX, 64,
+                38, ArcadeTheme.WHITE, ArcadeTheme.MAGENTA);
+        ArcadeTheme.centered(gc, "CONFIGURATION DES JOUEURS",
+                centerX, 94, 12, ArcadeTheme.CYAN, ArcadeTheme.VOID);
 
         List<InputController> controls = game.getPlayerControls();
         for (int player = 0; player < controls.size(); player++) {
             drawColumn(gc, player, controls.get(player));
         }
 
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFont(Font.font(16));
-        gc.setFill(Color.WHITE);
         if (waitingForKey) {
-            gc.fillText("APPUYEZ SUR LA NOUVELLE TOUCHE   -   ECHAP : ANNULER",
-                    Game.WIDTH / 2.0, Game.HEIGHT - 70);
+            ArcadeTheme.centered(gc, "APPUYEZ SUR LA NOUVELLE TOUCHE",
+                    centerX, 430, 16, ArcadeTheme.AMBER, ArcadeTheme.MAGENTA);
+            ArcadeTheme.centered(gc, "ECHAP // ANNULER",
+                    centerX, 456, 11, ArcadeTheme.MUTED, ArcadeTheme.VOID);
         } else {
-            gc.fillText("FLECHES : CHOISIR   -   ENTREE : MODIFIER   -   ECHAP : RETOUR",
-                    Game.WIDTH / 2.0, Game.HEIGHT - 70);
+            ArcadeTheme.centered(gc,
+                    "FLECHES // CHOISIR     ENTREE // MODIFIER     ECHAP // RETOUR",
+                    centerX, 430, 13, ArcadeTheme.CYAN, ArcadeTheme.VOID);
+            ArcadeTheme.centered(gc,
+                    "UNE TOUCHE DEJA UTILISEE EST RETIREE DE SON ANCIENNE ACTION",
+                    centerX, 456, 10, ArcadeTheme.MUTED, ArcadeTheme.VOID);
         }
-        gc.setFont(Font.font(14));
-        gc.setFill(Color.web("#8A93A6"));
-        gc.fillText("UNE TOUCHE DEJA UTILISEE EST RETIREE DE SON ANCIENNE ACTION",
-                Game.WIDTH / 2.0, Game.HEIGHT - 40);
 
-        drawScanlines(gc);
+        ArcadeTheme.centered(gc, "F11 // FULLSCREEN",
+                centerX, Game.HEIGHT - 20, 9, ArcadeTheme.MUTED, null);
+
+        ArcadeTheme.scanlines(gc, Game.WIDTH, Game.HEIGHT);
+        ArcadeTheme.crtFrame(gc, Game.WIDTH, Game.HEIGHT);
     }
 
     /**
-     * Dessine la colonne d'un joueur : son nom, puis une ligne par action
+     * Dessine le panneau d'un joueur : son nom, puis une ligne par action
      * avec ses touches. La ligne sélectionnée est encadrée de la couleur du joueur.
      *
      * @param gc       contexte graphique du canvas sur lequel dessiner
@@ -157,51 +173,44 @@ public class ControlsState implements GameState {
         double centerX = Game.WIDTH * (2 * player + 1) / 4.0;
         double left = centerX - COLUMN_WIDTH / 2;
         double right = centerX + COLUMN_WIDTH / 2;
-        Color color = Color.web(PLAYER_COLORS[player % PLAYER_COLORS.length]);
+        Color color = PLAYER_COLORS[player % PLAYER_COLORS.length];
 
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFont(Font.font(22));
-        gc.setFill(color);
-        gc.fillText("JOUEUR " + (player + 1), centerX, 140);
+        ArcadeTheme.panel(gc, left - 16, COLUMN_TOP,
+                COLUMN_WIDTH + 32, COLUMN_HEIGHT, color);
+        ArcadeTheme.centered(gc, (player + 1) + "P", centerX,
+                COLUMN_TOP + 30, 18, color, ArcadeTheme.VOID);
 
-        gc.setFont(Font.font(20));
+        gc.setStroke(ArcadeTheme.withAlpha(color, 0.35));
+        gc.setLineWidth(1);
+        gc.strokeLine(left, COLUMN_TOP + 48, right, COLUMN_TOP + 48);
+
         for (int i = 0; i < ACTIONS.length; i++) {
             double y = FIRST_ROW_Y + i * ROW_SPACING;
             boolean selected = player == selectedPlayer && i == selectedAction;
+
             if (selected) {
-                gc.setFill(Color.rgb(255, 255, 255, 0.08));
-                gc.fillRect(left, y - 18, COLUMN_WIDTH, 36);
+                gc.setFill(ArcadeTheme.withAlpha(color, 0.13));
+                gc.fillRect(left, y - 17, COLUMN_WIDTH, 34);
                 gc.setStroke(color);
-                gc.setLineWidth(2);
-                gc.strokeRect(left, y - 18, COLUMN_WIDTH, 36);
+                gc.setLineWidth(1.5);
+                gc.strokeRect(left + 0.5, y - 16.5, COLUMN_WIDTH - 1, 33);
+                ArcadeTheme.text(gc, ">", left + 10, y, 13, color, ArcadeTheme.VOID);
             }
 
-            gc.setTextAlign(TextAlignment.LEFT);
-            gc.setFill(selected ? Color.WHITE : Color.web("#8A93A6"));
-            gc.fillText(ACTIONS[i].getLabel(), left + 14, y);
+            ArcadeTheme.text(gc, ACTIONS[i].getLabel(), left + 26, y,
+                    13, selected ? ArcadeTheme.WHITE : ArcadeTheme.MUTED,
+                    ArcadeTheme.VOID);
 
-            gc.setTextAlign(TextAlignment.RIGHT);
-            gc.setFill(Color.WHITE);
             if (selected && waitingForKey) {
                 if (elapsed % 1.0 < 0.6) {
-                    gc.setFill(color);
-                    gc.fillText("?", right - 14, y);
+                    ArcadeTheme.rightText(gc, "?", right - 14, y, 16,
+                            color, ArcadeTheme.VOID);
                 }
             } else {
-                gc.fillText(describe(controls.getKeys(ACTIONS[i])), right - 14, y);
+                ArcadeTheme.rightText(gc, describe(controls.getKeys(ACTIONS[i])),
+                        right - 14, y, 13,
+                        selected ? color : ArcadeTheme.WHITE, ArcadeTheme.VOID);
             }
-        }
-    }
-
-    /**
-     * Dessine des lignes sombres sur tout l'écran, effet écran cathodique.
-     *
-     * @param gc contexte graphique du canvas sur lequel dessiner
-     */
-    private void drawScanlines(GraphicsContext gc) {
-        gc.setFill(Color.rgb(0, 0, 0, 0.15));
-        for (int y = 0; y < Game.HEIGHT; y += 4) {
-            gc.fillRect(0, y, Game.WIDTH, 2);
         }
     }
 

@@ -48,14 +48,30 @@ class Player {
 }
 
 class InputController {
-  - bindings : Map
+  - bindings : Map<Action, Set<KeyCode>>
+  - pressed : Set<KeyCode>
   + {static} player1() : InputController
   + {static} player2() : InputController
-  + getKeys(a) : Set
-  + setKeys(a, k) : void
-  + isPressed(a) : boolean
-  + removeKey(c) : Action
+  + getKeys(a : Action) : Set<KeyCode>
+  + setKeys(a : Action, keys : Set<KeyCode>) : void
+  + removeKey(code : KeyCode) : Action
+  + keyPressed(code : KeyCode) : void
+  + keyReleased(code : KeyCode) : void
+  + isPressed(a : Action) : boolean
+  + isUp() : boolean
+  + isDown() : boolean
+  + isLeft() : boolean
+  + isRight() : boolean
+  + isShooting() : boolean
   + clear() : void
+}
+
+enum Action {
+  UP
+  DOWN
+  LEFT
+  RIGHT
+  SHOOT
 }
 
 interface Updatable {
@@ -91,10 +107,13 @@ Weapon ..> Projectile : crée
 Updatable <|.. Weapon
 Character o-- "*" HealthObserver
 HealthObserver <|.. PlayerStatusPanel
+InputController --> "*" Action : bindings
 
 note bottom of InputController
   Joueur 1 : ZQSD (ou WASD) + espace
   Joueur 2 : flèches + entrée
+  Les touches sont modifiables dans
+  ControlsState et conservées par Game.
 end note
 
 note bottom of PlayerStatusPanel
