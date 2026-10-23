@@ -21,7 +21,7 @@ Les classes citées correspondent aux diagrammes du dossier `Diagrammes/`. Les e
 
 ### Problème
 
-Le jeu passe par plusieurs écrans : menu, partie, pause, game over. Sans pattern, la boucle de jeu deviendrait une suite de `if (state == MENU) ... else if (state == PAUSE) ...` répétée dans `update`, `render` et la gestion des touches. Ajouter un écran obligerait à modifier tous ces blocs.
+Le jeu passe par plusieurs écrans : menu, configuration des touches, partie, pause, game over et victoire. Sans pattern, la boucle de jeu deviendrait une suite de `if (state == MENU) ... else if (state == PAUSE) ...` répétée dans `update`, `render` et la gestion des touches. Ajouter un écran obligerait à modifier tous ces blocs.
 
 ### Solution
 
@@ -610,6 +610,8 @@ Le Singleton crée un état global, ce qui rend les tests plus difficiles. Nous 
 
 Chaque pattern est visible dans le dossier `Diagrammes/` grâce à un stéréotype : `<<State>>` sur `GameState` et `BossPhase`, `<<Factory>>` sur `EnemyFactory`, `<<Strategy>>` sur `MovementStrategy`, `<<Observer>>` sur `HealthObserver`, `<<Template Method>>` sur `Level` et `<<Singleton>>` sur `AssetManager`. L'`AssetManager` figure dans `Uml_structure_jeu.puml`, utilisé par `Player`, `Projectile` et `Potion`. La `BossHealthBar` (barre de vie du boss, simple affichage relu à chaque image) figure dans `Uml_structure_jeu.puml`, possédée par `PlayingState`.
 
+`MusicPlayer` n'implémente pas de design pattern : c'est un service audio simple, possédé par `Main`, qui charge la piste WAV et la boucle avec `Clip.LOOP_CONTINUOUSLY`. Il illustre plutôt la séparation entre l'orchestration du jeu et les services techniques.
+
 ## Patterns et tests
 
 Ces patterns facilitent aussi la couverture de tests demandée par le sujet :
@@ -621,4 +623,5 @@ Ces patterns facilitent aussi la couverture de tests demandée par le sujet :
 - `StateTransitionTest` vérifie les allers-retours entre la partie, la pause et l'écran des touches ;
 - `ControlsStateTest` vérifie la sélection, la réassignation et l'échange des touches, ainsi que l'impossibilité de choisir Échap ;
 - `InputControllerTest` vérifie les touches par défaut, la détection des appuis et la modification des liaisons ;
+- `MusicPlayerTest` vérifie que la piste WAV est bien packagée dans les ressources et qu'il s'agit d'un fichier RIFF/WAVE valide ;
 - `LevelTest` vérifie l'enchaînement des vagues, `Level.isCompleted()` et les couleurs/noms de secteur sans interface graphique.

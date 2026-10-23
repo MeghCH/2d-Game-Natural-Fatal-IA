@@ -11,6 +11,7 @@ Ce document présente les technologies utilisées dans le projet et justifie le 
 | Build et lancement    | Maven               | 3.9+           |
 | Tests unitaires       | JUnit               | 5.11           |
 | Couverture de tests   | JaCoCo              | 0.8.12         |
+| Audio                 | Java Sound (JDK)    | `javax.sound.sampled` |
 | Documentation du code | Javadoc             | intégré au JDK |
 | Diagrammes            | PlantUML + Graphviz | -              |
 | Versionnement         | Git                 | -              |
@@ -52,6 +53,7 @@ JavaFX est volontairement cantonné à la couche d'affichage et d'entrées.
 | Modèle        | `Entity`, `Character`, `Enemy`, `Weapon`, `Potion`, `Level`, `Wave`, `LevelManager`, `EnemyFactory`, `MovementStrategy`, `BossPhase` | seulement pour `render` |
 | Affichage     | méthodes `render`, `ArcadeTheme`, `LevelBackdrop`, `PlayerStatusPanel`, `BossHealthBar`, `Starfield`, `AssetManager`, `Animation`    | oui                     |
 | Entrées       | `InputController`, `Action`, `ControlsState`, `keyPressed` / `keyReleased` des `GameState`                                           | oui                     |
+| Audio         | `MusicPlayer`, ressource WAV dans `src/main/resources/audio/`                                                                        | non                     |
 | Orchestration | `Game`, `GameLoop` (`AnimationTimer`), `PlayingState` (qui gère aussi les collisions)                                                | oui                     |
 
 Conséquence directe : toute la logique du jeu (dégâts, déplacements, vagues, fin de niveau) se teste avec JUnit **sans ouvrir de fenêtre**, ce qui permet une bonne couverture JaCoCo.
@@ -78,18 +80,37 @@ mvn -version
 ```
 
 JavaFX n'a pas besoin d'être installé à part : Maven le télécharge comme dépendance du projet.
+Un périphérique audio est optionnel : sans carte son disponible, le jeu démarre normalement
+et reste silencieux.
 
 ## Commandes utiles
 
 | Action                | Commande                | Résultat                                                                                            |
 | --------------------- | ----------------------- | --------------------------------------------------------------------------------------------------- |
 | Lancer le jeu         | `./mvnw clean javafx:run` | ouvre le jeu en plein écran (`F11` pour basculer en fenêtre)                                       |
-| Lancer les tests      | `./mvnw test`           | exécute les 155 tests JUnit                                                                         |
+| Lancer les tests      | `./mvnw test`           | exécute les 156 tests JUnit                                                                         |
 | Rapport de couverture | `./mvnw verify`         | rapport dans `target/site/jacoco/index.html`                                                        |
 | Générer la Javadoc    | `./mvnw javadoc:javadoc` | documentation dans `target/reports/apidocs/` (ou `target/site/apidocs/` selon la version du plugin) |
 
 Le jeu est rendu sur un canvas de 960 x 540, puis mis à l'échelle dans la fenêtre
 en conservant le ratio 16:9. Les bandes noires éventuelles évitent toute déformation.
+
+## Audio
+
+La musique de fond utilise **Java Sound**, fourni avec le JDK, et non JavaFX Media :
+cela évite une dépendance Maven supplémentaire et reste suffisant pour une piste WAV.
+
+- ressource : `src/main/resources/audio/freesound_community-idea-34284.wav` ;
+- chargement : `AudioSystem.getAudioInputStream` puis `Clip.open` ;
+- boucle : `Clip.loop(Clip.LOOP_CONTINUOUSLY)`, qui relance automatiquement la piste
+  depuis le début à chaque fin (30,4 s) ;
+- volume : `MASTER_GAIN` réglé à -8 dB si le périphérique le permet ;
+- arrêt : `Main.stop()` ferme le clip à la fermeture du jeu ;
+- tolérance aux pannes : si la ressource ou la carte son manque, un avertissement est
+  affiché sur la sortie d'erreur et le jeu continue sans musique.
+
+`MusicPlayerTest` vérifie que la ressource WAV est bien présente dans le classpath et
+que son en-tête est un fichier RIFF/WAVE valide.
 
 ## Liens
 
@@ -110,7 +131,9 @@ flowchart TB
     VIEW["Affichage et entrées<br/>render, PlayerStatusPanel, InputController"]
     ORCH["Orchestration<br/>Game, GameLoop, GameState"]
     MODEL["Modèle du jeu<br/>Entités, niveaux, factory, stratégies"]
+    AUDIO["Audio<br/>MusicPlayer, WAV en boucle"]
     FX --> VIEW --> ORCH --> MODEL
+    FX --> AUDIO
   end
 
   subgraph TOOLS["Outils"]
@@ -130,8 +153,8 @@ flowchart TB
   classDef pure fill:#E1F5EE,stroke:#0F6E56,color:#085041
   classDef tool fill:#F1EFE8,stroke:#5F5E5A,color:#444441
   class FX,VIEW,ORCH javafx
-  class MODEL pure
+  class MODEL,AUDIO pure
   class MAVEN,JAVADOC,PLANTUML,JACOCO,JUNIT tool
 ```
 
-Les flèches pleines se lisent « appelle ». En violet, les couches qui dépendent de JavaFX ; en vert, le modèle du jeu, écrit en Java pur. Cette séparation permet à JUnit de tester toute la logique du jeu sans ouvrir de fenêtre, et à JaCoCo de mesurer cette couverture. Maven pilote l'ensemble : compilation, lancement, tests et génération de la Javadoc.
+Les flèches pleines se lisent « appelle ». En violet, les couches qui dépendent de JavaFX ; en vert, le modèle du jeu et l'audio, écrits en Java pur. Cette séparation permet à JUnit de tester toute la logique du jeu sans ouvrir de fenêtre, et à JaCoCo de mesurer cette couverture. Maven pilote l'ensemble : compilation, lancement, tests et génération de la Javadoc.

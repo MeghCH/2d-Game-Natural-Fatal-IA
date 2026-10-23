@@ -16,6 +16,7 @@ et testé avec **JUnit 5** et **JaCoCo**.
 - Écrans arcade : menu, configuration des touches, partie, pause, game over et victoire.
 - Contrôles personnalisables depuis le menu ou la pause, conservés pendant la session.
 - Décor animé par niveau, HUD segmenté, cadre CRT, scanlines et effets néon.
+- Musique de fond en boucle continue (piste WAV de 30,4 s) pour renforcer l'ambiance arcade.
 - Plein écran au lancement, avec bascule `F11` plein écran / fenêtré.
 
 ## Prérequis
@@ -44,10 +45,21 @@ sudo apt install openjdk-21-jdk maven graphviz
 
 Le jeu démarre en plein écran. `F11` permet de revenir en fenêtre.
 
+## Musique de fond
+
+La piste `src/main/resources/audio/freesound_community-idea-34284.wav` (30,4 s)
+est jouée en boucle pendant toute la partie. Elle est chargée par `MusicPlayer`
+avec Java Sound (`javax.sound.sampled.Clip`) et bouclée avec
+`Clip.LOOP_CONTINUOUSLY` : à la fin des 30 secondes, elle repart automatiquement
+du début, sans coupure ni dépendance supplémentaire.
+
+Le volume est réduit à -8 dB pour rester en fond sonore. Si le fichier ou le
+périphérique audio est indisponible, le jeu continue normalement, sans musique.
+
 ## Tests et documentation
 
 ```bash
-./mvnw test              # tests JUnit (155 tests)
+./mvnw test              # tests JUnit (156 tests)
 ./mvnw verify            # tests + rapport JaCoCo dans target/site/jacoco/
 ./mvnw javadoc:javadoc   # Javadoc dans target/reports/apidocs/
 ```
@@ -73,6 +85,7 @@ Une touche déjà utilisée par une autre action est retirée de cette action.
 src/main/java/com/shootemup/
 ├── Main.java              # Point d'entrée JavaFX, plein écran et mise à l'échelle
 ├── asset/                 # AssetManager (Singleton), Animation
+├── audio/                 # MusicPlayer : musique de fond en boucle
 ├── core/                  # Game (contexte State), GameLoop
 ├── enemy/                 # Enemy, Mosquito, Wasp, Crow, EvilAI, EnemyFactory, EnemyType
 │   └── boss/              # BossPhase et ses trois phases
@@ -85,6 +98,7 @@ src/main/java/com/shootemup/
 └── ui/                    # ArcadeTheme, LevelBackdrop, PlayerStatusPanel, BossHealthBar, Starfield
 
 src/main/resources/sprites/   # Feuilles de sprites du jeu
+src/main/resources/audio/     # Musique de fond (freesound_community-idea-34284.wav)
 src/test/java/com/shootemup/  # Tests JUnit organisés par package
 Docs/                         # GDD, concept, gameplay, stack et design patterns
 Docs/Diagrammes/              # Diagrammes UML PlantUML
