@@ -67,8 +67,8 @@ public class PauseState implements GameState {
                 48, ArcadeTheme.WHITE, ArcadeTheme.CYAN);
         ArcadeTheme.centered(gc, "ESC // RESUME MISSION", centerX,
                 Game.HEIGHT / 2.0 + 34, 14, ArcadeTheme.MUTED, ArcadeTheme.VOID);
-        ArcadeTheme.centered(gc, "T // CONTROLS", centerX,
-                Game.HEIGHT / 2.0 + 56, 14, ArcadeTheme.MUTED, ArcadeTheme.VOID);
+        ArcadeTheme.centered(gc, "T // CONFIGURER LES TOUCHES", centerX,
+                Game.HEIGHT / 2.0 + 56, 12, ArcadeTheme.AMBER, ArcadeTheme.VOID);
     }
 
     /**

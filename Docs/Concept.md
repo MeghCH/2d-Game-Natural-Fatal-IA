@@ -38,9 +38,10 @@ Pourquoi c'est adapté au module OOP :
 ### 3.1 Vue et joueurs
 
 - 2D, vue verticale / du dessus. Les ennemis viennent du haut et descendent vers les joueurs.
-- Fenêtre fixe **960 x 540** (`Game.WIDTH / HEIGHT`).
+- Résolution logique fixe **960 x 540** (`Game.WIDTH / HEIGHT`), mise à l'échelle en plein écran.
 - **2 joueurs** en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
-- Style : shoot'em up arcade des années 80, volontairement simple (sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions ; ciel étoilé procédural uniquement sur le menu, pas d'effets complexes).
+- Style : shoot'em up arcade des années 80-90 (sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions). L'interface reprend les codes des bornes d'arcade : typographie monospace, panneaux à double bordure, cadre CRT, scanlines, vignettage et décors procéduraux animés sur le menu, les écrans de fin, l'écran des touches et les niveaux.
+- Affichage : jeu en plein écran au lancement, mis à l'échelle en conservant le ratio 16:9 ; `F11` bascule entre plein écran et fenêtre.
 
 ### 3.2 Stack
 
@@ -63,7 +64,8 @@ Pourquoi c'est adapté au module OOP :
 - Joueur 2 : flèches + Entrée pour tirer.
 - Échap : pause ; en pause, T pour changer les touches, gardées pour la reprise. Chaque joueur a son propre `InputController`, ce qui permet le 2 joueurs sur un clavier.
 - Menu : Entrée pour jouer, T pour changer les touches. Écran de fin : Entrée pour rejouer, Échap pour revenir au menu.
-- Écran des touches (`ControlsState`) : chaque action (`Action`) de chaque joueur peut être réassignée.
+- Écran des touches (`ControlsState`) : chaque action (`Action`) de chaque joueur peut être réassignée. Les flèches choisissent le joueur et la ligne, Entrée attend la nouvelle touche, Échap annule ou revient à l'écran précédent. Une touche déjà utilisée est retirée de son ancienne action, et Échap ne peut pas être choisie.
+- `F11` bascule entre plein écran et fenêtré, sans interférer avec la pause.
 
 ### 3.5 Périmètre MVP (démo jouable)
 
@@ -77,6 +79,9 @@ Inclus :
 - [x] Score par joueur.
 - [x] Barre de PV du boss (`BossHealthBar`).
 - [x] Écran de victoire distinct (`VictoryState`).
+- [x] Écran de configuration des touches (`ControlsState`), accessible depuis le menu et la pause.
+- [x] Direction artistique arcade 80-90 : thème partagé (`ArcadeTheme`), décors animés (`LevelBackdrop`), HUD segmenté et cadre CRT.
+- [x] Plein écran au lancement et bascule `F11`.
 - [ ] XP.
 
 Exclus du MVP :
@@ -102,7 +107,9 @@ enemy.boss -> BossPhase, CalmPhase, AngryPhase, BersherkPhase
 movement -> MovementStrategy, StraightMovement, ZigzagMovement, DiveMovement
 level    -> Level, MosquitoLevel, WaspLevel, CrowLevel, BossLevel, Wave, LevelManager, TutorialManager
 state    -> GameState, MenuState, ControlsState, PlayingState, PauseState, GameOverState, VictoryState
-ui       -> PlayerStatusPanel (Observer), BossHealthBar (barre de vie du boss), Starfield (décor du menu uniquement)
+ui       -> ArcadeTheme (palette et primitives arcade), LevelBackdrop (décor animé des niveaux),
+            PlayerStatusPanel (Observer), BossHealthBar (barre de vie du boss),
+            Starfield (ciel étoilé procédural du menu et des écrans de configuration)
 input    -> InputController (factory player1 / player2, touches modifiables), Action
 asset    -> AssetManager (Singleton), Animation
 ```
@@ -114,7 +121,7 @@ asset    -> AssetManager (Singleton), Animation
 3. Potions : 10 PV, une seule fois, toutes les 6 à 12 s, perdues si elles sortent par le bas.
 4. Coop : si un joueur meurt, l'autre continue. La partie s'arrête quand les deux sont morts ou que le boss est vaincu.
 5. Fin de niveau : quand toutes les vagues sont éliminées ou sorties de l'écran.
-6. Menu et GameOver : implémentés (Entrée pour jouer / rejouer, Échap pour revenir au menu).
+6. Menu, GameOver, Victoire et écran des touches : implémentés (Entrée pour jouer / rejouer, Échap pour revenir au menu, T pour configurer les touches).
 7. Vitesses : joueur 300 px/s, balle 600 px/s, moustiques et guêpes 100 px/s, corbeaux 70 px/s puis 425 px/s en piqué, boss 60 / 140 / 220 px/s selon la phase.
 
 ## 6. Points à repréciser

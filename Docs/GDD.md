@@ -10,7 +10,7 @@
 - **Joueurs :** 2 joueurs en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
 - **Structure :** 4 niveaux avec une difficulté croissante, le dernier contre le boss.
 - **But :** Éliminer les vagues d'ennemis, survivre et vaincre le boss final (IA Fatale).
-- **Style visuel :** Shoot'em up des années 80, volontairement simple : sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions.
+- **Style visuel :** Shoot'em up arcade des années 80-90 : sprites animés, décors procéduraux, typographie monospace, panneaux, cadre CRT et scanlines.
 
 ## 2. Règles du jeu
 
@@ -23,7 +23,7 @@ Faire disparaître les ennemis (insectes, animaux, IA) en leur infligeant des d�
 - Chaque joueur commence avec **30 PV** (maximum : 30) et se déplace à 300 px/s, sans pouvoir sortir de l'écran.
 - Chaque joueur possède une arme de base : **1 dégât par tir**, un tir toutes les **0,2 s**, balle à 600 px/s vers le haut.
 - Il n'y a pas d'armes différentes à débloquer.
-- La barre de PV et le score de chaque joueur sont affichés en haut de l'écran (J1 à gauche, J2 à droite). La barre clignote en rouge quand le joueur perd des PV.
+- La barre de PV et le score de chaque joueur sont affichés en haut de l'écran (1P à gauche, 2P à droite). La barre clignote en rouge quand le joueur perd des PV.
 - Être touché par un ennemi fait perdre des PV. À 0 PV, le joueur est éliminé et l'autre continue seul.
 - La partie est perdue quand les deux joueurs sont éliminés.
 
@@ -51,7 +51,7 @@ La difficulté augmente à chaque niveau :
 ### 2.5 Potions de soin
 
 - Une potion tombe du haut de l'écran, à un endroit aléatoire, toutes les **6 à 12 secondes**, à 120 px/s.
-- Il suffit de la toucher pour la ramasser. Elle rend **4 PV**, sans dépasser le maximum de 30, et ne soigne qu'une seule fois.
+- Il suffit de la toucher pour la ramasser. Elle rend **10 PV**, sans dépasser le maximum de 30, et ne soigne qu'une seule fois.
 - Une fois ramassée, elle joue une courte animation puis disparaît. Une potion qui sort par le bas de l'écran est perdue.
 
 
@@ -111,9 +111,12 @@ Conseil de jeu : se décaler pour éviter les couloirs de descente.
 
 ## 4. Interface
 
-- Écran titre : nom du jeu, rappel des touches, Entrée pour jouer.
-- En partie : ennemis en haut, tirs vers le haut, joueurs J1 / J2 en bas.
-- Haut de l'écran : barre de PV, PV (`30/30`) et score de chaque joueur (J1 à gauche, J2 à droite), numéro du niveau au centre.
-- Pause (Échap) : la partie reste visible, assombrie, avec « PAUSE ».
-- Fin de partie : « GAME OVER » en néon rouge quand les deux joueurs sont éliminés, « VICTOIRE » en néon vert quand le boss est vaincu, avec le score total dans les deux cas, Entrée pour rejouer, Échap pour revenir au menu. Les deux écrans reprennent le style rétro du menu : ciel étoilé, grille néon et scanlines, avec invite clignotante.
-- Niveau 4 : barre de PV du boss affichée en haut au centre, avec ses PV (`EVIL AI hp/max`).
+- Direction artistique arcade 80-90 commune à tous les écrans : fond sombre, typographie monospace, panneaux à double bordure, coins en équerre, cadre CRT, scanlines et vignettage (`ArcadeTheme`).
+- Écran titre : logo néon, rappel des touches dans deux panneaux `1P` / `2P`, invitation `PRESS ENTER TO START`, `T` pour configurer les touches et `F11` pour le plein écran.
+- Écran des touches (`ControlsState`) : deux colonnes encadrées, une par joueur, avec les actions et leurs touches. La ligne sélectionnée est mise en évidence, la touche en cours de modification clignote.
+- En partie : décor animé propre à chaque niveau, ennemis en haut, tirs vers le haut, joueurs en bas.
+- Haut de l'écran : barres de vie segmentées, PV (`HP 30/30`) et score sur 6 chiffres pour chaque joueur (`1P` à gauche, `2P` à droite), badge de stage au centre (`STAGE 01 // JARDIN`).
+- Pause (Échap) : la partie reste visible, assombrie, avec « PAUSE », `ESC // RESUME MISSION` et `T // CONFIGURER LES TOUCHES`.
+- Fin de partie : « GAME OVER » en rouge avec effet de grésillement et panneau `FINAL SCORE` quand les deux joueurs sont éliminés ; « MISSION COMPLETE » en vert quand le boss est vaincu, avec le score total et un rang (S, A, B ou C). Entrée pour rejouer, Échap pour revenir au menu.
+- Niveau 4 : barre de PV du boss affichée en haut au centre, dans un panneau `WARNING // EVIL AI`, avec ses PV (`hp/max`).
+- Le jeu démarre en plein écran et s'adapte au ratio 16:9. `F11` bascule entre plein écran et fenêtré ; Échap reste réservé à la pause.

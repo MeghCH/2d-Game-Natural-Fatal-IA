@@ -50,8 +50,8 @@ JavaFX est volontairement cantonné à la couche d'affichage et d'entrées.
 | Couche        | Contenu                                                                                                                              | Dépend de JavaFX ?      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
 | Modèle        | `Entity`, `Character`, `Enemy`, `Weapon`, `Potion`, `Level`, `Wave`, `LevelManager`, `EnemyFactory`, `MovementStrategy`, `BossPhase` | seulement pour `render` |
-| Affichage     | méthodes `render`, `PlayerStatusPanel`, `AssetManager`, `Animation`                                                                  | oui                     |
-| Entrées       | `InputController`, `keyPressed` / `keyReleased` des `GameState`                                                                      | oui                     |
+| Affichage     | méthodes `render`, `ArcadeTheme`, `LevelBackdrop`, `PlayerStatusPanel`, `BossHealthBar`, `Starfield`, `AssetManager`, `Animation`    | oui                     |
+| Entrées       | `InputController`, `Action`, `ControlsState`, `keyPressed` / `keyReleased` des `GameState`                                           | oui                     |
 | Orchestration | `Game`, `GameLoop` (`AnimationTimer`), `PlayingState` (qui gère aussi les collisions)                                                | oui                     |
 
 Conséquence directe : toute la logique du jeu (dégâts, déplacements, vagues, fin de niveau) se teste avec JUnit **sans ouvrir de fenêtre**, ce qui permet une bonne couverture JaCoCo.
@@ -81,12 +81,15 @@ JavaFX n'a pas besoin d'être installé à part : Maven le télécharge comme d�
 
 ## Commandes utiles
 
-| Action                | Commande               | Résultat                                                                                            |
-| --------------------- | ---------------------- | --------------------------------------------------------------------------------------------------- |
-| Lancer le jeu         | `mvn clean javafx:run` | ouvre la fenêtre du jeu                                                                             |
-| Lancer les tests      | `mvn test`             | exécute les tests JUnit                                                                             |
-| Rapport de couverture | `mvn verify`           | rapport dans `target/site/jacoco/index.html`                                                        |
-| Générer la Javadoc    | `mvn javadoc:javadoc`  | documentation dans `target/reports/apidocs/` (ou `target/site/apidocs/` selon la version du plugin) |
+| Action                | Commande                | Résultat                                                                                            |
+| --------------------- | ----------------------- | --------------------------------------------------------------------------------------------------- |
+| Lancer le jeu         | `./mvnw clean javafx:run` | ouvre le jeu en plein écran (`F11` pour basculer en fenêtre)                                       |
+| Lancer les tests      | `./mvnw test`           | exécute les 155 tests JUnit                                                                         |
+| Rapport de couverture | `./mvnw verify`         | rapport dans `target/site/jacoco/index.html`                                                        |
+| Générer la Javadoc    | `./mvnw javadoc:javadoc` | documentation dans `target/reports/apidocs/` (ou `target/site/apidocs/` selon la version du plugin) |
+
+Le jeu est rendu sur un canvas de 960 x 540, puis mis à l'échelle dans la fenêtre
+en conservant le ratio 16:9. Les bandes noires éventuelles évitent toute déformation.
 
 ## Liens
 

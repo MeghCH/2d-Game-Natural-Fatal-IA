@@ -125,12 +125,19 @@ public class PauseState implements GameState {
     public void keyPressed(KeyCode code) {
         if (code == KeyCode.ESCAPE) {
             game.setState(previousState);   // retour à la partie
+        } else if (code == KeyCode.T) {
+            game.setState(new ControlsState(game, this));   // configuration des touches
         }
     }
 
     // enter(), update() et keyReleased() ne font rien : le jeu est figé
 }
 ```
+
+L'écran des touches (`ControlsState`) est lui aussi un état : il reçoit l'écran
+précédent (menu ou pause) pour y revenir avec Échap. Les contrôleurs de touches
+sont gardés par `Game`, pas par la partie : les changements faits depuis la pause
+sont donc immédiatement utilisés à la reprise, et conservés d'une partie à l'autre.
 
 Les transitions entre écrans :
 
@@ -611,5 +618,7 @@ Ces patterns facilitent aussi la couverture de tests demandée par le sujet :
 - `MovementTest` vérifie la position d'une entité après un `move` ;
 - `CharacterTest` teste l'Observer avec un faux observateur qui compte les notifications, et `PlayerStatusPanelTest` vérifie qu'un soin ne fait pas clignoter la barre ;
 - `EvilAITest` vérifie le passage d'une phase à l'autre, y compris quand un seul coup franchit les deux seuils ;
-- `StateTransitionTest` vérifie les allers-retours entre la partie et la pause ;
-- `LevelTest` vérifie l'enchaînement des vagues et `Level.isCompleted()` sans interface graphique.
+- `StateTransitionTest` vérifie les allers-retours entre la partie, la pause et l'écran des touches ;
+- `ControlsStateTest` vérifie la sélection, la réassignation et l'échange des touches, ainsi que l'impossibilité de choisir Échap ;
+- `InputControllerTest` vérifie les touches par défaut, la détection des appuis et la modification des liaisons ;
+- `LevelTest` vérifie l'enchaînement des vagues, `Level.isCompleted()` et les couleurs/noms de secteur sans interface graphique.

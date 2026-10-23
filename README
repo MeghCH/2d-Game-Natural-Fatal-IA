@@ -1,115 +1,111 @@
-B-OOP-301-STG-3-1-2dgame-5/
-├── pom.xml
-├── .gitignore
-├── README
-├── Docs/
-│   ├── Concept.md
-│   ├── GDD.md
-│   ├── Gameplay.md
-│   ├── Stack.md
-│   ├── Design_pattern.md
-│   └── Diagrammes/
-│       ├── README
-│       ├── 1_vue_ensemble.puml
-│       ├── 2_joueur.puml
-│       ├── 3_ennemis.puml
-│       ├── Diagrammes_classes.puml
-│       ├── Uml_entites.puml
-│       └── Uml_structure_jeu.puml
-├── Images/
-│   ├── level1.png
-│   ├── level2.png
-│   ├── level3.png
-│   └── level4.png
-└── src/
-    ├── main/
-    │   ├── java/com/shootemup/
-    │   │   ├── Main.java
-    │   │   ├── asset/Animation.java
-    │   │   ├── asset/AssetManager.java
-    │   │   ├── core/Game.java
-    │   │   ├── core/GameLoop.java
-    │   │   ├── enemy/Enemy.java
-    │   │   ├── enemy/EnemyType.java
-    │   │   ├── enemy/EnemyFactory.java
-    │   │   ├── enemy/Mosquito.java
-    │   │   ├── enemy/Wasp.java
-    │   │   ├── enemy/Crow.java
-    │   │   ├── enemy/EvilAI.java
-    │   │   ├── enemy/boss/BossPhase.java
-    │   │   ├── enemy/boss/CalmPhase.java
-    │   │   ├── enemy/boss/AngryPhase.java
-    │   │   ├── enemy/boss/BersherkPhase.java
-    │   │   ├── entity/Updatable.java
-    │   │   ├── entity/Renderable.java
-    │   │   ├── entity/Damageable.java
-    │   │   ├── entity/HealthObserver.java
-    │   │   ├── entity/Entity.java
-    │   │   ├── entity/Character.java
-    │   │   ├── entity/Player.java
-    │   │   ├── entity/Projectile.java
-    │   │   ├── entity/Weapon.java
-    │   │   ├── entity/Potion.java
-    │   │   ├── entity/PotionSpawner.java
-    │   │   ├── input/Action.java
-    │   │   ├── input/InputController.java
-    │   │   ├── level/Level.java
-    │   │   ├── level/Wave.java
-    │   │   ├── level/MosquitoLevel.java
-    │   │   ├── level/WaspLevel.java
-    │   │   ├── level/CrowLevel.java
-    │   │   ├── level/BossLevel.java
-    │   │   ├── level/LevelManager.java
-    │   │   ├── level/TutorialManager.java
-    │   │   ├── movement/MovementStrategy.java
-    │   │   ├── movement/StraightMovement.java
-    │   │   ├── movement/ZigzagMovement.java
-    │   │   ├── movement/DiveMovement.java
-    │   │   ├── state/GameState.java
-    │   │   ├── state/MenuState.java
-    │   │   ├── state/ControlsState.java
-    │   │   ├── state/PlayingState.java
-    │   │   ├── state/PauseState.java
-    │   │   ├── state/GameOverState.java
-│   │   ├── state/VictoryState.java
-    │   │   └── ui/PlayerStatusPanel.java
-│   │   └── ui/BossHealthBar.java
-    │   │   └── ui/Starfield.java
-    │   └── resources/sprites/
-    │       ├── player1.png
-    │       ├── player2.png
-    │       ├── projectile.png
-    │       ├── potion.png
-    │       ├── mosquito.png
-    │       ├── wasp.png
-    │       ├── crow.png
-    │       └── boss.png
-    └── test/
-        └── java/com/shootemup/
-            ├── asset/AnimationTest.java
-            ├── core/GameTest.java
-            ├── enemy/EnemyFactoryTest.java
-            ├── enemy/EnemyTest.java
-            ├── enemy/EvilAITest.java
-            ├── entity/CharacterTest.java
-            ├── entity/EntityTest.java
-            ├── entity/PlayerTest.java
-            ├── entity/PotionTest.java
-            ├── entity/PotionSpawnerTest.java
-            ├── entity/ProjectileTest.java
-            ├── entity/WeaponTest.java
-            ├── input/InputControllerTest.java
-            ├── level/WaveTest.java
-            ├── level/LevelTest.java
-            ├── level/LevelManagerTest.java
-            ├── level/TutorialManagerTest.java
-            ├── movement/MovementTest.java
-            ├── state/PlayingStateTest.java
-            ├── state/MenuStateTest.java
-            ├── state/ControlsStateTest.java
-            ├── state/GameOverStateTest.java
-            ├── state/VictoryStateTest.java
-            ├── state/StateTransitionTest.java
-            ├── ui/PlayerStatusPanelTest.java
-            ├── ui/BossHealthBarTest.java
-            └── ui/StarfieldTest.java
+# Natural Fatal IA
+
+Shoot'em up 2D coopératif à 2 joueurs, en vue verticale, avec une direction
+artistique de borne d'arcade des années 80-90.
+
+Le projet est écrit en **Java 21** avec **JavaFX 21**, construit avec **Maven**
+et testé avec **JUnit 5** et **JaCoCo**.
+
+## Fonctionnalités
+
+- 2 joueurs simultanés sur le même clavier (le second joueur peut rester immobile en solo).
+- 4 niveaux : moustiques, guêpes, corbeaux, puis le boss final **IA Fatale**.
+- Boss à trois phases selon ses points de vie.
+- Arme de base, projectiles, collisions et score par joueur.
+- Potions de soin qui tombent du haut de l'écran.
+- Écrans arcade : menu, configuration des touches, partie, pause, game over et victoire.
+- Contrôles personnalisables depuis le menu ou la pause, conservés pendant la session.
+- Décor animé par niveau, HUD segmenté, cadre CRT, scanlines et effets néon.
+- Plein écran au lancement, avec bascule `F11` plein écran / fenêtré.
+
+## Prérequis
+
+- Java 21 (JDK)
+- Maven 3.9+ (ou le wrapper `./mvnw` fourni)
+- Graphviz uniquement pour générer les diagrammes PlantUML
+
+Sur Fedora :
+
+```bash
+sudo dnf install java-21-openjdk-devel maven graphviz
+```
+
+Sur Ubuntu / Debian :
+
+```bash
+sudo apt install openjdk-21-jdk maven graphviz
+```
+
+## Lancer le jeu
+
+```bash
+./mvnw clean javafx:run
+```
+
+Le jeu démarre en plein écran. `F11` permet de revenir en fenêtre.
+
+## Tests et documentation
+
+```bash
+./mvnw test              # tests JUnit (155 tests)
+./mvnw verify            # tests + rapport JaCoCo dans target/site/jacoco/
+./mvnw javadoc:javadoc   # Javadoc dans target/reports/apidocs/
+```
+
+## Contrôles
+
+| Contexte            | Touches                                                          |
+| ------------------- | ---------------------------------------------------------------- |
+| Joueur 1            | `ZQSD` ou `WASD` pour se déplacer, `Espace` pour tirer            |
+| Joueur 2            | Flèches pour se déplacer, `Entrée` pour tirer                     |
+| Menu                | `Entrée` pour jouer, `T` pour configurer les touches              |
+| Pause               | `Échap` pour reprendre, `T` pour configurer les touches           |
+| Écran des touches   | Flèches pour choisir, `Entrée` pour modifier, `Échap` pour annuler / revenir |
+| Game Over / Victoire| `Entrée` pour rejouer, `Échap` pour revenir au menu               |
+| Partout             | `F11` pour basculer plein écran / fenêtré                         |
+
+Une touche déjà utilisée par une autre action est retirée de cette action.
+`Échap` ne peut pas être réassignée car elle sert à la pause.
+
+## Structure du projet
+
+```text
+src/main/java/com/shootemup/
+├── Main.java              # Point d'entrée JavaFX, plein écran et mise à l'échelle
+├── asset/                 # AssetManager (Singleton), Animation
+├── core/                  # Game (contexte State), GameLoop
+├── enemy/                 # Enemy, Mosquito, Wasp, Crow, EvilAI, EnemyFactory, EnemyType
+│   └── boss/              # BossPhase et ses trois phases
+├── entity/                # Entity, Character, Player, Projectile, Weapon, Potion...
+├── input/                 # Action, InputController (touches par joueur)
+├── level/                 # Level, les 4 niveaux, Wave, LevelManager, TutorialManager
+├── movement/              # MovementStrategy et ses implémentations
+├── state/                 # MenuState, ControlsState, PlayingState, PauseState,
+│                          # GameOverState, VictoryState, GameState
+└── ui/                    # ArcadeTheme, LevelBackdrop, PlayerStatusPanel, BossHealthBar, Starfield
+
+src/main/resources/sprites/   # Feuilles de sprites du jeu
+src/test/java/com/shootemup/  # Tests JUnit organisés par package
+Docs/                         # GDD, concept, gameplay, stack et design patterns
+Docs/Diagrammes/              # Diagrammes UML PlantUML
+```
+
+## Documentation
+
+- [`Docs/Concept.md`](Docs/Concept.md) — contexte, objectifs et choix figés.
+- [`Docs/GDD.md`](Docs/GDD.md) — règles, chiffres et description des niveaux.
+- [`Docs/Gameplay.md`](Docs/Gameplay.md) — contrôles, boucle de jeu et interactions.
+- [`Docs/Stack.md`](Docs/Stack.md) — JavaFX, Maven, tests et commandes.
+- [`Docs/Design_pattern.md`](Docs/Design_pattern.md) — patterns utilisés dans le code.
+- [`Docs/Diagrammes/README`](Docs/Diagrammes/README) — guide de lecture des diagrammes UML.
+
+## Design patterns principaux
+
+| Pattern         | Classes principales                    | Rôle                                              |
+| --------------- | -------------------------------------- | ------------------------------------------------- |
+| State           | `GameState`, `BossPhase`               | Écrans du jeu et phases du boss                   |
+| Factory         | `EnemyFactory`, `EnemyType`            | Création centralisée des ennemis                  |
+| Strategy        | `MovementStrategy`                     | Déplacements interchangeables                     |
+| Observer        | `HealthObserver`, `PlayerStatusPanel`  | Mise à jour du HUD quand les PV changent          |
+| Template Method | `Level`                                | Déroulement commun des niveaux                    |
+| Singleton       | `AssetManager`                         | Chargement unique des images                      |
