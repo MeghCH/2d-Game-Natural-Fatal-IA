@@ -11,6 +11,7 @@
 - **Structure :** 4 niveaux avec une difficulté croissante, le dernier contre le boss.
 - **But :** Éliminer les vagues d'ennemis, survivre et vaincre le boss final (IA Fatale).
 - **Style visuel :** Shoot'em up arcade des années 80-90 : sprites animés, décors procéduraux, typographie monospace, panneaux, cadre CRT et scanlines.
+- **Ambiance sonore :** musique de fond bouclée en continu, ajoutée à la direction artistique pour renforcer l'immersion et l'ambiance de borne d'arcade.
 
 ## 2. Règles du jeu
 
@@ -120,3 +121,16 @@ Conseil de jeu : se décaler pour éviter les couloirs de descente.
 - Fin de partie : « GAME OVER » en rouge avec effet de grésillement et panneau `FINAL SCORE` quand les deux joueurs sont éliminés ; « MISSION COMPLETE » en vert quand le boss est vaincu, avec le score total et un rang (S, A, B ou C). Entrée pour rejouer, Échap pour revenir au menu.
 - Niveau 4 : barre de PV du boss affichée en haut au centre, dans un panneau `WARNING // EVIL AI`, avec ses PV (`hp/max`).
 - Le jeu démarre en plein écran et s'adapte au ratio 16:9. `F11` bascule entre plein écran et fenêtré ; Échap reste réservé à la pause.
+
+### 4.1 Démarche artistique et ambiance sonore
+
+La direction artistique arcade a été complétée par l'ajout d'une musique de fond,
+pour donner une meilleure ambiance et éviter un jeu totalement silencieux. La piste
+`freesound_community-idea-34284.wav` dure **30,4 secondes** et est jouée en boucle
+continue : à la fin, elle repart automatiquement du début. Son volume est baissé à
+**-8 dB** pour rester en fond sonore et ne pas gêner le jeu.
+
+La musique est lancée au démarrage et accompagne le menu, les parties et les écrans
+de fin. Elle ne dépend pas de l'état du jeu : une pause ou un changement d'écran ne
+la coupe pas. Si le fichier ou le périphérique audio est absent, le jeu continue
+sans erreur, en silence.

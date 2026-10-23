@@ -12,8 +12,23 @@ abstract class Application <<JavaFX>>
 abstract class AnimationTimer <<JavaFX>>
 
 class Main {
+- music : MusicPlayer
+
   + start(stage : Stage) : void
+  + stop() : void
   + {static} main(args : String[]) : void
+}
+
+class MusicPlayer {
+  + {static} MUSIC_RESOURCE : String
+  - {static} VOLUME_DB : float = -8.0
+  - clip : Clip
+  - running : boolean
+
+  + start() : void
+  + stop() : void
+  + isRunning() : boolean
+  - applyVolume() : void
 }
 
 class Game {
@@ -468,6 +483,7 @@ Application <|-- Main
 AnimationTimer <|-- GameLoop
 Main ..> Game : <<create>>
 Main ..> GameLoop : <<create>>
+Main *-- "1" MusicPlayer : music
 
 Game o-- "1" GameLoop
 GameLoop --> "1" Game : update / render
@@ -597,6 +613,15 @@ note bottom of Game
   les touches configurées dans
   ControlsState sont partagées
   par toutes les parties.
+end note
+
+note bottom of MusicPlayer
+  Musique de fond en boucle :
+  Clip.loop(LOOP_CONTINUOUSLY)
+  relance la piste WAV (30,4 s)
+  depuis le début à chaque fin.
+  Le jeu continue en silence si
+  l'audio est indisponible.
 end note
 
 note bottom of AssetManager

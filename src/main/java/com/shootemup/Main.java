@@ -12,6 +12,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import com.shootemup.audio.MusicPlayer;
 import com.shootemup.core.Game;
 import com.shootemup.core.GameLoop;
 
@@ -22,6 +23,9 @@ import com.shootemup.core.GameLoop;
  * au {@link Game}, qui se charge de tout le reste.
  */
 public class Main extends Application {
+
+    /** Musique de fond jouée en boucle pendant toute la partie. */
+    private final MusicPlayer music = new MusicPlayer();
 
     /**
      * Crée l'application.
@@ -57,6 +61,7 @@ public class Main extends Application {
         Game game = new Game();
         GameLoop loop = new GameLoop(game, gc);
         game.start(loop);
+        music.start();
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.F11) {
@@ -73,6 +78,14 @@ public class Main extends Application {
         stage.setFullScreenExitHint("F11 : basculer plein écran / fenêtré");
         stage.setFullScreen(true);
         stage.show();
+    }
+
+    /**
+     * Arrête la musique et libère les ressources audio à la fermeture du jeu.
+     */
+    @Override
+    public void stop() {
+        music.stop();
     }
 
     /**

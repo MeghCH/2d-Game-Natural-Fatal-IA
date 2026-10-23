@@ -40,12 +40,13 @@ Pourquoi c'est adapté au module OOP :
 - 2D, vue verticale / du dessus. Les ennemis viennent du haut et descendent vers les joueurs.
 - Résolution logique fixe **960 x 540** (`Game.WIDTH / HEIGHT`), mise à l'échelle en plein écran.
 - **2 joueurs** en simultané sur le même clavier, en bas de l'écran. On peut jouer seul : le second joueur reste alors immobile.
-- Style : shoot'em up arcade des années 80-90 (sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions). L'interface reprend les codes des bornes d'arcade : typographie monospace, panneaux à double bordure, cadre CRT, scanlines, vignettage et décors procéduraux animés sur le menu, les écrans de fin, l'écran des touches et les niveaux.
+- Style : shoot'em up arcade des années 80-90 (sprites animés pour les joueurs, les tirs, les ennemis, le boss et les potions). L'interface reprend les codes des bornes d'arcade : typographie monospace, panneaux à double bordure, cadre CRT, scanlines, vignettage et décors procéduraux animés sur le menu, les écrans de fin, l'écran des touches et les niveaux. La démarche artistique a été complétée par une musique de fond bouclée en continu, pour renforcer l'ambiance de borne d'arcade sans gêner le gameplay.
 - Affichage : jeu en plein écran au lancement, mis à l'échelle en conservant le ratio 16:9 ; `F11` bascule entre plein écran et fenêtre.
 
 ### 3.2 Stack
 
 - Java 21 + Maven + JavaFX 21 + JUnit 5 + JaCoCo (voir `Stack.md`).
+- Audio via Java Sound, intégré au JDK (`javax.sound.sampled.Clip`), sans dépendance supplémentaire.
 - Boucle via `AnimationTimer` (~60 images/s), dessin sur `Canvas` (`Main`, `Game`).
 - Logique testable sans fenêtre : JavaFX n'apparaît que dans les méthodes `render` et la gestion des touches.
 
@@ -81,11 +82,12 @@ Inclus :
 - [x] Écran de victoire distinct (`VictoryState`).
 - [x] Écran de configuration des touches (`ControlsState`), accessible depuis le menu et la pause.
 - [x] Direction artistique arcade 80-90 : thème partagé (`ArcadeTheme`), décors animés (`LevelBackdrop`), HUD segmenté et cadre CRT.
+- [x] Musique de fond en boucle continue (`MusicPlayer`, piste WAV de 30,4 s) pour compléter l'ambiance.
 - [x] Plein écran au lancement et bascule `F11`.
 - [ ] XP.
 
 Exclus du MVP :
-- Scrolling horizontal, multijoueur réseau, boutique, particules complexes, audio, sauvegarde fichier.
+- Scrolling horizontal, multijoueur réseau, boutique, particules complexes, effets sonores ponctuels (tirs, impacts), sauvegarde fichier.
 
 > L'ancien brouillon (1 vaisseau, 3 PV, Drone / Weaver / Tank, Swing, 800x600) est abandonné :
 > il contredisait le GDD et le code. Ne pas le réintroduire.
@@ -112,6 +114,7 @@ ui       -> ArcadeTheme (palette et primitives arcade), LevelBackdrop (décor an
             Starfield (ciel étoilé procédural du menu et des écrans de configuration)
 input    -> InputController (factory player1 / player2, touches modifiables), Action
 asset    -> AssetManager (Singleton), Animation
+audio    -> MusicPlayer (musique de fond en boucle via Java Sound)
 ```
 
 ## 5. Points tranchés par le code
@@ -123,6 +126,7 @@ asset    -> AssetManager (Singleton), Animation
 5. Fin de niveau : quand toutes les vagues sont éliminées ou sorties de l'écran.
 6. Menu, GameOver, Victoire et écran des touches : implémentés (Entrée pour jouer / rejouer, Échap pour revenir au menu, T pour configurer les touches).
 7. Vitesses : joueur 300 px/s, balle 600 px/s, moustiques et guêpes 100 px/s, corbeaux 70 px/s puis 425 px/s en piqué, boss 60 / 140 / 220 px/s selon la phase.
+8. Audio : une seule piste de fond, `freesound_community-idea-34284.wav` (30,4 s), jouée en boucle continue à -8 dB. Le jeu reste silencieux mais jouable si la ressource ou le périphérique audio manque.
 
 ## 6. Points à repréciser
 

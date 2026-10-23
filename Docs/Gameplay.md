@@ -15,6 +15,9 @@
 - Les informations importantes sont toujours visibles en haut de l'écran : PV et score de chaque joueur
   (1P à gauche, 2P à droite) et badge de stage (`STAGE 01 // JARDIN`) au centre. Pendant le combat final,
   la barre de PV du boss (`BossHealthBar`) est affichée en haut au centre, avec ses PV restants.
+- Ambiance sonore : une musique de fond de 30,4 s tourne en boucle continue pendant toute la partie.
+  Elle est volontairement discrète (-8 dB) pour laisser la priorité au gameplay, et repart automatiquement
+  du début à la fin de la piste.
 - Le jeu démarre en plein écran. `F11` bascule entre plein écran et fenêtré.
 
 ## 2. Contrôles, entrées utilisateur et gestion du temps
