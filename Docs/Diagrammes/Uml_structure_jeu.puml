@@ -313,6 +313,7 @@ enum Action {
 class ArcadeTheme <<utility>> {
   + {static} font(size : double) : Font
   + {static} text(gc : GraphicsContext, text : String, x : double, y : double, size : double, fill : Color, shadow : Color) : void
+  + {static} rightText(gc : GraphicsContext, text : String, x : double, y : double, size : double, fill : Color, shadow : Color) : void
   + {static} centered(gc : GraphicsContext, text : String, centerX : double, y : double, size : double, fill : Color, shadow : Color) : void
   + {static} glowCentered(gc : GraphicsContext, text : String, centerX : double, y : double, size : double, fill : Color, glow : Color) : void
   + {static} panel(gc : GraphicsContext, x : double, y : double, w : double, h : double, border : Color) : void
@@ -322,6 +323,7 @@ class ArcadeTheme <<utility>> {
   + {static} crtFrame(gc : GraphicsContext, w : double, h : double) : void
   + {static} horizonGrid(gc : GraphicsContext, w : double, h : double, horizon : double, color : Color, phase : double) : void
   + {static} ship(gc : GraphicsContext, cx : double, cy : double, color : Color, scale : double, time : double) : void
+  + {static} withAlpha(color : Color, alpha : double) : Color
 }
 
 class LevelBackdrop {

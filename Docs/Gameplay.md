@@ -83,9 +83,9 @@
 4. Si un seul des deux joueurs meurt, l'autre continue seul. La partie s'arrête quand les deux sont morts.
 5. Fin de niveau : quand toutes les vagues ont été éliminées ou sont sorties de l'écran.
 
-## 6. Points encore ouverts
+## 6. Points tranchés (anciennes questions ouvertes)
 
-1. À quoi servirait l'XP : score seul, soin, arme plus forte ?
-2. Le boss inflige ses dégâts à chaque image tant qu'un joueur le touche : faut-il une courte invincibilité après un coup ?
+1. XP : il n'y en a pas dans le MVP, le score est le seul système de récompense.
+2. Invincibilité après un coup : il n'y en a pas, comme dit au §2 — il faut esquiver en permanence.
 
 La partie est perdue (« GAME OVER ») quand les deux joueurs sont morts, gagnée (« MISSION COMPLETE ») quand le boss est vaincu.

@@ -128,7 +128,7 @@ audio    -> MusicPlayer (musique de fond en boucle via Java Sound)
 7. Vitesses : joueur 300 px/s, balle 600 px/s, moustiques et guêpes 100 px/s, corbeaux 70 px/s puis 425 px/s en piqué, boss 60 / 140 / 220 px/s selon la phase.
 8. Audio : une seule piste de fond, `freesound_community-idea-34284.wav` (30,4 s), jouée en boucle continue à -8 dB. Le jeu reste silencieux mais jouable si la ressource ou le périphérique audio manque.
 
-## 6. Points à repréciser
+## 6. Points tranchés (anciennes questions ouvertes)
 
-1. Règles XP : à quoi sert l'XP (score seul, soin, amélioration ?).
-2. Dégâts du boss appliqués à chaque image tant qu'un joueur le touche : ajouter une courte invincibilité ?
+1. XP : tranché — il n'y a pas d'XP dans le MVP (score seul, voir §5 point 6 et les exclusions du MVP).
+2. Invincibilité après un coup : tranché — aucune invincibilité ; voir `Gameplay.md` §2 et la remarque dans la doc des patterns.
